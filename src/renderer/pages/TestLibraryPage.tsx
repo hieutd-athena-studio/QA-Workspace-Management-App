@@ -64,6 +64,7 @@ export default function TestLibraryPage() {
           <FolderTree
             selectedFolder={selectedFolder}
             onSelectFolder={setSelectedFolder}
+            onNewCase={selectedFolder ? () => { setEditingCase(null); setShowForm(true) } : undefined}
           />
         </div>
         <div className="library-cases-panel">

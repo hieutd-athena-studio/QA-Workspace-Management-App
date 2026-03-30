@@ -43,15 +43,24 @@ export default function FolderNode({
     <>
       <div
         className={`folder-node ${isSelected ? 'folder-node-selected' : ''}`}
-        style={{ paddingLeft: `${depth * 16 + 4}px` }}
+        style={{ paddingLeft: `${depth * 18 + 4}px` }}
       >
+        {/* Chevron */}
         <span
           className="folder-chevron"
           onClick={(e) => { e.stopPropagation(); setExpanded(!expanded) }}
         >
-          {hasChildren || creatingIn === folder.id ? (expanded ? '▾' : '▸') : '\u00A0\u00A0'}
+          {(hasChildren || creatingIn === folder.id)
+            ? (expanded ? '▾' : '▸')
+            : ''}
         </span>
 
+        {/* Folder icon */}
+        <span className="folder-icon">
+          {(hasChildren || expanded) ? '📂' : '📁'}
+        </span>
+
+        {/* Name or rename input */}
         {renaming ? (
           <input
             className="input folder-rename-input"
@@ -66,7 +75,7 @@ export default function FolderNode({
           />
         ) : (
           <span
-            className="folder-name truncate"
+            className="folder-name"
             onClick={() => onSelect(folder)}
             onDoubleClick={() => { setRenaming(true); setRenameName(folder.name) }}
           >
@@ -74,24 +83,25 @@ export default function FolderNode({
           </span>
         )}
 
+        {/* Hover actions */}
         <span className="folder-actions">
           <button
-            className="btn btn-ghost btn-icon btn-sm"
+            className="folder-action-btn"
             onClick={(e) => { e.stopPropagation(); onCreateChild(folder.id); setExpanded(true) }}
             title="New subfolder"
           >+</button>
           <button
-            className="btn btn-ghost btn-icon btn-sm"
+            className="folder-action-btn danger"
             onClick={(e) => { e.stopPropagation(); setConfirmDelete(true) }}
             title="Delete folder"
-          >&times;</button>
+          >×</button>
         </span>
       </div>
 
       {expanded && (
         <>
           {creatingIn === folder.id && (
-            <div className="folder-create-input" style={{ paddingLeft: `${(depth + 1) * 16 + 4}px` }}>
+            <div className="folder-create-input" style={{ paddingLeft: `${(depth + 1) * 18 + 4}px` }}>
               <input
                 className="input"
                 value={newFolderName}

@@ -1,8 +1,72 @@
 .test-case-list {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .test-case-list-header {
-  margin-bottom: var(--sp-4);
+  margin-bottom: var(--sp-5);
+}
+
+.tcl-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+}
+
+.tcl-folder-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  line-height: 1.2;
+}
+
+.tcl-count {
+  font-size: 0.8125rem;
+  color: var(--on-surface-variant);
+  margin-top: 4px;
+  display: block;
+  font-weight: 400;
+}
+
+.tcl-loading {
+  padding: var(--sp-8);
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+}
+
+/* Empty states */
+.tcl-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: var(--sp-10) var(--sp-8);
+  text-align: center;
+  gap: var(--sp-3);
+}
+
+.tcl-empty-illustration {
+  width: 180px;
+  height: 150px;
+  margin-bottom: var(--sp-3);
+  opacity: 0.9;
+}
+
+.tcl-empty-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  letter-spacing: -0.01em;
+}
+
+.tcl-empty-desc {
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+  max-width: 300px;
+  line-height: 1.6;
+  margin-bottom: var(--sp-1);
 }

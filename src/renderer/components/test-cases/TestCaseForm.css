@@ -1,35 +1,143 @@
-.steps-table {
+/* === Test Case Form Modal === */
+
+.tcf-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.15s ease;
+}
+
+.tcf-modal {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: var(--sp-6) var(--sp-8);
+  width: 600px;
+  max-width: 92vw;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 40px rgba(15, 23, 42, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  animation: slideUp 0.2s ease;
+}
+
+.tcf-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin-bottom: var(--sp-1);
+}
+
+/* Field */
+.tcf-field {
   display: flex;
   flex-direction: column;
   gap: var(--sp-1);
 }
 
-.steps-header {
-  display: flex;
-  gap: var(--sp-2);
-  padding: var(--sp-1) 0;
+.tcf-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--on-surface);
 }
 
-.steps-header span {
+/* Steps table */
+.tcf-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  background: var(--surface-container-low);
+  border-radius: var(--radius-default);
+  padding: var(--sp-3);
+}
+
+.tcf-steps-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding-bottom: var(--sp-2);
+}
+
+.tcf-steps-head span {
   font-size: 0.6875rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   color: var(--on-surface-variant);
 }
 
-.steps-row {
+.tcf-step-row {
   display: flex;
   align-items: center;
   gap: var(--sp-2);
 }
 
-.steps-col-num { width: 32px; min-width: 32px; text-align: center; }
-.steps-col-action { flex: 1; }
-.steps-col-expected { flex: 1; }
-.steps-col-del { width: 32px; }
+.tcf-col-num {
+  width: 24px;
+  min-width: 24px;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--on-surface-variant);
+}
 
-.steps-input {
-  padding: var(--sp-1) var(--sp-2) !important;
+.tcf-col-action { flex: 1; }
+.tcf-col-expected { flex: 1; }
+.tcf-col-del { width: 28px; min-width: 28px; }
+
+.tcf-step-input {
+  padding: 6px 10px !important;
   font-size: 0.8125rem !important;
+  background: #fff !important;
+}
+
+.tcf-del-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--on-surface-variant);
+  font-size: 1.1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.1s, color 0.1s;
+  line-height: 1;
+}
+.tcf-del-btn:hover:not(:disabled) {
+  background: rgba(159, 64, 61, 0.1);
+  color: var(--critical);
+}
+.tcf-del-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.tcf-add-step {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: var(--sp-1) var(--sp-1);
+  margin-top: var(--sp-1);
+  text-align: left;
+  transition: opacity 0.15s;
+}
+.tcf-add-step:hover { opacity: 0.75; }
+
+/* Footer */
+.tcf-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-3);
+  padding-top: var(--sp-2);
+  margin-top: var(--sp-1);
 }

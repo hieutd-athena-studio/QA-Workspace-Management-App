@@ -44,25 +44,24 @@ export default function TestCaseForm({ folderId, testCase, onSave, onCancel }: P
   }
 
   return (
-    <div className="modal-overlay" onClick={onCancel}>
-      <div className="modal-content modal-content-wide" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>{testCase ? 'Edit Test Case' : 'New Test Case'}</h2>
-        </div>
+    <div className="tcf-overlay" onClick={onCancel}>
+      <div className="tcf-modal" onClick={(e) => e.stopPropagation()}>
 
-        <div className="form-group">
-          <label className="form-label">Title</label>
+        <h2 className="tcf-title">{testCase ? 'Edit Test Case' : 'New Test Case'}</h2>
+
+        <div className="tcf-field">
+          <label className="tcf-label">Title</label>
           <input
             className="input"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g., Login with valid credentials"
+            placeholder="e.g. Login with valid credentials"
             autoFocus
           />
         </div>
 
-        <div className="form-group" style={{ marginTop: 'var(--sp-4)' }}>
-          <label className="form-label">Description</label>
+        <div className="tcf-field">
+          <label className="tcf-label">Description</label>
           <textarea
             className="textarea"
             value={description}
@@ -72,45 +71,44 @@ export default function TestCaseForm({ folderId, testCase, onSave, onCancel }: P
           />
         </div>
 
-        <div className="form-group" style={{ marginTop: 'var(--sp-4)' }}>
-          <label className="form-label">Steps</label>
-          <div className="steps-table">
-            <div className="steps-header">
-              <span className="steps-col-num">#</span>
-              <span className="steps-col-action">Action</span>
-              <span className="steps-col-expected">Expected Result</span>
-              <span className="steps-col-del"></span>
+        <div className="tcf-field">
+          <label className="tcf-label">Steps</label>
+          <div className="tcf-steps">
+            <div className="tcf-steps-head">
+              <span className="tcf-col-num">#</span>
+              <span className="tcf-col-action">ACTION</span>
+              <span className="tcf-col-expected">EXPECTED RESULT</span>
+              <span className="tcf-col-del" />
             </div>
             {steps.map((step, i) => (
-              <div key={i} className="steps-row">
-                <span className="steps-col-num mono">{step.step}</span>
+              <div key={i} className="tcf-step-row">
+                <span className="tcf-col-num mono">{step.step}</span>
                 <input
-                  className="input steps-input"
+                  className="input tcf-step-input"
                   value={step.action}
                   onChange={(e) => updateStep(i, 'action', e.target.value)}
                   placeholder="Action..."
                 />
                 <input
-                  className="input steps-input"
+                  className="input tcf-step-input"
                   value={step.expected}
                   onChange={(e) => updateStep(i, 'expected', e.target.value)}
                   placeholder="Expected..."
                 />
                 <button
-                  className="btn btn-ghost btn-icon btn-sm"
+                  className="tcf-del-btn"
                   onClick={() => removeStep(i)}
                   disabled={steps.length <= 1}
-                >&times;</button>
+                  title="Remove step"
+                >×</button>
               </div>
             ))}
-            <button className="btn btn-ghost btn-sm" onClick={addStep} style={{ marginTop: 'var(--sp-2)' }}>
-              + Add Step
-            </button>
+            <button className="tcf-add-step" onClick={addStep}>+ Add Step</button>
           </div>
         </div>
 
-        <div className="form-group" style={{ marginTop: 'var(--sp-4)' }}>
-          <label className="form-label">Overall Expected Result</label>
+        <div className="tcf-field">
+          <label className="tcf-label">Overall Expected Result</label>
           <textarea
             className="textarea"
             value={expectedResult}
@@ -120,7 +118,7 @@ export default function TestCaseForm({ folderId, testCase, onSave, onCancel }: P
           />
         </div>
 
-        <div className="modal-footer">
+        <div className="tcf-footer">
           <button className="btn btn-secondary" onClick={onCancel}>Cancel</button>
           <button className="btn btn-primary" onClick={handleSubmit} disabled={!title.trim()}>
             {testCase ? 'Save Changes' : 'Create Test Case'}

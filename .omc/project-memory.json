@@ -1,0 +1,153 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1774866689666,
+  "projectRoot": "/Users/athena1/Documents/QA-Workspace-Management-App",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "react",
+        "version": "18.3.1",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "18.3.1",
+        "category": "frontend"
+      },
+      {
+        "name": "vite",
+        "version": "5.4.11",
+        "category": "build"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "npm run build",
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": "npm run dev",
+    "scripts": {
+      "dev": "electron-vite dev",
+      "build": "electron-vite build",
+      "preview": "electron-vite preview",
+      "start": "electron-vite preview",
+      "postinstall": "electron-builder install-app-deps"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "src"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "out": {
+      "path": "out",
+      "purpose": "Build output",
+      "fileCount": 0,
+      "lastAccessed": 1774866689652,
+      "keyFiles": []
+    },
+    "re-design_screen": {
+      "path": "re-design_screen",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1774866689653,
+      "keyFiles": []
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 0,
+      "lastAccessed": 1774866689657,
+      "keyFiles": []
+    },
+    "test-ev": {
+      "path": "test-ev",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1774866689658,
+      "keyFiles": []
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "src/renderer/components/folder-tree/FolderTree.css",
+      "accessCount": 2,
+      "lastAccessed": 1774867210156,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/components/folder-tree/FolderTree.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1774867229357,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/components/folder-tree/FolderNode.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1774867253022,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/components/test-cases/TestCaseList.css",
+      "accessCount": 2,
+      "lastAccessed": 1774867264994,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/pages/TestLibraryPage.css",
+      "accessCount": 2,
+      "lastAccessed": 1774867301864,
+      "type": "file"
+    },
+    {
+      "path": "re-design_screen/test_library_dashboard/screen.png",
+      "accessCount": 1,
+      "lastAccessed": 1774867159741,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/assets/styles/global.css",
+      "accessCount": 1,
+      "lastAccessed": 1774867168486,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/components/test-cases/TestCaseList.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774867291867,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

@@ -9,6 +9,7 @@ import './FolderTree.css'
 interface Props {
   selectedFolder: Folder | null
   onSelectFolder: (folder: Folder) => void
+  onNewCase?: () => void
 }
 
 export default function FolderTree({ selectedFolder, onSelectFolder }: Props) {
@@ -63,12 +64,12 @@ export default function FolderTree({ selectedFolder, onSelectFolder }: Props) {
 
   return (
     <div className="folder-tree">
-      <div className="folder-tree-header flex items-center justify-between">
-        <span className="label-md text-muted">Folders</span>
+      <div className="folder-tree-header">
+        <span className="folder-tree-header-label">Folders</span>
         <button
-          className="btn btn-ghost btn-sm"
+          className="btn btn-primary btn-sm"
           onClick={() => { setCreatingIn('root'); setNewFolderName('') }}
-          title="New root folder"
+          title="New folder"
         >+ New</button>
       </div>
 
@@ -90,8 +91,8 @@ export default function FolderTree({ selectedFolder, onSelectFolder }: Props) {
       )}
 
       {rootFolders.length === 0 && creatingIn !== 'root' && (
-        <div className="folder-tree-empty text-muted body-sm">
-          No folders yet. Click "+ New" to create one.
+        <div className="folder-tree-empty">
+          No folders yet.<br />Click <strong>+ New</strong> to create one.
         </div>
       )}
 
