@@ -1,0 +1,35 @@
+.steps-table {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.steps-header {
+  display: flex;
+  gap: var(--sp-2);
+  padding: var(--sp-1) 0;
+}
+
+.steps-header span {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--on-surface-variant);
+}
+
+.steps-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.steps-col-num { width: 32px; min-width: 32px; text-align: center; }
+.steps-col-action { flex: 1; }
+.steps-col-expected { flex: 1; }
+.steps-col-del { width: 32px; }
+
+.steps-input {
+  padding: var(--sp-1) var(--sp-2) !important;
+  font-size: 0.8125rem !important;
+}

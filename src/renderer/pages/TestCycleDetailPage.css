@@ -1,0 +1,29 @@
+.cycle-detail-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-bar {
+  background: var(--surface-container-lowest);
+  border-radius: var(--radius-default);
+  padding: var(--sp-5);
+}
+
+.summary-stats {
+  flex-wrap: wrap;
+}
+
+.stat-chip {
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--radius-default);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.stat-chip strong {
+  font-weight: 700;
+  margin-right: 4px;
+}
+.stat-pass { background: rgba(0, 109, 74, 0.08); color: var(--success); }
+.stat-fail { background: rgba(159, 64, 61, 0.08); color: var(--critical); }
+.stat-blocked { background: rgba(245, 158, 11, 0.08); color: #b45309; }
+.stat-unexecuted { background: rgba(156, 163, 175, 0.08); color: #6b7280; }

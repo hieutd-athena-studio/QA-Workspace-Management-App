@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(pip3 install:*)",
+      "Bash(npx electron-rebuild:*)",
+      "Bash(npx electron-vite:*)",
+      "Bash(node node_modules/electron/install.js)"
+    ]
+  }
+}

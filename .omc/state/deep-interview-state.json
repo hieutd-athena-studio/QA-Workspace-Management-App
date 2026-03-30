@@ -1,0 +1,20 @@
+{
+  "active": true,
+  "current_phase": "execution-bridge",
+  "plan_path": ".omc/specs/deep-interview-qa-workspace.md",
+  "interview_id": "qa-workspace-001",
+  "type": "greenfield",
+  "rounds_completed": "9",
+  "final_ambiguity": "0.17",
+  "spec_path": ".omc/specs/deep-interview-qa-workspace.md",
+  "challenge_modes_used": [
+    "contrarian",
+    "simplifier"
+  ],
+  "_meta": {
+    "mode": "deep-interview",
+    "sessionId": null,
+    "updatedAt": "2026-03-30T08:29:33.386Z",
+    "updatedBy": "state_write_tool"
+  }
+}

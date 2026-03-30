@@ -1,0 +1,8 @@
+.test-case-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.test-case-list-header {
+  margin-bottom: var(--sp-4);
+}

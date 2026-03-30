@@ -1,0 +1,30 @@
+.library-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.library-header {
+  margin-bottom: var(--sp-6);
+}
+
+.library-content {
+  display: flex;
+  gap: var(--sp-6);
+  flex: 1;
+  min-height: 0;
+}
+
+.library-tree-panel {
+  width: 280px;
+  min-width: 280px;
+  background: var(--surface-container-lowest);
+  border-radius: var(--radius-default);
+  padding: var(--sp-4);
+  overflow-y: auto;
+}
+
+.library-cases-panel {
+  flex: 1;
+  min-width: 0;
+}

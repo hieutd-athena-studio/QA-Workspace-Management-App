@@ -1,0 +1,84 @@
+.gantt-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.gantt-container {
+  padding: var(--sp-4);
+  overflow-x: auto;
+}
+
+.gantt-timeline {
+  position: relative;
+  height: 32px;
+  margin-left: 220px;
+  margin-bottom: var(--sp-2);
+}
+
+.gantt-date-marker {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+}
+.gantt-date-marker .label-sm {
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+}
+
+.gantt-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.gantt-row {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+}
+
+.gantt-row-plan {
+  margin-top: var(--sp-2);
+}
+
+.gantt-label {
+  width: 220px;
+  min-width: 220px;
+  padding-right: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  font-size: 0.875rem;
+}
+
+.gantt-label-indent {
+  padding-left: var(--sp-6);
+}
+
+.gantt-bar-container {
+  flex: 1;
+  position: relative;
+  height: 24px;
+  min-width: 400px;
+}
+
+.gantt-bar {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 4px;
+  transition: opacity 0.15s;
+}
+.gantt-bar:hover {
+  opacity: 0.85;
+}
+
+.gantt-bar-plan {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dim));
+  height: 20px;
+  top: 2px;
+}
+
+.gantt-bar-cycle {
+  background: var(--surface-container-highest);
+  height: 16px;
+  top: 4px;
+}

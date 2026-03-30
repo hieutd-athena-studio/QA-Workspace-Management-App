@@ -1,0 +1,31 @@
+.plans-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.plans-header {
+  margin-bottom: var(--sp-6);
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--sp-4);
+}
+
+.plan-card {
+  transition: box-shadow 0.15s;
+}
+.plan-card:hover {
+  box-shadow: 0px 8px 24px rgba(17, 48, 105, 0.06);
+}
+
+.version-badge {
+  display: inline-flex;
+  padding: 2px 10px;
+  border-radius: var(--radius-default);
+  background: var(--surface-container-highest);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary);
+}

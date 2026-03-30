@@ -1,0 +1,35 @@
+.plan-detail-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-detail-header {
+  margin-top: var(--sp-3);
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.breadcrumb a {
+  color: var(--primary);
+  text-decoration: none;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.cycles-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.cycle-row {
+  padding: var(--sp-4) var(--sp-5);
+  transition: box-shadow 0.15s;
+}
+.cycle-row:hover {
+  box-shadow: 0px 4px 16px rgba(17, 48, 105, 0.04);
+}

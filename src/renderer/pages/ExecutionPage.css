@@ -1,0 +1,79 @@
+.execution-page {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+}
+
+.execution-card {
+  padding: var(--sp-6);
+}
+
+.execution-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.execution-step {
+  display: flex;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+}
+
+.execution-step-num {
+  width: 28px;
+  min-width: 28px;
+  color: var(--on-surface-variant);
+  font-weight: 600;
+}
+
+.execution-step-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.execution-bug-ref {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.execution-actions {
+  display: flex;
+  gap: var(--sp-3);
+}
+
+.execution-btn-pass {
+  background: var(--success);
+  color: #fff;
+  flex: 1;
+  padding: var(--sp-3);
+  font-size: 1rem;
+  font-weight: 600;
+}
+.execution-btn-pass:hover { filter: brightness(1.1); }
+
+.execution-btn-fail {
+  background: var(--critical);
+  color: #fff;
+  flex: 1;
+  padding: var(--sp-3);
+  font-size: 1rem;
+  font-weight: 600;
+}
+.execution-btn-fail:hover { filter: brightness(1.1); }
+
+.execution-btn-blocked {
+  background: var(--warning);
+  color: #fff;
+  flex: 1;
+  padding: var(--sp-3);
+  font-size: 1rem;
+  font-weight: 600;
+}
+.execution-btn-blocked:hover { filter: brightness(1.1); }
+
+.execution-nav {
+  padding: var(--sp-2) 0;
+}
