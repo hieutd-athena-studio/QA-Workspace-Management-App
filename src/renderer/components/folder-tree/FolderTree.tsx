@@ -10,7 +10,6 @@ import './FolderTree.css'
 interface Props {
   selectedFolder: Folder | null
   onSelectFolder: (folder: Folder) => void
-  onNewCase?: () => void
 }
 
 export default function FolderTree({ selectedFolder, onSelectFolder }: Props) {

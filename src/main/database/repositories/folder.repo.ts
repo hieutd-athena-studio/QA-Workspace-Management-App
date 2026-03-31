@@ -33,7 +33,7 @@ export class FolderRepository {
       if (!parent) throw new Error('Parent folder not found')
       path = `${parent.path}/${dto.name}`
     } else {
-      path = `/${dto.name}`
+      path = `/${dto.project_id}/${dto.name}`
     }
 
     const result = this.db.prepare(
