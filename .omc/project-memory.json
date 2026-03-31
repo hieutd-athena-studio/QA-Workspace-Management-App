@@ -113,15 +113,15 @@
       "type": "file"
     },
     {
-      "path": "src/shared/ipc-channels.ts",
-      "accessCount": 4,
-      "lastAccessed": 1774928387230,
+      "path": "src/main/database/connection.ts",
+      "accessCount": 5,
+      "lastAccessed": 1774933085880,
       "type": "file"
     },
     {
-      "path": "src/main/database/connection.ts",
+      "path": "src/shared/ipc-channels.ts",
       "accessCount": 4,
-      "lastAccessed": 1774928417087,
+      "lastAccessed": 1774928387230,
       "type": "file"
     },
     {
@@ -329,6 +329,12 @@
       "type": "file"
     },
     {
+      "path": "src/main/index.ts",
+      "accessCount": 2,
+      "lastAccessed": 1774933091432,
+      "type": "file"
+    },
+    {
       "path": "re-design_screen/test_library_dashboard/screen.png",
       "accessCount": 1,
       "lastAccessed": 1774867159741,
@@ -368,12 +374,6 @@
       "path": "src/renderer/hooks/useApi.ts",
       "accessCount": 1,
       "lastAccessed": 1774928061171,
-      "type": "file"
-    },
-    {
-      "path": "src/main/index.ts",
-      "accessCount": 1,
-      "lastAccessed": 1774928065447,
       "type": "file"
     },
     {
