@@ -1,61 +1,79 @@
+/* === Assignment Picker === */
+
 .picker-layout {
   display: flex;
-  gap: var(--sp-4);
-  min-height: 360px;
+  gap: var(--sp-3);
+  min-height: 340px;
 }
 
 .picker-folders {
-  width: 220px;
-  min-width: 220px;
-  background: var(--surface-container-lowest);
-  border-radius: var(--radius-default);
+  width: 200px;
+  min-width: 200px;
+  background: var(--surface-container-low);
+  border-radius: var(--radius-lg);
   padding: var(--sp-3);
   overflow-y: auto;
+  border: 1px solid rgba(136, 150, 179, 0.08);
 }
 
 .picker-folder {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
   padding: var(--sp-1) var(--sp-2);
   border-radius: var(--radius-default);
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
+  color: var(--on-surface);
   transition: background 0.1s;
+  min-height: 30px;
 }
 .picker-folder:hover {
-  background: rgba(0, 90, 194, 0.04);
+  background: rgba(59, 130, 246, 0.06);
 }
 .picker-folder-active {
-  background: rgba(0, 90, 194, 0.08);
+  background: rgba(59, 130, 246, 0.12);
   color: var(--primary);
   font-weight: 500;
 }
 
 .picker-cases {
   flex: 1;
-  background: var(--surface-container-lowest);
-  border-radius: var(--radius-default);
+  background: var(--surface-container-low);
+  border-radius: var(--radius-lg);
   padding: var(--sp-3);
   overflow-y: auto;
+  border: 1px solid rgba(136, 150, 179, 0.08);
 }
 
 .picker-case-list {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-1);
+  gap: 2px;
 }
 
 .picker-case-item {
   display: flex;
   align-items: center;
   gap: var(--sp-2);
-  padding: var(--sp-2);
+  padding: var(--sp-2) var(--sp-2);
   border-radius: var(--radius-default);
   cursor: pointer;
   font-size: 0.875rem;
+  color: var(--on-surface);
   transition: background 0.1s;
+  min-height: 36px;
 }
 .picker-case-item:hover {
-  background: rgba(0, 90, 194, 0.04);
+  background: rgba(59, 130, 246, 0.06);
 }
+.picker-case-item input[type="checkbox"] {
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 .picker-case-assigned {
-  opacity: 0.5;
+  opacity: 0.35;
+  pointer-events: none;
 }

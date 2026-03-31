@@ -1,7 +1,10 @@
+/* === App Shell Layout === */
+
 .app-layout {
   display: flex;
   height: 100vh;
   overflow: hidden;
+  background: var(--surface);
 }
 
 .main-content {
@@ -9,4 +12,20 @@
   overflow-y: auto;
   padding: var(--sp-6) var(--sp-8);
   background: var(--surface);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(136, 150, 179, 0.2) transparent;
+}
+
+.main-content::-webkit-scrollbar {
+  width: 6px;
+}
+.main-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.main-content::-webkit-scrollbar-thumb {
+  background: rgba(136, 150, 179, 0.2);
+  border-radius: 3px;
+}
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(136, 150, 179, 0.35);
 }

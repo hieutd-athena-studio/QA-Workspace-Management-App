@@ -1,3 +1,5 @@
+/* === Test Case List === */
+
 .test-case-list {
   display: flex;
   flex-direction: column;
@@ -16,16 +18,16 @@
 }
 
 .tcl-folder-name {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--on-surface);
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .tcl-count {
   font-size: 0.8125rem;
   color: var(--on-surface-variant);
-  margin-top: 4px;
+  margin-top: 3px;
   display: block;
   font-weight: 400;
 }
@@ -35,6 +37,15 @@
   text-align: center;
   font-size: 0.875rem;
   color: var(--on-surface-variant);
+}
+
+/* Display ID cell */
+.tcl-id {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  letter-spacing: 0.02em;
 }
 
 /* Empty states */
@@ -50,15 +61,15 @@
 }
 
 .tcl-empty-illustration {
-  width: 180px;
-  height: 150px;
-  margin-bottom: var(--sp-3);
-  opacity: 0.9;
+  width: 160px;
+  height: 130px;
+  margin-bottom: var(--sp-2);
+  opacity: 0.45;
 }
 
 .tcl-empty-title {
-  font-size: 1.125rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 600;
   color: var(--on-surface);
   letter-spacing: -0.01em;
 }
@@ -66,7 +77,7 @@
 .tcl-empty-desc {
   font-size: 0.875rem;
   color: var(--on-surface-variant);
-  max-width: 300px;
+  max-width: 280px;
   line-height: 1.6;
   margin-bottom: var(--sp-1);
 }

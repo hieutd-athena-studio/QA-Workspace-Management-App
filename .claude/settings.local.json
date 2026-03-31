@@ -7,7 +7,9 @@
       "Bash(npx electron-vite:*)",
       "Bash(node node_modules/electron/install.js)",
       "Bash(find ~/.claude/skills/omc-learned -name *.md)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Read(//Users/athena1/.claude/plugins/marketplaces/ui-ux-pro-max-skill/**)",
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"desktop productivity tool workspace professional dark sidebar\" --design-system -f markdown)"
     ]
   }
 }

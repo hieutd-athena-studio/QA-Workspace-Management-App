@@ -1,5 +1,13 @@
 {
   "enabledPlugins": {
     "oh-my-claudecode@omc": false
-  }
+  },
+  "permissions": {
+    "deny": [
+      "mcp__google_search:*",
+      "mcp__terminal_recorder:*",
+      "mcp__browser_usage:*"
+    ]
+  },
+  "enableAllProjectMcpServers": false
 }

@@ -3,7 +3,7 @@
 .folder-tree {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .folder-tree-header {
@@ -18,7 +18,7 @@
   font-size: 0.6875rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.7px;
+  letter-spacing: 0.6px;
   color: var(--on-surface-variant);
 }
 
@@ -27,28 +27,29 @@
   text-align: center;
   font-size: 0.8125rem;
   color: var(--on-surface-variant);
-  line-height: 1.5;
+  line-height: 1.6;
+  opacity: 0.6;
 }
 
 /* Folder node row */
 .folder-node {
   display: flex;
   align-items: center;
-  gap: var(--sp-2);
-  padding: 7px var(--sp-2);
+  gap: var(--sp-1);
+  padding: 5px var(--sp-2);
   border-radius: var(--radius-default);
   cursor: pointer;
   transition: background 0.1s;
-  min-height: 36px;
+  min-height: 32px;
   position: relative;
 }
 
 .folder-node:hover {
-  background: rgba(0, 90, 194, 0.06);
+  background: rgba(59, 130, 246, 0.06);
 }
 
 .folder-node-selected {
-  background: rgba(0, 90, 194, 0.1);
+  background: rgba(59, 130, 246, 0.1);
 }
 
 .folder-node-selected .folder-name {
@@ -58,42 +59,42 @@
 
 /* Chevron toggle */
 .folder-chevron {
-  width: 16px;
-  min-width: 16px;
-  height: 16px;
+  width: 27px;
+  min-width: 27px;
+  height: 27px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.6875rem;
+  font-size: 1.125rem;
   color: var(--on-surface-variant);
   cursor: pointer;
   user-select: none;
-  border-radius: 4px;
+  border-radius: 3px;
   transition: background 0.1s;
   flex-shrink: 0;
 }
 .folder-chevron:hover {
-  background: rgba(0, 90, 194, 0.08);
+  background: rgba(59, 130, 246, 0.1);
 }
 
 /* Folder icon */
 .folder-icon {
-  font-size: 1rem;
+  font-size: 1.3125rem;
   line-height: 1;
   flex-shrink: 0;
-  opacity: 0.75;
+  opacity: 0.5;
   transition: opacity 0.1s;
 }
 
 .folder-node:hover .folder-icon,
 .folder-node-selected .folder-icon {
-  opacity: 1;
+  opacity: 0.8;
 }
 
 /* Folder name */
 .folder-name {
   flex: 1;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   color: var(--on-surface);
   user-select: none;
@@ -103,11 +104,11 @@
   transition: color 0.1s;
 }
 
-/* Hover action buttons (+ and ×) */
+/* Hover action buttons */
 .folder-actions {
   display: none;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
   flex-shrink: 0;
 }
 
@@ -116,43 +117,45 @@
 }
 
 .folder-action-btn {
-  width: 22px;
-  height: 22px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   background: transparent;
-  border-radius: 4px;
-  font-size: 0.875rem;
+  border-radius: 3px;
+  font-size: 1.125rem;
   color: var(--on-surface-variant);
   cursor: pointer;
   transition: background 0.1s, color 0.1s;
   line-height: 1;
 }
 .folder-action-btn:hover {
-  background: rgba(0, 90, 194, 0.1);
+  background: rgba(59, 130, 246, 0.12);
   color: var(--primary);
 }
 .folder-action-btn.danger:hover {
-  background: rgba(159, 64, 61, 0.1);
+  background: rgba(248, 113, 113, 0.12);
   color: var(--critical);
 }
 
-/* Inline create input */
+/* Inline rename input */
 .folder-rename-input {
   flex: 1;
-  padding: 3px 7px !important;
-  font-size: 0.875rem !important;
-  height: 28px !important;
+  padding: 2px 6px !important;
+  font-size: 0.8125rem !important;
+  height: 24px !important;
+  border-radius: var(--radius-sm) !important;
 }
 
+/* Inline create input */
 .folder-create-input {
-  padding: 4px var(--sp-2);
+  padding: 3px var(--sp-2);
 }
 
 .folder-create-input .input {
-  padding: 5px 10px;
+  padding: 4px 8px;
   font-size: 0.8125rem;
-  height: 30px;
+  height: 28px;
 }
