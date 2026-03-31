@@ -1,29 +1,144 @@
+/* === Test Cycle Detail Page === */
+
 .cycle-detail-page {
   display: flex;
   flex-direction: column;
 }
 
-.summary-bar {
+/* Hero stats row */
+.cycle-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+  margin-bottom: var(--sp-5);
+}
+
+.cycle-stat-card {
+  background: var(--surface-container-lowest);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4) var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  position: relative;
+  overflow: hidden;
+}
+
+.cycle-stat-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.cycle-stat-card.stat-pass::after { background: var(--success); }
+.cycle-stat-card.stat-fail::after { background: var(--critical); }
+.cycle-stat-card.stat-blocked::after { background: var(--warning); }
+.cycle-stat-card.stat-unexecuted::after { background: var(--outline-variant); }
+
+.cycle-stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.cycle-stat-card.stat-pass .cycle-stat-value { color: var(--success); }
+.cycle-stat-card.stat-fail .cycle-stat-value { color: var(--critical); }
+.cycle-stat-card.stat-blocked .cycle-stat-value { color: #b45309; }
+.cycle-stat-card.stat-unexecuted .cycle-stat-value { color: #6b7280; }
+
+.cycle-stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--on-surface-variant);
+}
+
+/* Coverage row */
+.cycle-coverage-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
   background: var(--surface-container-lowest);
   border-radius: var(--radius-default);
-  padding: var(--sp-5);
+  padding: var(--sp-3) var(--sp-4);
 }
 
-.summary-stats {
-  flex-wrap: wrap;
-}
-
-.stat-chip {
-  padding: var(--sp-1) var(--sp-3);
-  border-radius: var(--radius-default);
+.cycle-coverage-label {
   font-size: 0.8125rem;
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+  white-space: nowrap;
 }
-.stat-chip strong {
+
+.cycle-coverage-pct {
+  font-size: 0.875rem;
   font-weight: 700;
-  margin-right: 4px;
+  color: var(--primary);
+  white-space: nowrap;
 }
-.stat-pass { background: rgba(0, 109, 74, 0.08); color: var(--success); }
-.stat-fail { background: rgba(159, 64, 61, 0.08); color: var(--critical); }
-.stat-blocked { background: rgba(245, 158, 11, 0.08); color: #b45309; }
-.stat-unexecuted { background: rgba(156, 163, 175, 0.08); color: #6b7280; }
+
+.coverage-track {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surface-container-low);
+  overflow: hidden;
+}
+
+.coverage-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-dim));
+  transition: width 0.4s ease;
+}
+
+/* Table section */
+.cycle-table-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.cycle-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-3);
+}
+
+/* Empty state */
+.cycle-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--sp-12) var(--sp-8);
+  text-align: center;
+  gap: var(--sp-3);
+}
+
+.cycle-empty-icon {
+  font-size: 3.5rem;
+  opacity: 0.25;
+  margin-bottom: var(--sp-2);
+}
+
+.cycle-empty-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--on-surface);
+}
+
+.cycle-empty-desc {
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+  max-width: 280px;
+  line-height: 1.6;
+  margin-bottom: var(--sp-1);
+}

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useCallback, useRef } from 'react'
 
-type Domain = 'folders' | 'testCases' | 'testPlans' | 'testCycles' | 'assignments' | 'reports'
+type Domain = 'projects' | 'folders' | 'testCases' | 'testPlans' | 'testCycles' | 'assignments' | 'reports'
 type Listener = () => void
 
 interface InvalidationContextType {

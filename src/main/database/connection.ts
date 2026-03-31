@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3'
 import { runMigrations } from './migrations/001-initial-schema'
+import { runMigration002 } from './migrations/002-add-projects'
 
 let dbInstance: Database.Database | null = null
 
@@ -8,6 +9,7 @@ export function createDatabase(dbPath: string): Database.Database {
   db.pragma('journal_mode = WAL')
   db.pragma('foreign_keys = ON')
   runMigrations(db)
+  runMigration002(db)
   return db
 }
 

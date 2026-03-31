@@ -12,6 +12,22 @@ export class TestCaseRepository {
     } as unknown as TestCase
   }
 
+  private generateDisplayId(folderId: number): string {
+    const row = this.db.prepare(`
+      SELECT p.code, COUNT(tc.id) as count
+      FROM project p
+      JOIN folder f ON f.project_id = p.id
+      LEFT JOIN test_case tc ON tc.folder_id IN (
+        SELECT id FROM folder WHERE project_id = p.id
+      )
+      WHERE f.id = ?
+      GROUP BY p.id
+    `).get(folderId) as { code: string; count: number } | undefined
+
+    if (!row) return `TC${String(1).padStart(3, '0')}`
+    return `${row.code}-TC${String(row.count + 1).padStart(3, '0')}`
+  }
+
   getByFolder(folderId: number): TestCase[] {
     const rows = this.db.prepare('SELECT * FROM test_case WHERE folder_id = ? ORDER BY title').all(folderId) as Record<string, unknown>[]
     return rows.map(r => this.mapRow(r))
@@ -23,9 +39,10 @@ export class TestCaseRepository {
   }
 
   create(dto: CreateTestCaseDTO): TestCase {
+    const displayId = this.generateDisplayId(dto.folder_id)
     const result = this.db.prepare(
-      'INSERT INTO test_case (title, description, steps, expected_result, folder_id) VALUES (?, ?, ?, ?, ?)'
-    ).run(dto.title, dto.description, serializeSteps(dto.steps), dto.expected_result, dto.folder_id)
+      'INSERT INTO test_case (display_id, title, description, steps, expected_result, folder_id) VALUES (?, ?, ?, ?, ?, ?)'
+    ).run(displayId, dto.title, dto.description, serializeSteps(dto.steps), dto.expected_result, dto.folder_id)
 
     return this.getById(Number(result.lastInsertRowid))!
   }
@@ -59,7 +76,16 @@ export class TestCaseRepository {
     this.db.prepare('DELETE FROM test_case WHERE id = ?').run(id)
   }
 
-  search(query: string): TestCase[] {
+  search(query: string, projectId?: number): TestCase[] {
+    if (projectId !== undefined) {
+      const rows = this.db.prepare(
+        `SELECT tc.* FROM test_case tc
+         JOIN folder f ON tc.folder_id = f.id
+         WHERE f.project_id = ? AND (tc.title LIKE ? OR tc.description LIKE ?)
+         ORDER BY tc.title LIMIT 50`
+      ).all(projectId, `%${query}%`, `%${query}%`) as Record<string, unknown>[]
+      return rows.map(r => this.mapRow(r))
+    }
     const rows = this.db.prepare(
       `SELECT * FROM test_case WHERE title LIKE ? OR description LIKE ? ORDER BY title LIMIT 50`
     ).all(`%${query}%`, `%${query}%`) as Record<string, unknown>[]

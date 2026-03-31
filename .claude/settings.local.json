@@ -6,7 +6,8 @@
       "Bash(npx electron-rebuild:*)",
       "Bash(npx electron-vite:*)",
       "Bash(node node_modules/electron/install.js)",
-      "Bash(find ~/.claude/skills/omc-learned -name *.md)"
+      "Bash(find ~/.claude/skills/omc-learned -name *.md)",
+      "Bash(npm run:*)"
     ]
   }
 }

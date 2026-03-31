@@ -385,3 +385,26 @@ body {
 .text-muted { color: var(--on-surface-variant); }
 .cursor-pointer { cursor: pointer; }
 .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* --- No-project guard --- */
+.no-project-guard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  padding: var(--sp-16) var(--sp-8);
+  text-align: center;
+  height: 100%;
+}
+.no-project-guard-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--on-surface);
+  margin: 0;
+}
+.no-project-guard-desc {
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+  margin: 0;
+}

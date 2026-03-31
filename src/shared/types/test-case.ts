@@ -6,6 +6,7 @@ export interface TestStep {
 
 export interface TestCase {
   id: number
+  display_id: string
   title: string
   description: string
   steps: TestStep[]

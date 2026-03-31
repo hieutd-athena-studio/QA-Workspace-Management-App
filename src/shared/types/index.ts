@@ -1,3 +1,4 @@
+export * from './project'
 export * from './folder'
 export * from './test-case'
 export * from './test-plan'

@@ -8,8 +8,15 @@ export class FolderRepository {
     return this.db.prepare('SELECT * FROM folder ORDER BY path').all() as Folder[]
   }
 
-  getChildren(parentId: number | null): Folder[] {
+  getByProject(projectId: number): Folder[] {
+    return this.db.prepare('SELECT * FROM folder WHERE project_id = ? ORDER BY path').all(projectId) as Folder[]
+  }
+
+  getChildren(parentId: number | null, projectId?: number): Folder[] {
     if (parentId === null) {
+      if (projectId !== undefined) {
+        return this.db.prepare('SELECT * FROM folder WHERE parent_id IS NULL AND project_id = ? ORDER BY name').all(projectId) as Folder[]
+      }
       return this.db.prepare('SELECT * FROM folder WHERE parent_id IS NULL ORDER BY name').all() as Folder[]
     }
     return this.db.prepare('SELECT * FROM folder WHERE parent_id = ? ORDER BY name').all(parentId) as Folder[]
@@ -30,8 +37,8 @@ export class FolderRepository {
     }
 
     const result = this.db.prepare(
-      'INSERT INTO folder (name, parent_id, path) VALUES (?, ?, ?)'
-    ).run(dto.name, dto.parent_id, path)
+      'INSERT INTO folder (name, parent_id, path, project_id) VALUES (?, ?, ?, ?)'
+    ).run(dto.name, dto.parent_id, path, dto.project_id)
 
     return this.getById(Number(result.lastInsertRowid))!
   }
@@ -45,12 +52,10 @@ export class FolderRepository {
     const newPath = `${parentPath}/${newName}`
 
     const updateAll = this.db.transaction(() => {
-      // Update all descendants' paths
       this.db.prepare(
         `UPDATE folder SET path = REPLACE(path, ?, ?), updated_at = datetime('now') WHERE path LIKE ?`
       ).run(oldPath, newPath, `${oldPath}/%`)
 
-      // Update the folder itself
       this.db.prepare(
         `UPDATE folder SET name = ?, path = ?, updated_at = datetime('now') WHERE id = ?`
       ).run(newName, newPath, id)
@@ -78,12 +83,10 @@ export class FolderRepository {
     const newPath = `${newParentPath}/${folder.name}`
 
     const moveAll = this.db.transaction(() => {
-      // Update all descendants' paths
       this.db.prepare(
         `UPDATE folder SET path = REPLACE(path, ?, ?), updated_at = datetime('now') WHERE path LIKE ?`
       ).run(oldPath, newPath, `${oldPath}/%`)
 
-      // Update the folder itself
       this.db.prepare(
         `UPDATE folder SET parent_id = ?, path = ?, updated_at = datetime('now') WHERE id = ?`
       ).run(dto.new_parent_id, newPath, id)

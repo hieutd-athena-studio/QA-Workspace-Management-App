@@ -3,6 +3,7 @@ export interface Folder {
   name: string
   parent_id: number | null
   path: string
+  project_id: number
   created_at: string
   updated_at: string
 }
@@ -10,6 +11,7 @@ export interface Folder {
 export interface CreateFolderDTO {
   name: string
   parent_id: number | null
+  project_id: number
 }
 
 export interface UpdateFolderDTO {

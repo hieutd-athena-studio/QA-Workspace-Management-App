@@ -1,6 +1,14 @@
 export const IPC = {
+  PROJECTS: {
+    GET_ALL: 'projects:get-all',
+    GET_BY_ID: 'projects:get-by-id',
+    CREATE: 'projects:create',
+    UPDATE: 'projects:update',
+    DELETE: 'projects:delete'
+  },
   FOLDERS: {
     GET_ALL: 'folders:get-all',
+    GET_BY_PROJECT: 'folders:get-by-project',
     GET_CHILDREN: 'folders:get-children',
     GET_BY_ID: 'folders:get-by-id',
     CREATE: 'folders:create',
@@ -18,6 +26,7 @@ export const IPC = {
   },
   TEST_PLANS: {
     GET_ALL: 'test-plans:get-all',
+    GET_BY_PROJECT: 'test-plans:get-by-project',
     GET_BY_ID: 'test-plans:get-by-id',
     CREATE: 'test-plans:create',
     UPDATE: 'test-plans:update',

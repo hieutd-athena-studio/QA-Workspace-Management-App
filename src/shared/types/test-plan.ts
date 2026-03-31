@@ -1,5 +1,7 @@
 export interface TestPlan {
   id: number
+  display_id: string
+  project_id: number
   name: string
   version: string
   start_date: string
@@ -9,6 +11,7 @@ export interface TestPlan {
 }
 
 export interface CreateTestPlanDTO {
+  project_id: number
   name: string
   version: string
   start_date: string

@@ -1,0 +1,170 @@
+.projects-page {
+  padding: var(--sp-6) var(--sp-8);
+  max-width: 1100px;
+}
+
+.projects-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--sp-8);
+  gap: var(--sp-4);
+}
+
+.projects-page-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin: 0 0 var(--sp-1) 0;
+}
+
+.projects-page-sub {
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+  margin: 0;
+}
+
+/* Empty state */
+.projects-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-16) var(--sp-8);
+  text-align: center;
+}
+
+.projects-empty-icon {
+  opacity: 0.5;
+}
+
+.projects-empty-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--on-surface);
+  margin: 0;
+}
+
+.projects-empty-desc {
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+  margin: 0;
+  max-width: 380px;
+}
+
+/* Project grid */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--sp-5);
+}
+
+.project-card {
+  background: var(--surface-container);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5);
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  position: relative;
+  border: 2px solid transparent;
+}
+
+.project-card:hover {
+  background: var(--surface-container-high);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.project-card-active {
+  border-color: var(--primary);
+  background: var(--surface-container-high);
+}
+
+.project-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.project-card-code {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--primary);
+  background: rgba(152, 177, 242, 0.12);
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.project-status-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.project-card-name {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  line-height: 1.3;
+}
+
+.project-card-desc {
+  font-size: 0.8125rem;
+  color: var(--on-surface-variant);
+  margin: 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.project-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: var(--sp-2);
+}
+
+.project-card-active-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.project-card-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  margin-left: auto;
+}
+
+.proj-delete-btn {
+  color: var(--critical) !important;
+  font-size: 1.125rem !important;
+  line-height: 1 !important;
+}
+
+/* Modal */
+.proj-modal {
+  width: min(520px, 92vw) !important;
+}
+
+.proj-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+}
+
+.proj-code-hint {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--on-surface-variant);
+  margin-left: var(--sp-2);
+}

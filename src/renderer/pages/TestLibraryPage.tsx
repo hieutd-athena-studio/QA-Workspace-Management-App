@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import FolderTree from '../components/folder-tree/FolderTree'
 import TestCaseList from '../components/test-cases/TestCaseList'
 import TestCaseForm from '../components/test-cases/TestCaseForm'
@@ -6,9 +7,12 @@ import type { Folder, TestCase, CreateTestCaseDTO, UpdateTestCaseDTO } from '@sh
 import { useApi } from '../hooks/useApi'
 import { useInvalidation } from '../contexts/InvalidationContext'
 import { useNotification } from '../contexts/NotificationContext'
+import { useProject } from '../contexts/ProjectContext'
 import './TestLibraryPage.css'
 
 export default function TestLibraryPage() {
+  const navigate = useNavigate()
+  const { selectedProject } = useProject()
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null)
   const [editingCase, setEditingCase] = useState<TestCase | null>(null)
   const [showForm, setShowForm] = useState(false)
@@ -53,6 +57,14 @@ export default function TestLibraryPage() {
       notify((e as Error).message, 'error')
     }
   }
+
+  if (!selectedProject) return (
+    <div className="no-project-guard">
+      <p className="no-project-guard-title">No project selected</p>
+      <p className="no-project-guard-desc">Select a project to manage its test library.</p>
+      <button className="btn btn-primary" onClick={() => navigate('/projects')}>Go to Projects</button>
+    </div>
+  )
 
   return (
     <div className="library-page">

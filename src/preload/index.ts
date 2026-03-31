@@ -9,9 +9,17 @@ function unwrap<T>(result: IpcResult<T>): T {
 }
 
 const api = {
+  projects: {
+    getAll: async () => unwrap(await ipcRenderer.invoke(IPC.PROJECTS.GET_ALL)),
+    getById: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.PROJECTS.GET_BY_ID, id)),
+    create: async (dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.PROJECTS.CREATE, dto)),
+    update: async (id: number, dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.PROJECTS.UPDATE, id, dto)),
+    delete: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.PROJECTS.DELETE, id))
+  },
   folders: {
     getAll: async () => unwrap(await ipcRenderer.invoke(IPC.FOLDERS.GET_ALL)),
-    getChildren: async (parentId: number | null) => unwrap(await ipcRenderer.invoke(IPC.FOLDERS.GET_CHILDREN, parentId)),
+    getByProject: async (projectId: number) => unwrap(await ipcRenderer.invoke(IPC.FOLDERS.GET_BY_PROJECT, projectId)),
+    getChildren: async (parentId: number | null, projectId?: number) => unwrap(await ipcRenderer.invoke(IPC.FOLDERS.GET_CHILDREN, parentId, projectId)),
     getById: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.FOLDERS.GET_BY_ID, id)),
     create: async (dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.FOLDERS.CREATE, dto)),
     rename: async (id: number, newName: string) => unwrap(await ipcRenderer.invoke(IPC.FOLDERS.UPDATE, id, newName)),
@@ -24,10 +32,11 @@ const api = {
     create: async (dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.CREATE, dto)),
     update: async (id: number, dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.UPDATE, id, dto)),
     delete: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.DELETE, id)),
-    search: async (query: string) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.SEARCH, query))
+    search: async (query: string, projectId?: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.SEARCH, query, projectId))
   },
   testPlans: {
     getAll: async () => unwrap(await ipcRenderer.invoke(IPC.TEST_PLANS.GET_ALL)),
+    getByProject: async (projectId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_PLANS.GET_BY_PROJECT, projectId)),
     getById: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_PLANS.GET_BY_ID, id)),
     create: async (dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.TEST_PLANS.CREATE, dto)),
     update: async (id: number, dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.TEST_PLANS.UPDATE, id, dto)),

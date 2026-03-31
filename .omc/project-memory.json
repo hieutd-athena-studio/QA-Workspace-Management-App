@@ -101,15 +101,153 @@
   },
   "hotPaths": [
     {
-      "path": "src/renderer/components/folder-tree/FolderTree.css",
-      "accessCount": 2,
-      "lastAccessed": 1774867210156,
+      "path": "src/renderer/pages/TestPlansPage.tsx",
+      "accessCount": 5,
+      "lastAccessed": 1774928868690,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/pages/TestPlansPage.css",
+      "accessCount": 5,
+      "lastAccessed": 1774928884361,
+      "type": "file"
+    },
+    {
+      "path": "src/shared/ipc-channels.ts",
+      "accessCount": 4,
+      "lastAccessed": 1774928387230,
+      "type": "file"
+    },
+    {
+      "path": "src/main/database/connection.ts",
+      "accessCount": 4,
+      "lastAccessed": 1774928417087,
       "type": "file"
     },
     {
       "path": "src/renderer/components/folder-tree/FolderTree.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1774928805374,
+      "type": "file"
+    },
+    {
+      "path": "src/shared/types/folder.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774928333375,
+      "type": "file"
+    },
+    {
+      "path": "src/shared/types/test-case.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774928340178,
+      "type": "file"
+    },
+    {
+      "path": "src/shared/types/test-plan.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774928346040,
+      "type": "file"
+    },
+    {
+      "path": "src/shared/types/test-cycle.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774928352092,
+      "type": "file"
+    },
+    {
+      "path": "src/shared/types/index.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774928357639,
+      "type": "file"
+    },
+    {
+      "path": "src/main/database/repositories/folder.repo.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774928453802,
+      "type": "file"
+    },
+    {
+      "path": "src/main/database/repositories/test-case.repo.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774928469128,
+      "type": "file"
+    },
+    {
+      "path": "src/main/database/repositories/test-plan.repo.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774928480614,
+      "type": "file"
+    },
+    {
+      "path": "src/main/database/repositories/test-cycle.repo.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774928496667,
+      "type": "file"
+    },
+    {
+      "path": "src/main/ipc/folder.handlers.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774928534711,
+      "type": "file"
+    },
+    {
+      "path": "src/main/ipc/test-plan.handlers.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774928541237,
+      "type": "file"
+    },
+    {
+      "path": "src/main/ipc/register-all.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774928551187,
+      "type": "file"
+    },
+    {
+      "path": "src/preload/index.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774928584072,
+      "type": "file"
+    },
+    {
+      "path": "src/main/ipc/test-case.handlers.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774928595457,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/contexts/InvalidationContext.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1774928621030,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/App.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1774928733776,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/assets/styles/global.css",
+      "accessCount": 3,
+      "lastAccessed": 1774928837442,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/pages/GanttPage.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1774928910226,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/pages/ReportsPage.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1774928942954,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/components/folder-tree/FolderTree.css",
       "accessCount": 2,
-      "lastAccessed": 1774867229357,
+      "lastAccessed": 1774867210156,
       "type": "file"
     },
     {
@@ -131,21 +269,135 @@
       "type": "file"
     },
     {
+      "path": "src/renderer/pages/TestPlanDetailPage.css",
+      "accessCount": 2,
+      "lastAccessed": 1774926403861,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/pages/TestCycleDetailPage.css",
+      "accessCount": 2,
+      "lastAccessed": 1774926415312,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/pages/ExecutionPage.css",
+      "accessCount": 2,
+      "lastAccessed": 1774926436687,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/pages/GanttPage.css",
+      "accessCount": 2,
+      "lastAccessed": 1774926450727,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/pages/ReportsPage.css",
+      "accessCount": 2,
+      "lastAccessed": 1774926466424,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/pages/TestPlanDetailPage.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1774926515991,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/pages/TestCycleDetailPage.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1774926537335,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/pages/ExecutionPage.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1774926559421,
+      "type": "file"
+    },
+    {
+      "path": "src/main/database/migrations/001-initial-schema.ts",
+      "accessCount": 2,
+      "lastAccessed": 1774928159654,
+      "type": "file"
+    },
+    {
+      "path": "src/preload/index.d.ts",
+      "accessCount": 2,
+      "lastAccessed": 1774928209731,
+      "type": "file"
+    },
+    {
       "path": "re-design_screen/test_library_dashboard/screen.png",
       "accessCount": 1,
       "lastAccessed": 1774867159741,
       "type": "file"
     },
     {
-      "path": "src/renderer/assets/styles/global.css",
-      "accessCount": 1,
-      "lastAccessed": 1774867168486,
-      "type": "file"
-    },
-    {
       "path": "src/renderer/components/test-cases/TestCaseList.tsx",
       "accessCount": 1,
       "lastAccessed": 1774867291867,
+      "type": "file"
+    },
+    {
+      "path": "DESIGN.md",
+      "accessCount": 1,
+      "lastAccessed": 1774926341877,
+      "type": "file"
+    },
+    {
+      "path": "src/shared/types/assignment.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774928055701,
+      "type": "file"
+    },
+    {
+      "path": "src/shared/types/report.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774928055768,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/contexts/NotificationContext.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774928060927,
+      "type": "file"
+    },
+    {
+      "path": "src/renderer/hooks/useApi.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774928061171,
+      "type": "file"
+    },
+    {
+      "path": "src/main/index.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774928065447,
+      "type": "file"
+    },
+    {
+      "path": "src/main/ipc/test-cycle.handlers.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774928066190,
+      "type": "file"
+    },
+    {
+      "path": "src/main/ipc/assignment.handlers.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774928070446,
+      "type": "file"
+    },
+    {
+      "path": "src/main/ipc/report.handlers.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774928070933,
+      "type": "file"
+    },
+    {
+      "path": "src/main/database/repositories/assignment.repo.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774928077520,
       "type": "file"
     }
   ],

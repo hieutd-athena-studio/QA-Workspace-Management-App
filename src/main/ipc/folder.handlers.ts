@@ -15,9 +15,17 @@ export function registerFolderHandlers(): void {
     }
   })
 
-  ipcMain.handle(IPC.FOLDERS.GET_CHILDREN, (_e, parentId: number | null) => {
+  ipcMain.handle(IPC.FOLDERS.GET_BY_PROJECT, (_e, projectId: number) => {
     try {
-      return wrapSuccess(repo.getChildren(parentId))
+      return wrapSuccess(repo.getByProject(projectId))
+    } catch (e: unknown) {
+      return wrapError('FOLDER_GET_BY_PROJECT', (e as Error).message)
+    }
+  })
+
+  ipcMain.handle(IPC.FOLDERS.GET_CHILDREN, (_e, parentId: number | null, projectId?: number) => {
+    try {
+      return wrapSuccess(repo.getChildren(parentId, projectId))
     } catch (e: unknown) {
       return wrapError('FOLDER_GET_CHILDREN', (e as Error).message)
     }

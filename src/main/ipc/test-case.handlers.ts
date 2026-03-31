@@ -50,9 +50,9 @@ export function registerTestCaseHandlers(): void {
     }
   })
 
-  ipcMain.handle(IPC.TEST_CASES.SEARCH, (_e, query: string) => {
+  ipcMain.handle(IPC.TEST_CASES.SEARCH, (_e, query: string, projectId?: number) => {
     try {
-      return wrapSuccess(repo.search(query))
+      return wrapSuccess(repo.search(query, projectId))
     } catch (e: unknown) {
       return wrapError('TC_SEARCH', (e as Error).message)
     }

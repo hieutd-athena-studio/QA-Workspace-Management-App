@@ -1,6 +1,7 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import MainLayout from './components/layout/MainLayout'
+import ProjectsPage from './pages/ProjectsPage'
 import TestLibraryPage from './pages/TestLibraryPage'
 import TestPlansPage from './pages/TestPlansPage'
 import TestPlanDetailPage from './pages/TestPlanDetailPage'
@@ -13,7 +14,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
-        <Route index element={<Navigate to="/library" replace />} />
+        <Route index element={<Navigate to="/projects" replace />} />
+        <Route path="projects" element={<ProjectsPage />} />
         <Route path="library" element={<TestLibraryPage />} />
         <Route path="plans" element={<TestPlansPage />} />
         <Route path="plans/:planId" element={<TestPlanDetailPage />} />

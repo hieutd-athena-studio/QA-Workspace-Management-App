@@ -1,5 +1,6 @@
 export interface TestCycle {
   id: number
+  display_id: string
   name: string
   build_name: string
   test_plan_id: number

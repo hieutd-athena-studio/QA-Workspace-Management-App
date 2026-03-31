@@ -25,9 +25,7 @@ export default function ExecutionPage() {
   const steps = current?.test_case_steps ? parseSteps(current.test_case_steps) : []
 
   useEffect(() => {
-    if (current) {
-      setBugRef(current.bug_ref || '')
-    }
+    if (current) setBugRef(current.bug_ref || '')
   }, [current?.id])
 
   const handleStatus = useCallback(async (status: ExecutionStatus) => {
@@ -59,103 +57,114 @@ export default function ExecutionPage() {
     return () => window.removeEventListener('keydown', handler)
   }, [handleStatus, currentIndex, assignments?.length])
 
-  if (!plan || !cycle || !assignments) return <div className="text-muted">Loading...</div>
-
-  if (assignments.length === 0) {
-    navigate(`/plans/${planId}/cycles/${cycleId}`)
-    return null
-  }
+  if (!plan || !cycle || !assignments) return <div className="text-muted body-sm" style={{ padding: 'var(--sp-8)' }}>Loading…</div>
+  if (assignments.length === 0) { navigate(`/plans/${planId}/cycles/${cycleId}`); return null }
 
   const executed = assignments.filter(a => a.status !== 'Unexecuted').length
+  const progressPct = Math.round((executed / assignments.length) * 100)
 
   return (
     <div className="execution-page">
-      <div className="breadcrumb body-sm text-muted">
-        <Link to="/plans">Plans</Link> <span>/</span>
-        <Link to={`/plans/${planId}`}>{plan.name}</Link> <span>/</span>
-        <Link to={`/plans/${planId}/cycles/${cycleId}`}>{cycle.name}</Link> <span>/</span>
+      <div className="breadcrumb">
+        <Link to="/plans">Plans</Link>
+        <span className="breadcrumb-sep">›</span>
+        <Link to={`/plans/${planId}`}>{plan.name}</Link>
+        <span className="breadcrumb-sep">›</span>
+        <Link to={`/plans/${planId}/cycles/${cycleId}`}>{cycle.name}</Link>
+        <span className="breadcrumb-sep">›</span>
         <span>Execute</span>
       </div>
 
-      <div className="execution-progress flex items-center justify-between" style={{ marginTop: 'var(--sp-3)' }}>
-        <h1 className="title-sm">Execution — {executed} of {assignments.length} done</h1>
-        <div className="progress-bar" style={{ width: 200 }}>
-          <div className="fill" style={{ width: `${Math.round((executed / assignments.length) * 100)}%` }} />
+      <div className="execution-header">
+        <span className="execution-title">Test Execution</span>
+        <div className="execution-progress-wrap">
+          <span className="execution-progress-label">{executed}/{assignments.length}</span>
+          <div className="execution-progress-track">
+            <div className="execution-progress-fill" style={{ width: `${progressPct}%` }} />
+          </div>
+          <span className="execution-progress-label">{progressPct}%</span>
         </div>
       </div>
 
       {current && (
-        <div className="execution-card card" style={{ marginTop: 'var(--sp-6)' }}>
-          <div className="execution-card-header flex items-center justify-between">
-            <h2 className="title-sm">#{currentIndex + 1}: {current.test_case_title}</h2>
+        <div className="execution-card">
+          <div className="execution-card-top">
+            <div>
+              <div className="execution-case-number">Case {currentIndex + 1} of {assignments.length}</div>
+              <div className="execution-case-title">{current.test_case_title}</div>
+            </div>
             {current.status !== 'Unexecuted' && (
               <span className={`status-badge status-${current.status.toLowerCase()}`}>{current.status}</span>
             )}
           </div>
 
           {current.test_case_description && (
-            <p className="body-md text-muted" style={{ marginTop: 'var(--sp-3)' }}>{current.test_case_description}</p>
+            <p className="execution-description">{current.test_case_description}</p>
           )}
 
           {steps.length > 0 && (
-            <div className="execution-steps" style={{ marginTop: 'var(--sp-4)' }}>
-              <div className="label-md text-muted" style={{ marginBottom: 'var(--sp-2)' }}>Steps</div>
-              {steps.map((s) => (
-                <div key={s.step} className="execution-step">
-                  <span className="execution-step-num mono">{s.step}.</span>
-                  <div className="execution-step-content">
-                    <div className="body-md">{s.action}</div>
-                    {s.expected && <div className="body-sm text-muted">Expected: {s.expected}</div>}
+            <div>
+              <div className="execution-steps-label">Steps</div>
+              <div className="execution-steps">
+                {steps.map((s) => (
+                  <div key={s.step} className="execution-step">
+                    <span className="execution-step-num">{s.step}</span>
+                    <div className="execution-step-content">
+                      <div className="execution-step-action">{s.action}</div>
+                      {s.expected && <div className="execution-step-expected">Expected: {s.expected}</div>}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
 
           {current.test_case_expected_result && (
-            <div style={{ marginTop: 'var(--sp-4)' }}>
-              <div className="label-md text-muted" style={{ marginBottom: 'var(--sp-1)' }}>Overall Expected Result</div>
-              <p className="body-md">{current.test_case_expected_result}</p>
+            <div className="execution-expected-block">
+              <div className="execution-expected-label">Overall Expected Result</div>
+              <p className="execution-expected-text">{current.test_case_expected_result}</p>
             </div>
           )}
 
-          <div className="execution-bug-ref" style={{ marginTop: 'var(--sp-4)' }}>
-            <label className="form-label">Bug Reference</label>
+          <div className="execution-bug-ref">
+            <label className="execution-bug-ref-label">Bug Reference</label>
             <input
               className="input"
               value={bugRef}
               onChange={(e) => setBugRef(e.target.value)}
               placeholder="e.g., BUG-42"
-              style={{ maxWidth: 300 }}
+              style={{ maxWidth: 280 }}
             />
-            <span className="body-sm text-muted">Saved with Fail/Blocked status</span>
+            <span className="execution-bug-ref-hint">Attached to Fail / Blocked results</span>
           </div>
 
-          <div className="execution-actions" style={{ marginTop: 'var(--sp-6)' }}>
-            <button className="btn execution-btn-pass" onClick={() => handleStatus('Pass')}>
-              Pass <span className="body-sm">(P)</span>
+          <div className="execution-actions">
+            <button className="execution-btn execution-btn-pass" onClick={() => handleStatus('Pass')}>
+              Pass <span className="execution-btn-key">P</span>
             </button>
-            <button className="btn execution-btn-fail" onClick={() => handleStatus('Fail')}>
-              Fail <span className="body-sm">(F)</span>
+            <button className="execution-btn execution-btn-fail" onClick={() => handleStatus('Fail')}>
+              Fail <span className="execution-btn-key">F</span>
             </button>
-            <button className="btn execution-btn-blocked" onClick={() => handleStatus('Blocked')}>
-              Blocked <span className="body-sm">(B)</span>
+            <button className="execution-btn execution-btn-blocked" onClick={() => handleStatus('Blocked')}>
+              Blocked <span className="execution-btn-key">B</span>
             </button>
           </div>
         </div>
       )}
 
-      <div className="execution-nav flex items-center justify-between" style={{ marginTop: 'var(--sp-4)' }}>
-        <button className="btn btn-secondary btn-sm" onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))} disabled={currentIndex === 0}>
-          &larr; Prev
-        </button>
-        <div className="flex items-center gap-2">
-          <span className="body-sm text-muted">Case {currentIndex + 1} of {assignments.length}</span>
+      <div className="execution-nav">
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
+          disabled={currentIndex === 0}
+        >← Prev</button>
+        <div className="execution-nav-center">
+          <span className="execution-nav-label">Jump to:</span>
           <select
             className="select"
             value={currentIndex}
             onChange={(e) => setCurrentIndex(Number(e.target.value))}
-            style={{ width: 200 }}
+            style={{ width: 220 }}
           >
             {assignments.map((a, i) => (
               <option key={a.id} value={i}>
@@ -164,9 +173,11 @@ export default function ExecutionPage() {
             ))}
           </select>
         </div>
-        <button className="btn btn-secondary btn-sm" onClick={() => setCurrentIndex(Math.min(assignments.length - 1, currentIndex + 1))} disabled={currentIndex === assignments.length - 1}>
-          Next &rarr;
-        </button>
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={() => setCurrentIndex(Math.min(assignments.length - 1, currentIndex + 1))}
+          disabled={currentIndex === assignments.length - 1}
+        >Next →</button>
       </div>
     </div>
   )

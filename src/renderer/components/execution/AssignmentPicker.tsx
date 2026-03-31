@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import type { Folder, TestCase, TestCaseAssignment } from '@shared/types'
 import { useApi } from '../../hooks/useApi'
+import { useProject } from '../../contexts/ProjectContext'
 import './AssignmentPicker.css'
 
 interface Props {
@@ -13,10 +14,17 @@ interface Props {
 export default function AssignmentPicker({ cycleId, existingAssignments, onAssign, onClose }: Props) {
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null)
   const [selected, setSelected] = useState<Set<number>>(new Set())
+  const { selectedProject } = useProject()
 
   const assignedIds = new Set(existingAssignments.map((a) => a.test_case_id))
 
-  const { data: folders } = useApi<Folder[]>(() => window.api.folders.getAll(), [], 'folders')
+  const { data: folders } = useApi<Folder[]>(
+    () => selectedProject
+      ? window.api.folders.getByProject(selectedProject.id)
+      : Promise.resolve([]),
+    [selectedProject?.id],
+    'folders'
+  )
   const { data: testCases } = useApi<TestCase[]>(
     () => selectedFolder ? window.api.testCases.getByFolder(selectedFolder.id) : Promise.resolve([]),
     [selectedFolder?.id]

@@ -15,6 +15,14 @@ export function registerTestPlanHandlers(): void {
     }
   })
 
+  ipcMain.handle(IPC.TEST_PLANS.GET_BY_PROJECT, (_e, projectId: number) => {
+    try {
+      return wrapSuccess(repo.getByProject(projectId))
+    } catch (e: unknown) {
+      return wrapError('TP_GET_BY_PROJECT', (e as Error).message)
+    }
+  })
+
   ipcMain.handle(IPC.TEST_PLANS.GET_BY_ID, (_e, id: number) => {
     try {
       const plan = repo.getById(id)

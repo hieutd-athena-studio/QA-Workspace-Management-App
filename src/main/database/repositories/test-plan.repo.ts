@@ -4,8 +4,25 @@ import type { TestPlan, CreateTestPlanDTO, UpdateTestPlanDTO } from '@shared/typ
 export class TestPlanRepository {
   constructor(private db: Database.Database) {}
 
+  private generateDisplayId(projectId: number): string {
+    const row = this.db.prepare(`
+      SELECT p.code, COUNT(tp.id) as count
+      FROM project p
+      LEFT JOIN test_plan tp ON tp.project_id = p.id
+      WHERE p.id = ?
+      GROUP BY p.id
+    `).get(projectId) as { code: string; count: number } | undefined
+
+    if (!row) return `PL${String(1).padStart(3, '0')}`
+    return `${row.code}-PL${String(row.count + 1).padStart(3, '0')}`
+  }
+
   getAll(): TestPlan[] {
     return this.db.prepare('SELECT * FROM test_plan ORDER BY start_date DESC').all() as TestPlan[]
+  }
+
+  getByProject(projectId: number): TestPlan[] {
+    return this.db.prepare('SELECT * FROM test_plan WHERE project_id = ? ORDER BY start_date DESC').all(projectId) as TestPlan[]
   }
 
   getById(id: number): TestPlan | undefined {
@@ -13,9 +30,10 @@ export class TestPlanRepository {
   }
 
   create(dto: CreateTestPlanDTO): TestPlan {
+    const displayId = this.generateDisplayId(dto.project_id)
     const result = this.db.prepare(
-      'INSERT INTO test_plan (name, version, start_date, end_date) VALUES (?, ?, ?, ?)'
-    ).run(dto.name, dto.version, dto.start_date, dto.end_date)
+      'INSERT INTO test_plan (display_id, project_id, name, version, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?)'
+    ).run(displayId, dto.project_id, dto.name, dto.version, dto.start_date, dto.end_date)
 
     return this.getById(Number(result.lastInsertRowid))!
   }

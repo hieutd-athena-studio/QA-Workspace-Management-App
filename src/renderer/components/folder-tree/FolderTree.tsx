@@ -3,6 +3,7 @@ import type { Folder, CreateFolderDTO } from '@shared/types'
 import { useApi } from '../../hooks/useApi'
 import { useInvalidation } from '../../contexts/InvalidationContext'
 import { useNotification } from '../../contexts/NotificationContext'
+import { useProject } from '../../contexts/ProjectContext'
 import FolderNode from './FolderNode'
 import './FolderTree.css'
 
@@ -15,21 +16,28 @@ interface Props {
 export default function FolderTree({ selectedFolder, onSelectFolder }: Props) {
   const { invalidate } = useInvalidation()
   const { notify } = useNotification()
+  const { selectedProject } = useProject()
   const [creatingIn, setCreatingIn] = useState<number | null | 'root'>(null)
   const [newFolderName, setNewFolderName] = useState('')
 
   const { data: folders } = useApi<Folder[]>(
-    () => window.api.folders.getAll(),
-    [],
+    () => selectedProject
+      ? window.api.folders.getByProject(selectedProject.id)
+      : Promise.resolve([]),
+    [selectedProject?.id],
     'folders'
   )
 
   const rootFolders = (folders || []).filter((f) => f.parent_id === null)
 
   const handleCreate = async (parentId: number | null) => {
-    if (!newFolderName.trim()) return
+    if (!newFolderName.trim() || !selectedProject) return
     try {
-      const dto: CreateFolderDTO = { name: newFolderName.trim(), parent_id: parentId }
+      const dto: CreateFolderDTO = {
+        name: newFolderName.trim(),
+        parent_id: parentId,
+        project_id: selectedProject.id
+      }
       const created = await window.api.folders.create(dto)
       invalidate('folders')
       onSelectFolder(created)
@@ -70,6 +78,7 @@ export default function FolderTree({ selectedFolder, onSelectFolder }: Props) {
           className="btn btn-primary btn-sm"
           onClick={() => { setCreatingIn('root'); setNewFolderName('') }}
           title="New folder"
+          disabled={!selectedProject}
         >+ New</button>
       </div>
 
