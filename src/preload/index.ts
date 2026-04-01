@@ -16,18 +16,23 @@ const api = {
     update: async (id: number, dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.PROJECTS.UPDATE, id, dto)),
     delete: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.PROJECTS.DELETE, id))
   },
-  folders: {
-    getAll: async () => unwrap(await ipcRenderer.invoke(IPC.FOLDERS.GET_ALL)),
-    getByProject: async (projectId: number) => unwrap(await ipcRenderer.invoke(IPC.FOLDERS.GET_BY_PROJECT, projectId)),
-    getChildren: async (parentId: number | null, projectId?: number) => unwrap(await ipcRenderer.invoke(IPC.FOLDERS.GET_CHILDREN, parentId, projectId)),
-    getById: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.FOLDERS.GET_BY_ID, id)),
-    create: async (dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.FOLDERS.CREATE, dto)),
-    rename: async (id: number, newName: string) => unwrap(await ipcRenderer.invoke(IPC.FOLDERS.UPDATE, id, newName)),
-    move: async (id: number, dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.FOLDERS.MOVE, id, dto)),
-    delete: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.FOLDERS.DELETE, id))
+  categories: {
+    getByProject: async (projectId: number) => unwrap(await ipcRenderer.invoke(IPC.CATEGORIES.GET_BY_PROJECT, projectId)),
+    getById: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.CATEGORIES.GET_BY_ID, id)),
+    create: async (dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.CATEGORIES.CREATE, dto)),
+    rename: async (id: number, name: string) => unwrap(await ipcRenderer.invoke(IPC.CATEGORIES.RENAME, id, name)),
+    delete: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.CATEGORIES.DELETE, id))
+  },
+  subcategories: {
+    getByProject: async (projectId: number) => unwrap(await ipcRenderer.invoke(IPC.SUBCATEGORIES.GET_BY_PROJECT, projectId)),
+    getByCategory: async (categoryId: number) => unwrap(await ipcRenderer.invoke(IPC.SUBCATEGORIES.GET_BY_CATEGORY, categoryId)),
+    getById: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.SUBCATEGORIES.GET_BY_ID, id)),
+    create: async (dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.SUBCATEGORIES.CREATE, dto)),
+    rename: async (id: number, name: string) => unwrap(await ipcRenderer.invoke(IPC.SUBCATEGORIES.RENAME, id, name)),
+    delete: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.SUBCATEGORIES.DELETE, id))
   },
   testCases: {
-    getByFolder: async (folderId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.GET_BY_FOLDER, folderId)),
+    getBySubcategory: async (subcategoryId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.GET_BY_SUBCATEGORY, subcategoryId)),
     getById: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.GET_BY_ID, id)),
     create: async (dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.CREATE, dto)),
     update: async (id: number, dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.UPDATE, id, dto)),
