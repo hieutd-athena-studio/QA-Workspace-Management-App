@@ -139,7 +139,7 @@ export default function TestCycleDetailPage() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Folder</th>
+                <th>Category / Sub-category</th>
                 <th>Test Case</th>
                 <th>Status</th>
                 <th>Bug Ref</th>
@@ -148,7 +148,7 @@ export default function TestCycleDetailPage() {
             <tbody>
               {assignments!.map((a) => (
                 <tr key={a.id}>
-                  <td className="secondary">{a.folder_path}</td>
+                  <td className="secondary">{a.category_name} / {a.subcategory_name}</td>
                   <td>{a.test_case_title}</td>
                   <td><StatusBadge status={a.status} /></td>
                   <td className="mono">{a.bug_ref || '—'}</td>

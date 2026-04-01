@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import type { Folder, TestCase, TestCaseAssignment } from '@shared/types'
+import type { Category, Subcategory, TestCase, TestCaseAssignment } from '@shared/types'
 import { useApi } from '../../hooks/useApi'
 import { useProject } from '../../contexts/ProjectContext'
 import './AssignmentPicker.css'
@@ -12,50 +12,42 @@ interface Props {
 }
 
 export default function AssignmentPicker({ cycleId, existingAssignments, onAssign, onClose }: Props) {
-  const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null)
+  const [selectedSubcategory, setSelectedSubcategory] = useState<Subcategory | null>(null)
   const [selected, setSelected] = useState<Set<number>>(new Set())
   const { selectedProject } = useProject()
 
   const assignedIds = new Set(existingAssignments.map((a) => a.test_case_id))
 
-  const { data: folders } = useApi<Folder[]>(
+  const { data: categories } = useApi<Category[]>(
     () => selectedProject
-      ? window.api.folders.getByProject(selectedProject.id)
+      ? window.api.categories.getByProject(selectedProject.id)
       : Promise.resolve([]),
     [selectedProject?.id],
-    'folders'
-  )
-  const { data: testCases } = useApi<TestCase[]>(
-    () => selectedFolder ? window.api.testCases.getByFolder(selectedFolder.id) : Promise.resolve([]),
-    [selectedFolder?.id]
+    'categories'
   )
 
-  const rootFolders = (folders || []).filter((f) => f.parent_id === null)
+  const { data: subcategories } = useApi<Subcategory[]>(
+    () => selectedProject
+      ? window.api.subcategories.getByProject(selectedProject.id)
+      : Promise.resolve([]),
+    [selectedProject?.id],
+    'subcategories'
+  )
+
+  const { data: testCases } = useApi<TestCase[]>(
+    () => selectedSubcategory
+      ? window.api.testCases.getBySubcategory(selectedSubcategory.id)
+      : Promise.resolve([]),
+    [selectedSubcategory?.id]
+  )
+
+  const subsForCategory = (categoryId: number) =>
+    (subcategories || []).filter((s) => s.category_id === categoryId)
 
   const toggleCase = (id: number) => {
     const next = new Set(selected)
     if (next.has(id)) next.delete(id); else next.add(id)
     setSelected(next)
-  }
-
-  const handleAssign = () => {
-    onAssign(Array.from(selected))
-  }
-
-  const renderFolderList = (parentId: number | null, depth: number): React.ReactNode => {
-    const children = (folders || []).filter((f) => f.parent_id === parentId)
-    return children.map((f) => (
-      <React.Fragment key={f.id}>
-        <div
-          className={`picker-folder ${selectedFolder?.id === f.id ? 'picker-folder-active' : ''}`}
-          style={{ paddingLeft: `${depth * 16 + 8}px` }}
-          onClick={() => setSelectedFolder(f)}
-        >
-          {f.name}
-        </div>
-        {renderFolderList(f.id, depth + 1)}
-      </React.Fragment>
-    ))
   }
 
   return (
@@ -67,22 +59,35 @@ export default function AssignmentPicker({ cycleId, existingAssignments, onAssig
 
         <div className="picker-layout">
           <div className="picker-folders">
-            <div className="label-md text-muted" style={{ marginBottom: 'var(--sp-2)' }}>Folders</div>
-            {rootFolders.length === 0 ? (
-              <div className="body-sm text-muted">No folders</div>
+            <div className="label-md text-muted" style={{ marginBottom: 'var(--sp-2)' }}>Categories</div>
+            {(categories || []).length === 0 ? (
+              <div className="body-sm text-muted">No categories</div>
             ) : (
-              renderFolderList(null, 0)
+              (categories || []).map((cat) => (
+                <React.Fragment key={cat.id}>
+                  <div className="picker-category-header">{cat.name}</div>
+                  {subsForCategory(cat.id).map((sub) => (
+                    <div
+                      key={sub.id}
+                      className={`picker-folder picker-subfolder ${selectedSubcategory?.id === sub.id ? 'picker-folder-active' : ''}`}
+                      onClick={() => setSelectedSubcategory(sub)}
+                    >
+                      {sub.name}
+                    </div>
+                  ))}
+                </React.Fragment>
+              ))
             )}
           </div>
 
           <div className="picker-cases">
             <div className="label-md text-muted" style={{ marginBottom: 'var(--sp-2)' }}>
-              Test Cases {selectedFolder ? `in ${selectedFolder.name}` : ''}
+              Test Cases {selectedSubcategory ? `in ${selectedSubcategory.name}` : ''}
             </div>
-            {!selectedFolder ? (
-              <div className="body-sm text-muted">Select a folder</div>
+            {!selectedSubcategory ? (
+              <div className="body-sm text-muted">Select a sub-category</div>
             ) : !testCases?.length ? (
-              <div className="body-sm text-muted">No test cases in this folder</div>
+              <div className="body-sm text-muted">No test cases in this sub-category</div>
             ) : (
               <div className="picker-case-list">
                 {testCases.map((tc) => {
@@ -112,7 +117,7 @@ export default function AssignmentPicker({ cycleId, existingAssignments, onAssig
         <div className="modal-footer">
           <span className="body-sm text-muted">{selected.size} selected</span>
           <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
-          <button className="btn btn-primary" onClick={handleAssign} disabled={selected.size === 0}>
+          <button className="btn btn-primary" onClick={() => onAssign(Array.from(selected))} disabled={selected.size === 0}>
             Assign Selected
           </button>
         </div>
