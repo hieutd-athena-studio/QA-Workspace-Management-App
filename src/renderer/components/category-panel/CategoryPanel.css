@@ -1,0 +1,183 @@
+/* === Category Panel === */
+
+.category-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.category-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--sp-1);
+  margin-bottom: var(--sp-3);
+}
+
+.category-panel-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--on-surface-variant);
+}
+
+.category-panel-empty {
+  padding: var(--sp-6) var(--sp-2);
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--on-surface-variant);
+  line-height: 1.6;
+  opacity: 0.6;
+}
+
+/* Category row */
+.category-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 5px var(--sp-2);
+  border-radius: var(--radius-default);
+  cursor: pointer;
+  min-height: 32px;
+  position: relative;
+}
+
+.category-row:hover {
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.category-chevron {
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  user-select: none;
+  border-radius: 3px;
+  transition: background 0.1s;
+  flex-shrink: 0;
+}
+
+.category-chevron:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.category-name {
+  flex: 1;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--on-surface);
+  user-select: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Category action buttons (shown on hover) */
+.category-actions,
+.subcategory-actions {
+  display: none;
+  align-items: center;
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+.category-row:hover .category-actions,
+.subcategory-row:hover .subcategory-actions {
+  display: flex;
+}
+
+.category-action-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 3px;
+  font-size: 1rem;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  line-height: 1;
+}
+
+.category-action-btn:hover {
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--primary);
+}
+
+.category-action-btn.danger:hover {
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--critical);
+}
+
+/* Sub-category row */
+.subcategory-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 4px var(--sp-2) 4px 36px;
+  border-radius: var(--radius-default);
+  cursor: pointer;
+  min-height: 28px;
+  transition: background 0.1s;
+  position: relative;
+}
+
+.subcategory-row:hover {
+  background: rgba(59, 130, 246, 0.06);
+}
+
+.subcategory-row-selected {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.subcategory-row-selected .subcategory-name {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.subcategory-name {
+  flex: 1;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--on-surface);
+  user-select: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.1s;
+}
+
+/* Inline rename inputs */
+.category-rename-input,
+.subcategory-rename-input {
+  flex: 1;
+  padding: 2px 6px !important;
+  font-size: 0.8125rem !important;
+  height: 24px !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* Inline create inputs */
+.category-create-input {
+  padding: 3px var(--sp-2);
+}
+
+.subcategory-create-input {
+  padding: 3px var(--sp-2) 3px 36px;
+}
+
+.category-create-input .input,
+.subcategory-create-input .input {
+  padding: 4px 8px;
+  font-size: 0.8125rem;
+  height: 28px;
+}
