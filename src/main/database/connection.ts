@@ -1,6 +1,8 @@
 import Database from 'better-sqlite3'
 import { runMigrations } from './migrations/001-initial-schema'
 import { runMigration002 } from './migrations/002-add-projects'
+import { runMigration003 } from './migrations/003-add-test-case-version'
+import { runMigration004 } from './migrations/004-restructure-categories'
 
 let dbInstance: Database.Database | null = null
 
@@ -10,6 +12,8 @@ export function createDatabase(dbPath: string): Database.Database {
   db.pragma('foreign_keys = ON')
   runMigrations(db)
   runMigration002(db)
+  runMigration003(db)
+  runMigration004(db)
   return db
 }
 
