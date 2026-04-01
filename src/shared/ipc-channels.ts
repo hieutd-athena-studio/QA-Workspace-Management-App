@@ -6,18 +6,23 @@ export const IPC = {
     UPDATE: 'projects:update',
     DELETE: 'projects:delete'
   },
-  FOLDERS: {
-    GET_ALL: 'folders:get-all',
-    GET_BY_PROJECT: 'folders:get-by-project',
-    GET_CHILDREN: 'folders:get-children',
-    GET_BY_ID: 'folders:get-by-id',
-    CREATE: 'folders:create',
-    UPDATE: 'folders:update',
-    MOVE: 'folders:move',
-    DELETE: 'folders:delete'
+  CATEGORIES: {
+    GET_BY_PROJECT: 'categories:get-by-project',
+    GET_BY_ID: 'categories:get-by-id',
+    CREATE: 'categories:create',
+    RENAME: 'categories:rename',
+    DELETE: 'categories:delete'
+  },
+  SUBCATEGORIES: {
+    GET_BY_PROJECT: 'subcategories:get-by-project',
+    GET_BY_CATEGORY: 'subcategories:get-by-category',
+    GET_BY_ID: 'subcategories:get-by-id',
+    CREATE: 'subcategories:create',
+    RENAME: 'subcategories:rename',
+    DELETE: 'subcategories:delete'
   },
   TEST_CASES: {
-    GET_BY_FOLDER: 'test-cases:get-by-folder',
+    GET_BY_SUBCATEGORY: 'test-cases:get-by-subcategory',
     GET_BY_ID: 'test-cases:get-by-id',
     CREATE: 'test-cases:create',
     UPDATE: 'test-cases:update',
