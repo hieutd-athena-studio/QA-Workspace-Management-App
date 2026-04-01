@@ -2,30 +2,42 @@ import type Database from 'better-sqlite3'
 
 export function runMigrations(db: Database.Database): void {
   db.exec(`
-    CREATE TABLE IF NOT EXISTS folder (
+    CREATE TABLE IF NOT EXISTS category (
       id          INTEGER PRIMARY KEY AUTOINCREMENT,
       name        TEXT    NOT NULL,
-      parent_id   INTEGER REFERENCES folder(id) ON DELETE CASCADE,
-      path        TEXT    NOT NULL,
+      project_id  INTEGER NOT NULL REFERENCES project(id) ON DELETE CASCADE,
       created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
       updated_at  TEXT    NOT NULL DEFAULT (datetime('now'))
     );
 
-    CREATE INDEX IF NOT EXISTS idx_folder_parent ON folder(parent_id);
-    CREATE UNIQUE INDEX IF NOT EXISTS idx_folder_path ON folder(path);
+    CREATE INDEX IF NOT EXISTS idx_category_project ON category(project_id);
+
+    CREATE TABLE IF NOT EXISTS subcategory (
+      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      name        TEXT    NOT NULL,
+      category_id INTEGER NOT NULL REFERENCES category(id) ON DELETE CASCADE,
+      project_id  INTEGER NOT NULL REFERENCES project(id) ON DELETE CASCADE,
+      created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
+      updated_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_subcategory_category ON subcategory(category_id);
+    CREATE INDEX IF NOT EXISTS idx_subcategory_project ON subcategory(project_id);
 
     CREATE TABLE IF NOT EXISTS test_case (
       id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      display_id      TEXT    NOT NULL DEFAULT '',
       title           TEXT    NOT NULL,
       description     TEXT    NOT NULL DEFAULT '',
       steps           TEXT    NOT NULL DEFAULT '[]',
       expected_result TEXT    NOT NULL DEFAULT '',
-      folder_id       INTEGER NOT NULL REFERENCES folder(id) ON DELETE CASCADE,
+      version         TEXT    NOT NULL DEFAULT '',
+      subcategory_id  INTEGER NOT NULL REFERENCES subcategory(id) ON DELETE CASCADE,
       created_at      TEXT    NOT NULL DEFAULT (datetime('now')),
       updated_at      TEXT    NOT NULL DEFAULT (datetime('now'))
     );
 
-    CREATE INDEX IF NOT EXISTS idx_test_case_folder ON test_case(folder_id);
+    CREATE INDEX IF NOT EXISTS idx_test_case_subcategory ON test_case(subcategory_id);
 
     CREATE TABLE IF NOT EXISTS test_plan (
       id          INTEGER PRIMARY KEY AUTOINCREMENT,

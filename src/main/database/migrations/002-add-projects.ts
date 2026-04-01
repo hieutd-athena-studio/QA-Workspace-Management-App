@@ -5,6 +5,13 @@ function columnExists(db: Database.Database, table: string, column: string): boo
   return cols.some((c) => c.name === column)
 }
 
+function tableExists(db: Database.Database, table: string): boolean {
+  const row = db.prepare(
+    `SELECT name FROM sqlite_master WHERE type='table' AND name=?`
+  ).get(table)
+  return !!row
+}
+
 export function runMigration002(db: Database.Database): void {
   // Create project table
   db.exec(`
@@ -21,8 +28,8 @@ export function runMigration002(db: Database.Database): void {
     CREATE UNIQUE INDEX IF NOT EXISTS idx_project_code ON project(code);
   `)
 
-  // Add project_id to folder
-  if (!columnExists(db, 'folder', 'project_id')) {
+  // Add project_id to folder (only if folder table still exists - for backwards compatibility)
+  if (tableExists(db, 'folder') && !columnExists(db, 'folder', 'project_id')) {
     db.exec(`ALTER TABLE folder ADD COLUMN project_id INTEGER REFERENCES project(id) ON DELETE CASCADE`)
     db.exec(`CREATE INDEX IF NOT EXISTS idx_folder_project ON folder(project_id)`)
   }
