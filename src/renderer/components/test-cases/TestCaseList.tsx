@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import type { Folder, TestCase } from '@shared/types'
+import type { Subcategory, TestCase } from '@shared/types'
 import ConfirmDialog from '../shared/ConfirmDialog'
 import './TestCaseList.css'
 
 interface Props {
-  folder: Folder | null
+  subcategory: Subcategory | null
   testCases: TestCase[]
   loading: boolean
   onNewCase: () => void
@@ -12,7 +12,7 @@ interface Props {
   onDeleteCase: (id: number) => void
 }
 
-function NoFolderState() {
+function NoSubcategoryState() {
   return (
     <div className="tcl-empty-state">
       <svg className="tcl-empty-illustration" viewBox="0 0 160 130" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -25,13 +25,13 @@ function NoFolderState() {
         <rect x="36" y="88" width="64" height="5" rx="2.5" fill="#d0daea"/>
         <rect x="36" y="102" width="76" height="5" rx="2.5" fill="#d0daea"/>
       </svg>
-      <p className="tcl-empty-title">Select a folder</p>
-      <p className="tcl-empty-desc">Choose a folder from the left panel to view and manage its test cases.</p>
+      <p className="tcl-empty-title">Select a sub-category</p>
+      <p className="tcl-empty-desc">Choose a sub-category from the left panel to view and manage its test cases.</p>
     </div>
   )
 }
 
-function NoTestCasesState({ folderName, onNewCase }: { folderName: string; onNewCase: () => void }) {
+function NoTestCasesState({ subName, onNewCase }: { subName: string; onNewCase: () => void }) {
   return (
     <div className="tcl-empty-state">
       <svg className="tcl-empty-illustration" viewBox="0 0 160 130" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -49,18 +49,18 @@ function NoTestCasesState({ folderName, onNewCase }: { folderName: string; onNew
       </svg>
       <p className="tcl-empty-title">No test cases</p>
       <p className="tcl-empty-desc">
-        No test cases in &ldquo;{folderName}&rdquo; yet. Create your first one to get started.
+        No test cases in &ldquo;{subName}&rdquo; yet. Create your first one to get started.
       </p>
       <button className="btn btn-primary btn-sm" onClick={onNewCase}>+ New Test Case</button>
     </div>
   )
 }
 
-export default function TestCaseList({ folder, testCases, loading, onNewCase, onEditCase, onDeleteCase }: Props) {
+export default function TestCaseList({ subcategory, testCases, loading, onNewCase, onEditCase, onDeleteCase }: Props) {
   const [deleteTarget, setDeleteTarget] = useState<TestCase | null>(null)
 
-  if (!folder) {
-    return <NoFolderState />
+  if (!subcategory) {
+    return <NoSubcategoryState />
   }
 
   return (
@@ -68,7 +68,7 @@ export default function TestCaseList({ folder, testCases, loading, onNewCase, on
       <div className="test-case-list-header">
         <div className="tcl-title-row">
           <div>
-            <h2 className="tcl-folder-name">{folder.name}</h2>
+            <h2 className="tcl-folder-name">{subcategory.name}</h2>
             <span className="tcl-count">
               {testCases.length} test case{testCases.length !== 1 ? 's' : ''}
             </span>
@@ -80,12 +80,13 @@ export default function TestCaseList({ folder, testCases, loading, onNewCase, on
       {loading ? (
         <div className="tcl-loading">Loading…</div>
       ) : testCases.length === 0 ? (
-        <NoTestCasesState folderName={folder.name} onNewCase={onNewCase} />
+        <NoTestCasesState subName={subcategory.name} onNewCase={onNewCase} />
       ) : (
         <table className="data-table">
           <thead>
             <tr>
               <th style={{ width: 110 }}>ID</th>
+              <th style={{ width: 80 }}>Version</th>
               <th>Title</th>
               <th style={{ width: 80 }}>Steps</th>
               <th style={{ width: 100 }}>Created</th>
@@ -98,6 +99,7 @@ export default function TestCaseList({ folder, testCases, loading, onNewCase, on
                 <td>
                   <span className="tcl-id">{tc.display_id || '—'}</span>
                 </td>
+                <td className="secondary">{tc.version || '—'}</td>
                 <td>{tc.title}</td>
                 <td className="secondary">{tc.steps.length} step{tc.steps.length !== 1 ? 's' : ''}</td>
                 <td className="secondary">{new Date(tc.created_at).toLocaleDateString()}</td>

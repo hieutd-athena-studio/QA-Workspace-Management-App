@@ -3,15 +3,16 @@ import type { TestCase, TestStep, CreateTestCaseDTO, UpdateTestCaseDTO } from '@
 import './TestCaseForm.css'
 
 interface Props {
-  folderId: number
+  subcategoryId: number
   testCase: TestCase | null
   onSave: (dto: CreateTestCaseDTO | UpdateTestCaseDTO) => void
   onCancel: () => void
 }
 
-export default function TestCaseForm({ folderId, testCase, onSave, onCancel }: Props) {
+export default function TestCaseForm({ subcategoryId, testCase, onSave, onCancel }: Props) {
   const [title, setTitle] = useState(testCase?.title || '')
   const [description, setDescription] = useState(testCase?.description || '')
+  const [version, setVersion] = useState(testCase?.version || '')
   const [expectedResult, setExpectedResult] = useState(testCase?.expected_result || '')
   const [steps, setSteps] = useState<TestStep[]>(
     testCase?.steps?.length
@@ -38,7 +39,8 @@ export default function TestCaseForm({ folderId, testCase, onSave, onCancel }: P
       description: description.trim(),
       steps: steps.filter((s) => s.action.trim()),
       expected_result: expectedResult.trim(),
-      folder_id: folderId
+      version: version.trim(),
+      subcategory_id: subcategoryId
     }
     onSave(dto)
   }
@@ -57,6 +59,16 @@ export default function TestCaseForm({ folderId, testCase, onSave, onCancel }: P
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Login with valid credentials"
             autoFocus
+          />
+        </div>
+
+        <div className="tcf-field">
+          <label className="tcf-label">Version</label>
+          <input
+            className="input"
+            value={version}
+            onChange={(e) => setVersion(e.target.value)}
+            placeholder="e.g. 1.0.0"
           />
         </div>
 

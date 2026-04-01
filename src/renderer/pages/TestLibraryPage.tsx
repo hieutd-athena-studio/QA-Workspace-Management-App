@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import FolderTree from '../components/folder-tree/FolderTree'
+import CategoryPanel from '../components/category-panel/CategoryPanel'
 import TestCaseList from '../components/test-cases/TestCaseList'
 import TestCaseForm from '../components/test-cases/TestCaseForm'
-import type { Folder, TestCase, CreateTestCaseDTO, UpdateTestCaseDTO } from '@shared/types'
+import type { Subcategory, TestCase, CreateTestCaseDTO, UpdateTestCaseDTO } from '@shared/types'
 import { useApi } from '../hooks/useApi'
 import { useInvalidation } from '../contexts/InvalidationContext'
 import { useNotification } from '../contexts/NotificationContext'
@@ -13,15 +13,17 @@ import './TestLibraryPage.css'
 export default function TestLibraryPage() {
   const navigate = useNavigate()
   const { selectedProject } = useProject()
-  const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null)
+  const [selectedSubcategory, setSelectedSubcategory] = useState<Subcategory | null>(null)
   const [editingCase, setEditingCase] = useState<TestCase | null>(null)
   const [showForm, setShowForm] = useState(false)
   const { invalidate } = useInvalidation()
   const { notify } = useNotification()
 
   const { data: testCases, loading } = useApi<TestCase[]>(
-    () => selectedFolder ? window.api.testCases.getByFolder(selectedFolder.id) : Promise.resolve([]),
-    [selectedFolder?.id],
+    () => selectedSubcategory
+      ? window.api.testCases.getBySubcategory(selectedSubcategory.id)
+      : Promise.resolve([]),
+    [selectedSubcategory?.id],
     'testCases'
   )
 
@@ -73,15 +75,14 @@ export default function TestLibraryPage() {
       </div>
       <div className="library-content">
         <div className="library-tree-panel">
-          <FolderTree
-            selectedFolder={selectedFolder}
-            onSelectFolder={setSelectedFolder}
-            onNewCase={selectedFolder ? () => { setEditingCase(null); setShowForm(true) } : undefined}
+          <CategoryPanel
+            selectedSubcategory={selectedSubcategory}
+            onSelectSubcategory={setSelectedSubcategory}
           />
         </div>
         <div className="library-cases-panel">
           <TestCaseList
-            folder={selectedFolder}
+            subcategory={selectedSubcategory}
             testCases={testCases || []}
             loading={loading}
             onNewCase={() => { setEditingCase(null); setShowForm(true) }}
@@ -91,9 +92,9 @@ export default function TestLibraryPage() {
         </div>
       </div>
 
-      {showForm && selectedFolder && (
+      {showForm && selectedSubcategory && (
         <TestCaseForm
-          folderId={selectedFolder.id}
+          subcategoryId={selectedSubcategory.id}
           testCase={editingCase}
           onSave={(dto) =>
             editingCase
