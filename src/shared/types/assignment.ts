@@ -14,7 +14,9 @@ export interface TestCaseAssignment {
   test_case_description?: string
   test_case_steps?: string
   test_case_expected_result?: string
-  folder_path?: string
+  // Joined fields from subcategory + category
+  category_name?: string
+  subcategory_name?: string
 }
 
 export interface UpdateAssignmentStatusDTO {

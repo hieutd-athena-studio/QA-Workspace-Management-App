@@ -11,7 +11,8 @@ export interface TestCase {
   description: string
   steps: TestStep[]
   expected_result: string
-  folder_id: number
+  version: string
+  subcategory_id: number
   created_at: string
   updated_at: string
 }
@@ -21,7 +22,8 @@ export interface CreateTestCaseDTO {
   description: string
   steps: TestStep[]
   expected_result: string
-  folder_id: number
+  version: string
+  subcategory_id: number
 }
 
 export interface UpdateTestCaseDTO {
@@ -29,5 +31,6 @@ export interface UpdateTestCaseDTO {
   description?: string
   steps?: TestStep[]
   expected_result?: string
-  folder_id?: number
+  version?: string
+  subcategory_id?: number
 }

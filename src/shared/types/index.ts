@@ -1,5 +1,6 @@
 export * from './project'
-export * from './folder'
+export * from './category'
+export * from './subcategory'
 export * from './test-case'
 export * from './test-plan'
 export * from './test-cycle'
