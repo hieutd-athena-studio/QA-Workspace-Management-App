@@ -22,24 +22,6 @@ export class AssignmentRepository {
     `).all(cycleId) as TestCaseAssignment[]
   }
 
-  getByCycleFiltered(cycleId: number): TestCaseAssignment[] {
-    return this.db.prepare(`
-      SELECT a.*,
-        tc.title as test_case_title,
-        tc.description as test_case_description,
-        tc.steps as test_case_steps,
-        tc.expected_result as test_case_expected_result,
-        cat.name as category_name,
-        sub.name as subcategory_name
-      FROM test_case_assignment a
-      JOIN test_case tc ON a.test_case_id = tc.id
-      JOIN subcategory sub ON tc.subcategory_id = sub.id
-      JOIN category cat ON sub.category_id = cat.id
-      WHERE a.test_cycle_id = ?
-      ORDER BY cat.name, sub.name, tc.title
-    `).all(cycleId) as TestCaseAssignment[]
-  }
-
   assign(cycleId: number, testCaseIds: number[]): void {
     const insert = this.db.prepare(
       'INSERT OR IGNORE INTO test_case_assignment (test_cycle_id, test_case_id) VALUES (?, ?)'

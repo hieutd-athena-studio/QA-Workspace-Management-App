@@ -9,7 +9,7 @@ export function registerAssignmentHandlers(): void {
 
   ipcMain.handle(IPC.ASSIGNMENTS.GET_BY_CYCLE, (_e, cycleId: number) => {
     try {
-      return wrapSuccess(repo.getByCycleFiltered(cycleId))
+      return wrapSuccess(repo.getByCycle(cycleId))
     } catch (e: unknown) {
       return wrapError('ASSIGN_GET', (e as Error).message)
     }

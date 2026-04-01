@@ -27,7 +27,7 @@ export class TestCaseRepository {
       GROUP BY p.id
     `).get(subcategoryId) as { code: string; count: number } | undefined
 
-    if (!row) return `TC${String(1).padStart(3, '0')}`
+    if (!row) throw new Error(`Subcategory ${subcategoryId} not found or has no project link`)
     return `${row.code}-TC${String(row.count + 1).padStart(3, '0')}`
   }
 
