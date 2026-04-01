@@ -1,5 +1,6 @@
 import { registerProjectHandlers } from './project.handlers'
-import { registerFolderHandlers } from './folder.handlers'
+import { registerCategoryHandlers } from './category.handlers'
+import { registerSubcategoryHandlers } from './subcategory.handlers'
 import { registerTestCaseHandlers } from './test-case.handlers'
 import { registerTestPlanHandlers } from './test-plan.handlers'
 import { registerTestCycleHandlers } from './test-cycle.handlers'
@@ -8,7 +9,8 @@ import { registerReportHandlers } from './report.handlers'
 
 export function registerAllHandlers(): void {
   registerProjectHandlers()
-  registerFolderHandlers()
+  registerCategoryHandlers()
+  registerSubcategoryHandlers()
   registerTestCaseHandlers()
   registerTestPlanHandlers()
   registerTestCycleHandlers()

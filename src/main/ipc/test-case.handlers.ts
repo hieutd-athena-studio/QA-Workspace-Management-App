@@ -7,11 +7,11 @@ import { getDatabase } from '../database/connection'
 export function registerTestCaseHandlers(): void {
   const repo = new TestCaseRepository(getDatabase())
 
-  ipcMain.handle(IPC.TEST_CASES.GET_BY_FOLDER, (_e, folderId: number) => {
+  ipcMain.handle(IPC.TEST_CASES.GET_BY_SUBCATEGORY, (_e, subcategoryId: number) => {
     try {
-      return wrapSuccess(repo.getByFolder(folderId))
+      return wrapSuccess(repo.getBySubcategory(subcategoryId))
     } catch (e: unknown) {
-      return wrapError('TC_GET_BY_FOLDER', (e as Error).message)
+      return wrapError('TC_GET_BY_SUBCATEGORY', (e as Error).message)
     }
   })
 
