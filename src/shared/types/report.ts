@@ -21,7 +21,8 @@ export interface ReportData {
   coverage_percent: number
   failed_cases: Array<{
     title: string
-    folder_path: string
+    category_name: string
+    subcategory_name: string
     status: string
     bug_ref: string | null
   }>

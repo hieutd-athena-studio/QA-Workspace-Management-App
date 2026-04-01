@@ -44,12 +44,14 @@ export class ReportRepository {
     const failedCases = this.db.prepare(`
       SELECT
         tc.title,
-        f.path as folder_path,
+        cat.name as category_name,
+        sub.name as subcategory_name,
         a.status,
         a.bug_ref
       FROM test_case_assignment a
       JOIN test_case tc ON a.test_case_id = tc.id
-      JOIN folder f ON tc.folder_id = f.id
+      JOIN subcategory sub ON tc.subcategory_id = sub.id
+      JOIN category cat ON sub.category_id = cat.id
       WHERE a.test_cycle_id = ? AND a.status IN ('Fail', 'Blocked')
       ORDER BY a.status, tc.title
     `).all(cycleId) as ReportData['failed_cases']

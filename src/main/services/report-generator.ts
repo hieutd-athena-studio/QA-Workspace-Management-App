@@ -6,7 +6,7 @@ export function generateReportHtml(data: ReportData): string {
       (fc) => `
       <tr>
         <td>${esc(fc.title)}</td>
-        <td>${esc(fc.folder_path)}</td>
+        <td>${esc(fc.category_name)} / ${esc(fc.subcategory_name)}</td>
         <td class="status-${fc.status.toLowerCase()}">${esc(fc.status)}</td>
         <td class="mono">${esc(fc.bug_ref || '—')}</td>
       </tr>`
@@ -79,7 +79,7 @@ export function generateReportHtml(data: ReportData): string {
       ? `
   <div class="section-title">Failed &amp; Blocked Test Cases</div>
   <table>
-    <thead><tr><th>Test Case</th><th>Folder</th><th>Status</th><th>Bug Ref</th></tr></thead>
+    <thead><tr><th>Test Case</th><th>Category / Subcategory</th><th>Status</th><th>Bug Ref</th></tr></thead>
     <tbody>${failedRows}</tbody>
   </table>`
       : '<div class="section-title" style="color:#006d4a">All tests passed!</div>'

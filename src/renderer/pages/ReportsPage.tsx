@@ -176,13 +176,13 @@ export default function ReportsPage() {
               <p className="report-section-title">Failed &amp; Blocked Test Cases</p>
               <table className="data-table">
                 <thead>
-                  <tr><th>Test Case</th><th>Folder</th><th>Status</th><th>Bug Ref</th></tr>
+                  <tr><th>Test Case</th><th>Category / Subcategory</th><th>Status</th><th>Bug Ref</th></tr>
                 </thead>
                 <tbody>
                   {reportData.failed_cases.map((fc, i) => (
                     <tr key={i}>
                       <td>{fc.title}</td>
-                      <td className="secondary">{fc.folder_path}</td>
+                      <td className="secondary">{fc.category_name} / {fc.subcategory_name}</td>
                       <td><span className={`status-badge status-${fc.status.toLowerCase()}`}>{fc.status}</span></td>
                       <td className="mono">{fc.bug_ref || '—'}</td>
                     </tr>
