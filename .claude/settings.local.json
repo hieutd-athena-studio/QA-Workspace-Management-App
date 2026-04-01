@@ -9,7 +9,15 @@
       "Bash(find ~/.claude/skills/omc-learned -name *.md)",
       "Bash(npm run:*)",
       "Read(//Users/athena1/.claude/plugins/marketplaces/ui-ux-pro-max-skill/**)",
-      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"desktop productivity tool workspace professional dark sidebar\" --design-system -f markdown)"
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"desktop productivity tool workspace professional dark sidebar\" --design-system -f markdown)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(npx tsc:*)",
+      "Bash(git -C /Users/athena1/Documents/QA-Workspace-Management-App diff 463df96..255dc8f)",
+      "Bash(git -C /Users/athena1/Documents/QA-Workspace-Management-App log --oneline 463df96..255dc8f)",
+      "Bash(git -C /Users/athena1/Documents/QA-Workspace-Management-App show 463df96:src/main/database/connection.ts)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }

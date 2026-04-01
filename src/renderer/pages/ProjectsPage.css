@@ -55,32 +55,35 @@
 /* Project grid */
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--sp-5);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--sp-6);
 }
 
 .project-card {
   background: var(--surface-container);
   border-radius: var(--radius-lg);
-  padding: var(--sp-5);
+  padding: var(--sp-6);
   cursor: pointer;
-  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, border-color 120ms ease;
   display: flex;
   flex-direction: column;
-  gap: var(--sp-3);
+  gap: var(--sp-4);
   position: relative;
-  border: 2px solid transparent;
+  border: 1.5px solid var(--surface-variant);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .project-card:hover {
   background: var(--surface-container-high);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+  border-color: var(--primary);
 }
 
 .project-card-active {
   border-color: var(--primary);
   background: var(--surface-container-high);
+  box-shadow: 0 8px 24px rgba(152, 177, 242, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .project-card-top {
@@ -91,26 +94,31 @@
 
 .project-card-code {
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.12em;
   color: var(--primary);
-  background: rgba(152, 177, 242, 0.12);
-  padding: 3px 10px;
+  background: rgba(152, 177, 242, 0.16);
+  padding: 4px 12px;
   border-radius: var(--radius-sm);
   font-family: 'SF Mono', 'Fira Code', monospace;
+  border: 1px solid rgba(152, 177, 242, 0.3);
 }
 
 .project-status-badge {
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.02em;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .project-card-name {
-  font-size: 1.0625rem;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--on-surface);
   line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 .project-card-desc {
@@ -134,8 +142,12 @@
 
 .project-card-active-label {
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--primary);
+  background: rgba(152, 177, 242, 0.12);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.01em;
 }
 
 .project-card-actions {
@@ -153,12 +165,12 @@
 
 /* Modal */
 .proj-modal {
-  width: min(520px, 92vw) !important;
+  width: min(640px, 92vw) !important;
 }
 
 .proj-form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: var(--sp-4);
 }
 
