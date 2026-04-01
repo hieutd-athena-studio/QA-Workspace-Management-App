@@ -11,12 +11,15 @@ export class AssignmentRepository {
         tc.description as test_case_description,
         tc.steps as test_case_steps,
         tc.expected_result as test_case_expected_result,
-        f.path as folder_path
+        cat.name as category_name,
+        sub.name as subcategory_name
       FROM test_case_assignment a
       JOIN test_case tc ON a.test_case_id = tc.id
-      JOIN folder f ON tc.folder_id = f.id
-      ORDER BY f.path, tc.title
-    `).all() as TestCaseAssignment[]
+      JOIN subcategory sub ON tc.subcategory_id = sub.id
+      JOIN category cat ON sub.category_id = cat.id
+      WHERE a.test_cycle_id = ?
+      ORDER BY cat.name, sub.name, tc.title
+    `).all(cycleId) as TestCaseAssignment[]
   }
 
   getByCycleFiltered(cycleId: number): TestCaseAssignment[] {
@@ -26,12 +29,14 @@ export class AssignmentRepository {
         tc.description as test_case_description,
         tc.steps as test_case_steps,
         tc.expected_result as test_case_expected_result,
-        f.path as folder_path
+        cat.name as category_name,
+        sub.name as subcategory_name
       FROM test_case_assignment a
       JOIN test_case tc ON a.test_case_id = tc.id
-      JOIN folder f ON tc.folder_id = f.id
+      JOIN subcategory sub ON tc.subcategory_id = sub.id
+      JOIN category cat ON sub.category_id = cat.id
       WHERE a.test_cycle_id = ?
-      ORDER BY f.path, tc.title
+      ORDER BY cat.name, sub.name, tc.title
     `).all(cycleId) as TestCaseAssignment[]
   }
 
@@ -71,10 +76,12 @@ export class AssignmentRepository {
         tc.description as test_case_description,
         tc.steps as test_case_steps,
         tc.expected_result as test_case_expected_result,
-        f.path as folder_path
+        cat.name as category_name,
+        sub.name as subcategory_name
       FROM test_case_assignment a
       JOIN test_case tc ON a.test_case_id = tc.id
-      JOIN folder f ON tc.folder_id = f.id
+      JOIN subcategory sub ON tc.subcategory_id = sub.id
+      JOIN category cat ON sub.category_id = cat.id
       WHERE a.id = ?
     `).get(id) as TestCaseAssignment
   }

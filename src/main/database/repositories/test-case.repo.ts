@@ -12,38 +12,44 @@ export class TestCaseRepository {
     } as unknown as TestCase
   }
 
-  private generateDisplayId(folderId: number): string {
+  private generateDisplayId(subcategoryId: number): string {
     const row = this.db.prepare(`
       SELECT p.code, COUNT(tc.id) as count
       FROM project p
-      JOIN folder f ON f.project_id = p.id
-      LEFT JOIN test_case tc ON tc.folder_id IN (
-        SELECT id FROM folder WHERE project_id = p.id
+      JOIN category cat ON cat.project_id = p.id
+      JOIN subcategory sub ON sub.category_id = cat.id
+      LEFT JOIN test_case tc ON tc.subcategory_id IN (
+        SELECT sub2.id FROM subcategory sub2
+        JOIN category cat2 ON sub2.category_id = cat2.id
+        WHERE cat2.project_id = p.id
       )
-      WHERE f.id = ?
+      WHERE sub.id = ?
       GROUP BY p.id
-    `).get(folderId) as { code: string; count: number } | undefined
+    `).get(subcategoryId) as { code: string; count: number } | undefined
 
     if (!row) return `TC${String(1).padStart(3, '0')}`
     return `${row.code}-TC${String(row.count + 1).padStart(3, '0')}`
   }
 
-  getByFolder(folderId: number): TestCase[] {
-    const rows = this.db.prepare('SELECT * FROM test_case WHERE folder_id = ? ORDER BY title').all(folderId) as Record<string, unknown>[]
+  getBySubcategory(subcategoryId: number): TestCase[] {
+    const rows = this.db.prepare(
+      'SELECT * FROM test_case WHERE subcategory_id = ? ORDER BY title'
+    ).all(subcategoryId) as Record<string, unknown>[]
     return rows.map(r => this.mapRow(r))
   }
 
   getById(id: number): TestCase | undefined {
-    const row = this.db.prepare('SELECT * FROM test_case WHERE id = ?').get(id) as Record<string, unknown> | undefined
+    const row = this.db.prepare(
+      'SELECT * FROM test_case WHERE id = ?'
+    ).get(id) as Record<string, unknown> | undefined
     return row ? this.mapRow(row) : undefined
   }
 
   create(dto: CreateTestCaseDTO): TestCase {
-    const displayId = this.generateDisplayId(dto.folder_id)
+    const displayId = this.generateDisplayId(dto.subcategory_id)
     const result = this.db.prepare(
-      'INSERT INTO test_case (display_id, title, description, steps, expected_result, folder_id) VALUES (?, ?, ?, ?, ?, ?)'
-    ).run(displayId, dto.title, dto.description, serializeSteps(dto.steps), dto.expected_result, dto.folder_id)
-
+      'INSERT INTO test_case (display_id, title, description, steps, expected_result, version, subcategory_id) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ).run(displayId, dto.title, dto.description, serializeSteps(dto.steps), dto.expected_result, dto.version, dto.subcategory_id)
     return this.getById(Number(result.lastInsertRowid))!
   }
 
@@ -57,7 +63,8 @@ export class TestCaseRepository {
         description = ?,
         steps = ?,
         expected_result = ?,
-        folder_id = ?,
+        version = ?,
+        subcategory_id = ?,
         updated_at = datetime('now')
       WHERE id = ?`
     ).run(
@@ -65,7 +72,8 @@ export class TestCaseRepository {
       dto.description ?? existing.description,
       dto.steps ? serializeSteps(dto.steps) : serializeSteps(existing.steps),
       dto.expected_result ?? existing.expected_result,
-      dto.folder_id ?? existing.folder_id,
+      dto.version ?? existing.version,
+      dto.subcategory_id ?? existing.subcategory_id,
       id
     )
 
@@ -80,8 +88,8 @@ export class TestCaseRepository {
     if (projectId !== undefined) {
       const rows = this.db.prepare(
         `SELECT tc.* FROM test_case tc
-         JOIN folder f ON tc.folder_id = f.id
-         WHERE f.project_id = ? AND (tc.title LIKE ? OR tc.description LIKE ?)
+         JOIN subcategory sub ON tc.subcategory_id = sub.id
+         WHERE sub.project_id = ? AND (tc.title LIKE ? OR tc.description LIKE ?)
          ORDER BY tc.title LIMIT 50`
       ).all(projectId, `%${query}%`, `%${query}%`) as Record<string, unknown>[]
       return rows.map(r => this.mapRow(r))
