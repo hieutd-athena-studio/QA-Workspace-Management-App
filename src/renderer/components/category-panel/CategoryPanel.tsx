@@ -27,6 +27,9 @@ export default function CategoryPanel({ selectedSubcategory, onSelectSubcategory
   const [deletingCategory, setDeletingCategory] = useState<Category | null>(null)
   const [deletingSub, setDeletingSub] = useState<Subcategory | null>(null)
 
+  const cancelledCategoryRename = React.useRef(false)
+  const cancelledSubRename = React.useRef(false)
+
   const { data: categories } = useApi<Category[]>(
     () => selectedProject
       ? window.api.categories.getByProject(selectedProject.id)
@@ -190,9 +193,12 @@ export default function CategoryPanel({ selectedSubcategory, onSelectSubcategory
                   onChange={(e) => setRenameName(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleRenameCategory(cat.id)
-                    if (e.key === 'Escape') setRenamingCategoryId(null)
+                    if (e.key === 'Escape') { cancelledCategoryRename.current = true; setRenamingCategoryId(null) }
                   }}
-                  onBlur={() => handleRenameCategory(cat.id)}
+                  onBlur={() => {
+                    if (cancelledCategoryRename.current) { cancelledCategoryRename.current = false; return }
+                    handleRenameCategory(cat.id)
+                  }}
                   autoFocus
                 />
               ) : (
@@ -238,9 +244,12 @@ export default function CategoryPanel({ selectedSubcategory, onSelectSubcategory
                         onChange={(e) => setRenameName(e.target.value)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') handleRenameSub(sub.id)
-                          if (e.key === 'Escape') setRenamingSubId(null)
+                          if (e.key === 'Escape') { cancelledSubRename.current = true; setRenamingSubId(null) }
                         }}
-                        onBlur={() => handleRenameSub(sub.id)}
+                        onBlur={() => {
+                          if (cancelledSubRename.current) { cancelledSubRename.current = false; return }
+                          handleRenameSub(sub.id)
+                        }}
                         autoFocus
                         onClick={(e) => e.stopPropagation()}
                       />
