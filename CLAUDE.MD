@@ -60,10 +60,12 @@ src/
 │   │   ├── connection.ts        # better-sqlite3 init + migration runner
 │   │   ├── migrations/
 │   │   │   ├── 001-initial-schema.ts
-│   │   │   └── 002-add-projects.ts
+│   │   │   ├── 002-add-projects.ts
+│   │   │   └── 004-restructure-categories.ts
 │   │   └── repositories/
 │   │       ├── project.repo.ts  # One repo per entity
-│   │       ├── folder.repo.ts
+│   │       ├── category.repo.ts
+│   │       ├── subcategory.repo.ts
 │   │       ├── test-case.repo.ts
 │   │       ├── test-plan.repo.ts
 │   │       ├── test-cycle.repo.ts
@@ -72,7 +74,8 @@ src/
 │   ├── ipc/
 │   │   ├── register-all.ts      # Centralized IPC registration
 │   │   ├── project.handlers.ts  # One handler file per domain
-│   │   ├── folder.handlers.ts
+│   │   ├── category.handlers.ts
+│   │   ├── subcategory.handlers.ts
 │   │   ├── test-case.handlers.ts
 │   │   ├── test-plan.handlers.ts
 │   │   ├── test-cycle.handlers.ts
@@ -102,11 +105,12 @@ src/
 │   │   ├── layout/
 │   │   │   ├── MainLayout.tsx
 │   │   │   └── Sidebar.tsx
-│   │   ├── folder-tree/
-│   │   │   ├── FolderTree.tsx
-│   │   │   └── FolderNode.tsx
+│   │   ├── category-panel/
+│   │   │   ├── CategoryPanel.tsx
+│   │   │   └── CategoryPanel.css
 │   │   ├── test-cases/
 │   │   │   ├── TestCaseForm.tsx
+│   │   │   ├── TestCaseForm.css
 │   │   │   └── TestCaseList.tsx
 │   │   ├── execution/
 │   │   │   └── AssignmentPicker.tsx
@@ -120,7 +124,8 @@ src/
 ├── shared/
 │   ├── types/                   # Single source of truth for types
 │   │   ├── project.ts
-│   │   ├── folder.ts
+│   │   ├── category.ts
+│   │   ├── subcategory.ts
 │   │   ├── test-case.ts
 │   │   ├── test-plan.ts
 │   │   ├── test-cycle.ts
@@ -217,6 +222,48 @@ const { data, loading } = useApi<T>(
 
 **Rule:** No IPC calls directly in components. Always wrap in hooks or services.
 
+### Category & Subcategory IPC Channels
+
+The hierarchy is exposed via two IPC domains:
+
+```typescript
+// src/shared/ipc-channels.ts
+export const IPC = {
+  CATEGORIES: {
+    GET_BY_PROJECT: 'api:category:getByProject',
+    CREATE: 'api:category:create',
+    RENAME: 'api:category:rename',
+    DELETE: 'api:category:delete',
+  },
+  SUBCATEGORIES: {
+    GET_BY_CATEGORY: 'api:subcategory:getByCategory',
+    CREATE: 'api:subcategory:create',
+    RENAME: 'api:subcategory:rename',
+    DELETE: 'api:subcategory:delete',
+  },
+  // ...
+};
+```
+
+**Preload bridge** (`src/preload/index.ts`):
+
+```typescript
+categories: {
+  getByProject: (projectId) => ipcRenderer.invoke(IPC.CATEGORIES.GET_BY_PROJECT, projectId),
+  create: (dto) => ipcRenderer.invoke(IPC.CATEGORIES.CREATE, dto),
+  rename: (id, name) => ipcRenderer.invoke(IPC.CATEGORIES.RENAME, id, name),
+  delete: (id) => ipcRenderer.invoke(IPC.CATEGORIES.DELETE, id),
+},
+subcategories: {
+  getByCategory: (categoryId) => ipcRenderer.invoke(IPC.SUBCATEGORIES.GET_BY_CATEGORY, categoryId),
+  create: (dto) => ipcRenderer.invoke(IPC.SUBCATEGORIES.CREATE, dto),
+  rename: (id, name) => ipcRenderer.invoke(IPC.SUBCATEGORIES.RENAME, id, name),
+  delete: (id) => ipcRenderer.invoke(IPC.SUBCATEGORIES.DELETE, id),
+},
+```
+
+Test cases are assigned to subcategories: `window.api.testCases.getBySubcategory(subcategoryId)`.
+
 ## 4. State Management
 
 ### Context + useState (for local/app-wide state)
@@ -224,11 +271,11 @@ const { data, loading } = useApi<T>(
 - **ProjectContext:** Selected project (persists to localStorage)
 - **NotificationContext:** Toast/notifications
 - **InvalidationContext:** Cache invalidation domains
-- **FolderTree:** Folder selection state
+- **CategoryPanel:** Category and sub-category selection state
 
 **When to use Context:**
 
-- ✅ Selected items (project, folder, cycle)
+- ✅ Selected items (project, subcategory, cycle)
 - ✅ App-level settings (theme, layout state)
 - ✅ Cache invalidation signals
 - ❌ High-frequency updates (scroll, mouse pos)
@@ -249,9 +296,9 @@ invalidate("testCases"); // Clear cache for that domain
 ```
 src/renderer/
 ├── components/
-│   ├── folder-tree/
-│   │   ├── FolderTree.tsx
-│   │   └── FolderTree.css
+│   ├── category-panel/
+│   │   ├── CategoryPanel.tsx
+│   │   └── CategoryPanel.css
 │   ├── test-cases/
 │   │   ├── TestCaseForm.tsx
 │   │   ├── TestCaseForm.css
@@ -293,33 +340,48 @@ Use shared `tcf-*` CSS classes (TestCaseForm foundation):
 
 ## 6. Database & Repository Pattern
 
+### Category / Subcategory Hierarchy
+
+The app uses a strict 2-level category structure (replaces unlimited-depth folder tree):
+
+- **Category (Main Category):** Container only, cannot hold test cases directly. One per project.
+- **Subcategory:** Holds test cases. Always belongs to exactly one Category.
+- **Test Cases:** Assigned only to Subcategories via `subcategory_id`.
+
+**Database Schema:**
+- `category` — Main category container (id, name, project_id)
+- `subcategory` — Test case container (id, name, category_id, project_id)
+- `test_case` — Now references `subcategory_id` instead of `folder_id`
+
+**Migration 004** (`src/main/database/migrations/004-restructure-categories.ts`) dropped the old recursive `folder` table and created the two-level schema. Safe for re-runs with `tableExists` guard.
+
 ### Repository Layer (src/main/database/repositories/)
 
-- **One Repo per Entity:** `project.repo.ts`, `folder.repo.ts`, etc.
+- **One Repo per Entity:** `category.repo.ts`, `subcategory.repo.ts`, `test-case.repo.ts`, etc.
 - **Computed Fields at DB Layer:** Display IDs, denormalized counts
 - **Prepared Statements:** Use parameterized queries. No string concatenation.
-- **Migrations:** Safe column-checks before ALTER TABLE
+- **Migrations:** Safe idempotency checks and transaction wrapping
 
 ```typescript
 export class TestCaseRepo {
   create(dto: CreateTestCaseDTO) {
     /* insert + return with display_id */
   }
-  getByFolder(folderId) {
-    /* join with display_id generation */
+  getBySubcategory(subcategoryId) {
+    /* fetch test cases for a subcategory */
   }
-  generateDisplayId(folderId) {
-    /* join folder→project to get code */
+  generateDisplayId(subcategoryId) {
+    /* join subcategory→category→project to get code */
   }
 }
 ```
 
 ### Display IDs (Generated Once, Stored)
 
-- **Test Cases:** `ARR-TC001` (stored in DB)
+- **Test Cases:** `ARR-TC001` (stored in DB, joins subcategory→category→project.code)
 - **Test Plans:** `ARR-PL001` (stored in DB)
 - **Test Cycles:** `ARR-PL001-CY01` (stored in DB)
-- **Folders:** No display ID (structural containers)
+- **Categories / Subcategories:** No display ID (structural containers)
 
 Compute at insert time in repository, not on-the-fly.
 
