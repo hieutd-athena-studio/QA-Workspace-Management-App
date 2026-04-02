@@ -17,7 +17,8 @@
       "Bash(git -C /Users/athena1/Documents/QA-Workspace-Management-App log --oneline 463df96..255dc8f)",
       "Bash(git -C /Users/athena1/Documents/QA-Workspace-Management-App show 463df96:src/main/database/connection.ts)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git fetch:*)"
     ]
   }
 }
