@@ -160,6 +160,7 @@ export default function TestCycleDetailPage() {
                   Unassign ({selectedForRemoval.size})
                 </button>
               )}
+              <button className="btn btn-secondary btn-sm" onClick={() => setShowPicker(true)}>+ Assign Cases</button>
             </div>
           </div>
         )}
