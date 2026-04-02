@@ -16,8 +16,18 @@ export default function TestLibraryPage() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<Subcategory | null>(null)
   const [editingCase, setEditingCase] = useState<TestCase | null>(null)
   const [showForm, setShowForm] = useState(false)
+  const [showCsvHelp, setShowCsvHelp] = useState(false)
   const { invalidate } = useInvalidation()
   const { notify } = useNotification()
+
+  const handleCopyHeader = () => {
+    const headerText = 'Category,Sub-category,Title,Description,Steps,Expected Result'
+    navigator.clipboard.writeText(headerText).then(() => {
+      notify('Header row copied to clipboard', 'success')
+    }).catch(() => {
+      notify('Failed to copy', 'error')
+    })
+  }
 
   const { data: testCases, loading } = useApi<TestCase[]>(
     () => selectedSubcategory
@@ -98,6 +108,7 @@ export default function TestLibraryPage() {
         <div className="library-header-actions">
           <button className="btn btn-secondary btn-sm" onClick={handleImportCSV}>Import CSV</button>
           <button className="btn btn-secondary btn-sm" onClick={handleExportCSV}>Export CSV</button>
+          <button className="csv-help-btn" onClick={() => setShowCsvHelp(true)} title="CSV format guide">?</button>
         </div>
       </div>
       <div className="library-content">
@@ -130,6 +141,84 @@ export default function TestLibraryPage() {
           }
           onCancel={() => { setShowForm(false); setEditingCase(null) }}
         />
+      )}
+
+      {showCsvHelp && (
+        <div className="tcf-overlay" onClick={() => setShowCsvHelp(false)}>
+          <div className="tcf-modal csv-help-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="tcf-header">
+              <span className="tcf-title">CSV Import Format</span>
+              <button className="tcf-close" onClick={() => setShowCsvHelp(false)}>✕</button>
+            </div>
+            <div className="csv-help-body">
+              <p className="csv-help-intro">
+                Your CSV file must include a header row with these exact column names:
+              </p>
+              <div className="csv-help-code-wrapper">
+                <div className="csv-help-code">
+                  Category,Sub-category,Title,Description,Steps,Expected Result
+                  <button className="csv-copy-icon-btn" onClick={handleCopyHeader} title="Copy header row">⧉</button>
+                </div>
+              </div>
+
+              <table className="csv-help-table">
+                <thead>
+                  <tr>
+                    <th>Column</th>
+                    <th>Required</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="mono">Category</td>
+                    <td className="csv-help-req">Yes</td>
+                    <td>Main category name. Auto-created if it doesn't exist.</td>
+                  </tr>
+                  <tr>
+                    <td className="mono">Sub-category</td>
+                    <td className="csv-help-req">Yes</td>
+                    <td>Subcategory name. Auto-created under the Category if it doesn't exist.</td>
+                  </tr>
+                  <tr>
+                    <td className="mono">Title</td>
+                    <td className="csv-help-req">Yes</td>
+                    <td>Short name for the test case.</td>
+                  </tr>
+                  <tr>
+                    <td className="mono">Description</td>
+                    <td>No</td>
+                    <td>Detailed description of what is being tested.</td>
+                  </tr>
+                  <tr>
+                    <td className="mono">Steps</td>
+                    <td>No</td>
+                    <td>Test steps. Use semicolons or newlines to separate multiple steps.</td>
+                  </tr>
+                  <tr>
+                    <td className="mono">Expected Result</td>
+                    <td>No</td>
+                    <td>The expected outcome when the test passes.</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <p className="csv-help-section-label">Notes</p>
+              <ul className="csv-help-notes">
+                <li>Fields containing commas or newlines must be wrapped in double quotes.</li>
+                <li>To include a literal double quote inside a field, escape it as <span className="mono">""</span>.</li>
+                <li>Existing categories and subcategories are matched by name — no duplicates are created.</li>
+              </ul>
+
+              <p className="csv-help-section-label">Example</p>
+              <div className="csv-help-code csv-help-code-example">
+Category,Sub-category,Title,Description,Steps,Expected Result
+Authentication,Login,Valid login,Verify login with correct credentials,"1. Enter valid username;2. Enter password;3. Click Login",User reaches dashboard
+Authentication,Login,Invalid password,Verify error on wrong password,"1. Enter valid username;2. Enter wrong password;3. Click Login",Error message is shown
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
