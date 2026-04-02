@@ -232,9 +232,21 @@ body {
 }
 
 /* --- Input Fields --- */
-.input, .textarea, .select {
+.input, .textarea {
   width: 100%;
   padding: 0.4375rem var(--sp-3);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--on-surface);
+  background: var(--surface-container-low);
+  border: 1px solid rgba(136, 150, 179, 0.15);
+  border-radius: var(--radius-default);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.select {
+  width: 100%;
+  padding: 0.4375rem 2.5rem 0.4375rem var(--sp-3);
   font-family: var(--font-sans);
   font-size: 0.875rem;
   color: var(--on-surface);

@@ -148,20 +148,21 @@ export default function TestCycleDetailPage() {
 
       {/* Assignments */}
       <div className="cycle-table-section">
-        <div className="cycle-table-header">
-          <span className="section-title">
-            Test Cases
-            {total > 0 && <span className="section-count">{total}</span>}
-          </span>
-          <div className="cycle-table-actions">
-            {selectedForRemoval.size > 0 && (
-              <button className="btn btn-danger btn-sm" onClick={handleBatchUnassign}>
-                Unassign ({selectedForRemoval.size})
-              </button>
-            )}
-            <button className="btn btn-secondary btn-sm" onClick={() => setShowPicker(true)}>+ Assign Cases</button>
+        {total > 0 && (
+          <div className="cycle-table-header">
+            <span className="section-title">
+              Test Cases
+              <span className="section-count">{total}</span>
+            </span>
+            <div className="cycle-table-actions">
+              {selectedForRemoval.size > 0 && (
+                <button className="btn btn-danger btn-sm" onClick={handleBatchUnassign}>
+                  Unassign ({selectedForRemoval.size})
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {total === 0 ? (
           <div className="cycle-empty">
