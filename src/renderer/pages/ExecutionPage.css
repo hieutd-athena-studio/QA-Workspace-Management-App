@@ -203,18 +203,19 @@
 
 .execution-btn {
   flex: 1;
-  padding: var(--sp-3) var(--sp-4);
+  padding: var(--sp-5) var(--sp-6);
   border: none;
   border-radius: var(--radius-default);
   font-family: var(--font-sans);
-  font-size: 0.9375rem;
+  font-size: 1.125rem;
   font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--sp-2);
+  gap: var(--sp-3);
   transition: filter 0.15s, transform 0.1s;
+  min-height: 56px;
 }
 
 .execution-btn:active { transform: scale(0.98); }
