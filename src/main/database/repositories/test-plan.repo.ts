@@ -32,8 +32,8 @@ export class TestPlanRepository {
   create(dto: CreateTestPlanDTO): TestPlan {
     const displayId = this.generateDisplayId(dto.project_id)
     const result = this.db.prepare(
-      'INSERT INTO test_plan (display_id, project_id, name, version, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?)'
-    ).run(displayId, dto.project_id, dto.name, dto.version, dto.start_date, dto.end_date)
+      'INSERT INTO test_plan (display_id, project_id, name, summary, version, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ).run(displayId, dto.project_id, dto.name, dto.summary ?? '', dto.version, dto.start_date, dto.end_date)
 
     return this.getById(Number(result.lastInsertRowid))!
   }
@@ -45,6 +45,7 @@ export class TestPlanRepository {
     this.db.prepare(
       `UPDATE test_plan SET
         name = ?,
+        summary = ?,
         version = ?,
         start_date = ?,
         end_date = ?,
@@ -52,6 +53,7 @@ export class TestPlanRepository {
       WHERE id = ?`
     ).run(
       dto.name ?? existing.name,
+      dto.summary !== undefined ? dto.summary : existing.summary,
       dto.version ?? existing.version,
       dto.start_date ?? existing.start_date,
       dto.end_date ?? existing.end_date,

@@ -39,6 +39,7 @@ export default function TestPlansPage() {
   const [deleteTarget, setDeleteTarget] = useState<TestPlan | null>(null)
 
   const [name, setName] = useState('')
+  const [summary, setSummary] = useState('')
   const [version, setVersion] = useState('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
@@ -60,7 +61,7 @@ export default function TestPlansPage() {
   )
 
   const resetForm = () => {
-    setName(''); setVersion(''); setStartDate(''); setEndDate('')
+    setName(''); setSummary(''); setVersion(''); setStartDate(''); setEndDate('')
     setShowForm(false)
   }
 
@@ -69,7 +70,8 @@ export default function TestPlansPage() {
     try {
       const dto: CreateTestPlanDTO = {
         project_id: selectedProject.id,
-        name: name.trim(), version: version.trim(),
+        name: name.trim(), summary: summary.trim(),
+        version: version.trim(),
         start_date: startDate, end_date: endDate
       }
       await window.api.testPlans.create(dto)
@@ -115,6 +117,9 @@ export default function TestPlansPage() {
               {plan.display_id && (
                 <span className="plan-card-display-id">{plan.display_id}</span>
               )}
+              {plan.summary && (
+                <p className="plan-card-summary">{plan.summary}</p>
+              )}
               <div className="plan-card-dates">
                 <span>{new Date(plan.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                 <span className="plan-card-dates-sep" />
@@ -145,6 +150,10 @@ export default function TestPlansPage() {
               <div className="form-group">
                 <label className="tcf-label">Version</label>
                 <input className="input" value={version} onChange={(e) => setVersion(e.target.value)} placeholder="e.g., v2.0" />
+              </div>
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                <label className="tcf-label">Summary</label>
+                <textarea className="input plan-summary-input" value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="Describe the features being tested in this plan…" rows={3} />
               </div>
               <div className="plan-form-dates">
                 <div className="form-group">

@@ -60,6 +60,29 @@ export default function TestLibraryPage() {
     }
   }
 
+  const handleImportCSV = async () => {
+    try {
+      const result = await window.api.testCases.importCSV(selectedProject!.id)
+      invalidate('testCases')
+      invalidate('categories')
+      invalidate('subcategories')
+      notify(`Imported ${result.count} test case(s)`, 'success')
+    } catch (e: unknown) {
+      const msg = (e as Error).message
+      if (!msg.includes('cancelled')) notify(msg, 'error')
+    }
+  }
+
+  const handleExportCSV = async () => {
+    try {
+      const result = await window.api.testCases.exportCSV(selectedProject!.id)
+      notify(`Exported ${result.count} test case(s)`, 'success')
+    } catch (e: unknown) {
+      const msg = (e as Error).message
+      if (!msg.includes('cancelled')) notify(msg, 'error')
+    }
+  }
+
   if (!selectedProject) return (
     <div className="no-project-guard">
       <p className="no-project-guard-title">No project selected</p>
@@ -72,6 +95,10 @@ export default function TestLibraryPage() {
     <div className="library-page">
       <div className="library-header">
         <h1 className="headline-sm">Test Library</h1>
+        <div className="library-header-actions">
+          <button className="btn btn-secondary btn-sm" onClick={handleImportCSV}>Import CSV</button>
+          <button className="btn btn-secondary btn-sm" onClick={handleExportCSV}>Export CSV</button>
+        </div>
       </div>
       <div className="library-content">
         <div className="library-tree-panel">

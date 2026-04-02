@@ -30,6 +30,12 @@ export class CategoryRepository {
     return this.getById(id)!
   }
 
+  findByName(projectId: number, name: string): Category | undefined {
+    return this.db.prepare(
+      'SELECT * FROM category WHERE project_id = ? AND name = ?'
+    ).get(projectId, name) as Category | undefined
+  }
+
   delete(id: number): void {
     this.db.prepare('DELETE FROM category WHERE id = ?').run(id)
   }

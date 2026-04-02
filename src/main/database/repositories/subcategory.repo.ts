@@ -36,6 +36,12 @@ export class SubcategoryRepository {
     return this.getById(id)!
   }
 
+  findByName(categoryId: number, name: string): Subcategory | undefined {
+    return this.db.prepare(
+      'SELECT * FROM subcategory WHERE category_id = ? AND name = ?'
+    ).get(categoryId, name) as Subcategory | undefined
+  }
+
   delete(id: number): void {
     this.db.prepare('DELETE FROM subcategory WHERE id = ?').run(id)
   }

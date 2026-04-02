@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import type { TestPlan, TestCycle, CreateTestCycleDTO } from '@shared/types'
 import { useApi } from '../hooks/useApi'
@@ -14,6 +14,8 @@ export default function TestPlanDetailPage() {
   const { notify } = useNotification()
   const [showCycleForm, setShowCycleForm] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<TestCycle | null>(null)
+  const [editingSummary, setEditingSummary] = useState(false)
+  const [summaryDraft, setSummaryDraft] = useState('')
 
   const [cycleName, setCycleName] = useState('')
   const [buildName, setBuildName] = useState('')
@@ -41,6 +43,21 @@ export default function TestPlanDetailPage() {
       notify('Test cycle created', 'success')
       setCycleName(''); setBuildName('')
       setShowCycleForm(false)
+    } catch (e: unknown) {
+      notify((e as Error).message, 'error')
+    }
+  }
+
+  useEffect(() => {
+    if (plan) setSummaryDraft(plan.summary || '')
+  }, [plan?.id, plan?.summary])
+
+  const handleSaveSummary = async () => {
+    try {
+      await window.api.testPlans.update(Number(planId), { summary: summaryDraft.trim() })
+      invalidate('testPlans')
+      notify('Summary updated', 'success')
+      setEditingSummary(false)
     } catch (e: unknown) {
       notify((e as Error).message, 'error')
     }
@@ -95,6 +112,36 @@ export default function TestPlanDetailPage() {
           <button className="btn btn-primary" onClick={() => setShowCycleForm(true)}>+ New Cycle</button>
           <button className="btn btn-secondary" onClick={() => navigate('/plans')}>Back</button>
         </div>
+      </div>
+
+      {/* Summary section */}
+      <div className="plan-summary-section">
+        <div className="plan-summary-header">
+          <span className="section-title">Summary</span>
+          {!editingSummary && (
+            <button className="btn btn-ghost btn-sm" onClick={() => { setSummaryDraft(plan.summary || ''); setEditingSummary(true) }}>Edit</button>
+          )}
+        </div>
+        {editingSummary ? (
+          <div className="plan-summary-edit">
+            <textarea
+              className="input plan-summary-textarea"
+              value={summaryDraft}
+              onChange={(e) => setSummaryDraft(e.target.value)}
+              placeholder="Describe the features being tested in this plan…"
+              rows={4}
+              autoFocus
+            />
+            <div className="plan-summary-edit-actions">
+              <button className="btn btn-secondary btn-sm" onClick={() => setEditingSummary(false)}>Cancel</button>
+              <button className="btn btn-primary btn-sm" onClick={handleSaveSummary}>Save</button>
+            </div>
+          </div>
+        ) : (
+          <p className="plan-summary-text">
+            {plan.summary || <span className="text-muted">No summary added yet. Click Edit to describe the features tested in this plan.</span>}
+          </p>
+        )}
       </div>
 
       {/* Cycles section */}

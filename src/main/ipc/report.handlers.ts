@@ -17,6 +17,14 @@ export function registerReportHandlers(): void {
     }
   })
 
+  ipcMain.handle(IPC.REPORTS.GET_MULTI_CYCLE_DATA, (_e, cycleIds: number[]) => {
+    try {
+      return wrapSuccess(repo.getMultiCycleReportData(cycleIds))
+    } catch (e: unknown) {
+      return wrapError('REPORT_MULTI_DATA', (e as Error).message)
+    }
+  })
+
   ipcMain.handle(IPC.REPORTS.GET_BY_CYCLE, (_e, cycleId: number) => {
     try {
       return wrapSuccess(repo.getByCycle(cycleId))

@@ -23,11 +23,14 @@ export const IPC = {
   },
   TEST_CASES: {
     GET_BY_SUBCATEGORY: 'test-cases:get-by-subcategory',
+    GET_BY_PROJECT: 'test-cases:get-by-project',
     GET_BY_ID: 'test-cases:get-by-id',
     CREATE: 'test-cases:create',
     UPDATE: 'test-cases:update',
     DELETE: 'test-cases:delete',
-    SEARCH: 'test-cases:search'
+    SEARCH: 'test-cases:search',
+    IMPORT_CSV: 'test-cases:import-csv',
+    EXPORT_CSV: 'test-cases:export-csv'
   },
   TEST_PLANS: {
     GET_ALL: 'test-plans:get-all',
@@ -48,11 +51,13 @@ export const IPC = {
     GET_BY_CYCLE: 'assignments:get-by-cycle',
     ASSIGN: 'assignments:assign',
     UNASSIGN: 'assignments:unassign',
+    BATCH_UNASSIGN: 'assignments:batch-unassign',
     UPDATE_STATUS: 'assignments:update-status'
   },
   REPORTS: {
     GENERATE: 'reports:generate',
     GET_DATA: 'reports:get-data',
+    GET_MULTI_CYCLE_DATA: 'reports:get-multi-cycle-data',
     GET_BY_CYCLE: 'reports:get-by-cycle'
   }
 } as const

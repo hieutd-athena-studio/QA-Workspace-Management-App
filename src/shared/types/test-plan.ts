@@ -3,6 +3,7 @@ export interface TestPlan {
   display_id: string
   project_id: number
   name: string
+  summary: string
   version: string
   start_date: string
   end_date: string
@@ -13,6 +14,7 @@ export interface TestPlan {
 export interface CreateTestPlanDTO {
   project_id: number
   name: string
+  summary?: string
   version: string
   start_date: string
   end_date: string
@@ -20,6 +22,7 @@ export interface CreateTestPlanDTO {
 
 export interface UpdateTestPlanDTO {
   name?: string
+  summary?: string
   version?: string
   start_date?: string
   end_date?: string

@@ -84,6 +84,32 @@ export class TestCaseRepository {
     this.db.prepare('DELETE FROM test_case WHERE id = ?').run(id)
   }
 
+  getByProject(projectId: number): TestCase[] {
+    const rows = this.db.prepare(
+      `SELECT tc.* FROM test_case tc
+       JOIN subcategory sub ON tc.subcategory_id = sub.id
+       WHERE sub.project_id = ?
+       ORDER BY tc.title`
+    ).all(projectId) as Record<string, unknown>[]
+    return rows.map(r => this.mapRow(r))
+  }
+
+  getByProjectWithHierarchy(projectId: number): Array<TestCase & { category_name: string; subcategory_name: string }> {
+    const rows = this.db.prepare(
+      `SELECT tc.*, cat.name as category_name, sub.name as subcategory_name
+       FROM test_case tc
+       JOIN subcategory sub ON tc.subcategory_id = sub.id
+       JOIN category cat ON sub.category_id = cat.id
+       WHERE sub.project_id = ?
+       ORDER BY cat.name, sub.name, tc.title`
+    ).all(projectId) as Record<string, unknown>[]
+    return rows.map(r => ({
+      ...this.mapRow(r),
+      category_name: r.category_name as string,
+      subcategory_name: r.subcategory_name as string
+    }))
+  }
+
   search(query: string, projectId?: number): TestCase[] {
     if (projectId !== undefined) {
       const rows = this.db.prepare(

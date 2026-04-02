@@ -33,11 +33,14 @@ const api = {
   },
   testCases: {
     getBySubcategory: async (subcategoryId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.GET_BY_SUBCATEGORY, subcategoryId)),
+    getByProject: async (projectId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.GET_BY_PROJECT, projectId)),
     getById: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.GET_BY_ID, id)),
     create: async (dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.CREATE, dto)),
     update: async (id: number, dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.UPDATE, id, dto)),
     delete: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.DELETE, id)),
-    search: async (query: string, projectId?: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.SEARCH, query, projectId))
+    search: async (query: string, projectId?: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.SEARCH, query, projectId)),
+    importCSV: async (projectId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.IMPORT_CSV, projectId)),
+    exportCSV: async (projectId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.EXPORT_CSV, projectId))
   },
   testPlans: {
     getAll: async () => unwrap(await ipcRenderer.invoke(IPC.TEST_PLANS.GET_ALL)),
@@ -58,10 +61,12 @@ const api = {
     getByCycle: async (cycleId: number) => unwrap(await ipcRenderer.invoke(IPC.ASSIGNMENTS.GET_BY_CYCLE, cycleId)),
     assign: async (cycleId: number, testCaseIds: number[]) => unwrap(await ipcRenderer.invoke(IPC.ASSIGNMENTS.ASSIGN, cycleId, testCaseIds)),
     unassign: async (assignmentId: number) => unwrap(await ipcRenderer.invoke(IPC.ASSIGNMENTS.UNASSIGN, assignmentId)),
+    batchUnassign: async (assignmentIds: number[]) => unwrap(await ipcRenderer.invoke(IPC.ASSIGNMENTS.BATCH_UNASSIGN, assignmentIds)),
     updateStatus: async (id: number, dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.ASSIGNMENTS.UPDATE_STATUS, id, dto))
   },
   reports: {
     getData: async (cycleId: number) => unwrap(await ipcRenderer.invoke(IPC.REPORTS.GET_DATA, cycleId)),
+    getMultiCycleData: async (cycleIds: number[]) => unwrap(await ipcRenderer.invoke(IPC.REPORTS.GET_MULTI_CYCLE_DATA, cycleIds)),
     getByCycle: async (cycleId: number) => unwrap(await ipcRenderer.invoke(IPC.REPORTS.GET_BY_CYCLE, cycleId)),
     generate: async (cycleId: number, format: 'pdf' | 'html') => unwrap(await ipcRenderer.invoke(IPC.REPORTS.GENERATE, cycleId, format))
   }

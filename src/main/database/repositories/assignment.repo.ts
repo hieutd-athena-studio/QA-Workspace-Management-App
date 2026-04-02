@@ -40,6 +40,16 @@ export class AssignmentRepository {
     this.db.prepare('DELETE FROM test_case_assignment WHERE id = ?').run(assignmentId)
   }
 
+  batchUnassign(assignmentIds: number[]): void {
+    const del = this.db.prepare('DELETE FROM test_case_assignment WHERE id = ?')
+    const deleteAll = this.db.transaction(() => {
+      for (const id of assignmentIds) {
+        del.run(id)
+      }
+    })
+    deleteAll()
+  }
+
   updateStatus(id: number, dto: UpdateAssignmentStatusDTO): TestCaseAssignment {
     const executedAt = dto.status !== 'Unexecuted' ? new Date().toISOString() : null
 

@@ -33,6 +33,15 @@ export function registerAssignmentHandlers(): void {
     }
   })
 
+  ipcMain.handle(IPC.ASSIGNMENTS.BATCH_UNASSIGN, (_e, assignmentIds: number[]) => {
+    try {
+      repo.batchUnassign(assignmentIds)
+      return wrapSuccess(null)
+    } catch (e: unknown) {
+      return wrapError('ASSIGN_BATCH_DELETE', (e as Error).message)
+    }
+  })
+
   ipcMain.handle(IPC.ASSIGNMENTS.UPDATE_STATUS, (_e, id: number, dto) => {
     try {
       return wrapSuccess(repo.updateStatus(id, dto))

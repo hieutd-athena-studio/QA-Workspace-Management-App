@@ -50,6 +50,41 @@ export default function AssignmentPicker({ cycleId, existingAssignments, onAssig
     setSelected(next)
   }
 
+  const selectAllInSubcategory = () => {
+    if (!testCases) return
+    const next = new Set(selected)
+    const unassigned = testCases.filter(tc => !assignedIds.has(tc.id))
+    const allSelected = unassigned.every(tc => next.has(tc.id))
+    if (allSelected) {
+      unassigned.forEach(tc => next.delete(tc.id))
+    } else {
+      unassigned.forEach(tc => next.add(tc.id))
+    }
+    setSelected(next)
+  }
+
+  const selectAllInCategory = async (categoryId: number) => {
+    const subs = subsForCategory(categoryId)
+    const next = new Set(selected)
+    for (const sub of subs) {
+      try {
+        const cases = await window.api.testCases.getBySubcategory(sub.id) as TestCase[]
+        cases.forEach(tc => {
+          if (!assignedIds.has(tc.id)) next.add(tc.id)
+        })
+      } catch { /* skip errors */ }
+    }
+    setSelected(next)
+  }
+
+  const subcategoryUnassignedCount = testCases
+    ? testCases.filter(tc => !assignedIds.has(tc.id)).length
+    : 0
+
+  const allSubcategorySelected = testCases
+    ? subcategoryUnassignedCount > 0 && testCases.filter(tc => !assignedIds.has(tc.id)).every(tc => selected.has(tc.id))
+    : false
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content modal-content-wide" onClick={(e) => e.stopPropagation()}>
@@ -65,7 +100,16 @@ export default function AssignmentPicker({ cycleId, existingAssignments, onAssig
             ) : (
               (categories || []).map((cat) => (
                 <React.Fragment key={cat.id}>
-                  <div className="picker-category-header">{cat.name}</div>
+                  <div className="picker-category-header">
+                    <span>{cat.name}</span>
+                    <button
+                      className="picker-select-all-btn"
+                      onClick={(e) => { e.stopPropagation(); selectAllInCategory(cat.id) }}
+                      title={`Select all test cases in ${cat.name}`}
+                    >
+                      All
+                    </button>
+                  </div>
                   {subsForCategory(cat.id).map((sub) => (
                     <div
                       key={sub.id}
@@ -81,8 +125,18 @@ export default function AssignmentPicker({ cycleId, existingAssignments, onAssig
           </div>
 
           <div className="picker-cases">
-            <div className="label-md text-muted" style={{ marginBottom: 'var(--sp-2)' }}>
-              Test Cases {selectedSubcategory ? `in ${selectedSubcategory.name}` : ''}
+            <div className="picker-cases-header">
+              <span className="label-md text-muted">
+                Test Cases {selectedSubcategory ? `in ${selectedSubcategory.name}` : ''}
+              </span>
+              {selectedSubcategory && testCases && subcategoryUnassignedCount > 0 && (
+                <button
+                  className="picker-select-all-btn"
+                  onClick={selectAllInSubcategory}
+                >
+                  {allSubcategorySelected ? 'Deselect All' : 'Select All'}
+                </button>
+              )}
             </div>
             {!selectedSubcategory ? (
               <div className="body-sm text-muted">Select a sub-category</div>

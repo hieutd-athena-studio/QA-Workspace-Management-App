@@ -86,6 +86,35 @@
   letter-spacing: 0.5px;
   color: var(--on-surface-variant);
   opacity: 0.7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.picker-cases-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-2);
+}
+
+.picker-select-all-btn {
+  background: none;
+  border: 1px solid rgba(136, 150, 179, 0.2);
+  border-radius: var(--radius-default);
+  padding: 1px 8px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.picker-select-all-btn:hover {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: var(--primary);
 }
 
 .picker-subfolder {

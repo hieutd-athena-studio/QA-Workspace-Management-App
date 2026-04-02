@@ -21,6 +21,7 @@ export default function TestCycleDetailPage() {
   const { invalidate } = useInvalidation()
   const { notify } = useNotification()
   const [showPicker, setShowPicker] = useState(false)
+  const [selectedForRemoval, setSelectedForRemoval] = useState<Set<number>>(new Set())
 
   const { data: plan } = useApi<TestPlan>(() => window.api.testPlans.getById(Number(planId)), [planId], 'testPlans')
   const { data: cycle } = useApi<TestCycle>(() => window.api.testCycles.getById(Number(cycleId)), [cycleId], 'testCycles')
@@ -33,6 +34,33 @@ export default function TestCycleDetailPage() {
   const unexecuted = assignments?.filter(a => a.status === 'Unexecuted').length || 0
   const executed = total - unexecuted
   const coverage = total > 0 ? Math.round((executed / total) * 100) : 0
+
+  const toggleRemoval = (id: number) => {
+    const next = new Set(selectedForRemoval)
+    if (next.has(id)) next.delete(id); else next.add(id)
+    setSelectedForRemoval(next)
+  }
+
+  const toggleAllRemoval = () => {
+    if (!assignments) return
+    if (selectedForRemoval.size === assignments.length) {
+      setSelectedForRemoval(new Set())
+    } else {
+      setSelectedForRemoval(new Set(assignments.map(a => a.id)))
+    }
+  }
+
+  const handleBatchUnassign = async () => {
+    if (selectedForRemoval.size === 0) return
+    try {
+      await window.api.assignments.batchUnassign(Array.from(selectedForRemoval))
+      invalidate('assignments')
+      notify(`${selectedForRemoval.size} test case(s) unassigned`, 'success')
+      setSelectedForRemoval(new Set())
+    } catch (e: unknown) {
+      notify((e as Error).message, 'error')
+    }
+  }
 
   const handleAssign = async (testCaseIds: number[]) => {
     try {
@@ -125,7 +153,14 @@ export default function TestCycleDetailPage() {
             Test Cases
             {total > 0 && <span className="section-count">{total}</span>}
           </span>
-          <button className="btn btn-secondary btn-sm" onClick={() => setShowPicker(true)}>+ Assign Cases</button>
+          <div className="cycle-table-actions">
+            {selectedForRemoval.size > 0 && (
+              <button className="btn btn-danger btn-sm" onClick={handleBatchUnassign}>
+                Unassign ({selectedForRemoval.size})
+              </button>
+            )}
+            <button className="btn btn-secondary btn-sm" onClick={() => setShowPicker(true)}>+ Assign Cases</button>
+          </div>
         </div>
 
         {total === 0 ? (
@@ -139,6 +174,13 @@ export default function TestCycleDetailPage() {
           <table className="data-table">
             <thead>
               <tr>
+                <th className="col-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={assignments!.length > 0 && selectedForRemoval.size === assignments!.length}
+                    onChange={toggleAllRemoval}
+                  />
+                </th>
                 <th>Category / Sub-category</th>
                 <th>Test Case</th>
                 <th>Status</th>
@@ -147,7 +189,14 @@ export default function TestCycleDetailPage() {
             </thead>
             <tbody>
               {assignments!.map((a) => (
-                <tr key={a.id}>
+                <tr key={a.id} className={selectedForRemoval.has(a.id) ? 'row-selected' : ''}>
+                  <td className="col-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={selectedForRemoval.has(a.id)}
+                      onChange={() => toggleRemoval(a.id)}
+                    />
+                  </td>
                   <td className="secondary">{a.category_name} / {a.subcategory_name}</td>
                   <td>{a.test_case_title}</td>
                   <td><StatusBadge status={a.status} /></td>

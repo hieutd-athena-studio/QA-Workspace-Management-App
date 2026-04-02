@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import type { TestPlan, TestCycle, ReportData } from '@shared/types'
+import type { TestPlan, TestCycle, ReportData, MultiCycleReportData } from '@shared/types'
 import { useApi } from '../hooks/useApi'
 import { useNotification } from '../contexts/NotificationContext'
 import { useProject } from '../contexts/ProjectContext'
 import './ReportsPage.css'
+
+const ALL_CYCLES_VALUE = 'all'
 
 export default function ReportsPage() {
   const navigate = useNavigate()
@@ -12,8 +14,9 @@ export default function ReportsPage() {
   const { notify } = useNotification()
   const { selectedProject } = useProject()
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null)
-  const [selectedCycleId, setSelectedCycleId] = useState<number | null>(null)
-  const [reportData, setReportData] = useState<ReportData | null>(null)
+  const [selectedCycleOption, setSelectedCycleOption] = useState<string>('')
+  const [reportData, setReportData] = useState<ReportData | MultiCycleReportData | null>(null)
+  const [isMultiCycle, setIsMultiCycle] = useState(false)
   const [loadingReport, setLoadingReport] = useState(false)
 
   const { data: plans } = useApi<TestPlan[]>(
@@ -30,22 +33,40 @@ export default function ReportsPage() {
 
   useEffect(() => {
     const cid = searchParams.get('cycleId')
-    if (cid) setSelectedCycleId(Number(cid))
+    if (cid) setSelectedCycleOption(cid)
   }, [searchParams])
 
   useEffect(() => {
-    if (!selectedCycleId) { setReportData(null); return }
+    if (!selectedCycleOption) { setReportData(null); setIsMultiCycle(false); return }
     setLoadingReport(true)
-    window.api.reports.getData(selectedCycleId)
-      .then(setReportData)
-      .catch((e: Error) => notify(e.message, 'error'))
-      .finally(() => setLoadingReport(false))
-  }, [selectedCycleId])
+
+    if (selectedCycleOption === ALL_CYCLES_VALUE) {
+      // Aggregate all cycles for this plan
+      const cycleIds = (cycles || []).map(c => c.id)
+      if (cycleIds.length === 0) {
+        setReportData(null)
+        setIsMultiCycle(false)
+        setLoadingReport(false)
+        return
+      }
+      setIsMultiCycle(true)
+      window.api.reports.getMultiCycleData(cycleIds)
+        .then(setReportData)
+        .catch((e: Error) => notify(e.message, 'error'))
+        .finally(() => setLoadingReport(false))
+    } else {
+      setIsMultiCycle(false)
+      window.api.reports.getData(Number(selectedCycleOption))
+        .then(setReportData)
+        .catch((e: Error) => notify(e.message, 'error'))
+        .finally(() => setLoadingReport(false))
+    }
+  }, [selectedCycleOption, cycles])
 
   const handleExport = async (format: 'pdf' | 'html') => {
-    if (!selectedCycleId) return
+    if (!selectedCycleOption || selectedCycleOption === ALL_CYCLES_VALUE) return
     try {
-      await window.api.reports.generate(selectedCycleId, format)
+      await window.api.reports.generate(Number(selectedCycleOption), format)
       notify(`Report exported as ${format.toUpperCase()}`, 'success')
     } catch (e: unknown) {
       const msg = (e as Error).message
@@ -88,7 +109,7 @@ export default function ReportsPage() {
           <select
             className="select"
             value={selectedPlanId ?? ''}
-            onChange={(e) => { setSelectedPlanId(e.target.value ? Number(e.target.value) : null); setSelectedCycleId(null) }}
+            onChange={(e) => { setSelectedPlanId(e.target.value ? Number(e.target.value) : null); setSelectedCycleOption('') }}
           >
             <option value="">Select a plan…</option>
             {plans?.map((p) => <option key={p.id} value={p.id}>{p.name} ({p.version})</option>)}
@@ -98,11 +119,14 @@ export default function ReportsPage() {
           <label className="tcf-label">Test Cycle</label>
           <select
             className="select"
-            value={selectedCycleId ?? ''}
-            onChange={(e) => setSelectedCycleId(e.target.value ? Number(e.target.value) : null)}
+            value={selectedCycleOption}
+            onChange={(e) => setSelectedCycleOption(e.target.value)}
             disabled={!selectedPlanId}
           >
             <option value="">Select a cycle…</option>
+            {cycles && cycles.length > 1 && (
+              <option value={ALL_CYCLES_VALUE}>All Cycles ({cycles.length})</option>
+            )}
             {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name} — {c.build_name}</option>)}
           </select>
         </div>
@@ -121,8 +145,21 @@ export default function ReportsPage() {
           {/* Summary card */}
           <div className="report-summary-card">
             <div className="report-summary-header">
-              <div className="report-summary-title">Test Cycle Report</div>
-              <div className="report-summary-subtitle">{reportData.plan_name} {reportData.plan_version} — {reportData.cycle_name}</div>
+              <div className="report-summary-title">{isMultiCycle ? 'Multi-Cycle Report' : 'Test Cycle Report'}</div>
+              <div className="report-summary-subtitle">
+                {reportData.plan_name} {reportData.plan_version}
+                {isMultiCycle
+                  ? ` — ${(reportData as MultiCycleReportData).cycle_names.length} cycles`
+                  : ` — ${(reportData as ReportData).cycle_name}`
+                }
+              </div>
+              {isMultiCycle && (
+                <div className="report-cycle-list">
+                  {(reportData as MultiCycleReportData).cycle_names.map((name, i) => (
+                    <span key={i} className="report-cycle-tag">{name}</span>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="report-summary-body">
@@ -176,13 +213,20 @@ export default function ReportsPage() {
               <p className="report-section-title">Failed &amp; Blocked Test Cases</p>
               <table className="data-table">
                 <thead>
-                  <tr><th>Test Case</th><th>Category / Subcategory</th><th>Status</th><th>Bug Ref</th></tr>
+                  <tr>
+                    <th>Test Case</th>
+                    <th>Category / Subcategory</th>
+                    {isMultiCycle && <th>Cycle</th>}
+                    <th>Status</th>
+                    <th>Bug Ref</th>
+                  </tr>
                 </thead>
                 <tbody>
                   {reportData.failed_cases.map((fc, i) => (
                     <tr key={i}>
                       <td>{fc.title}</td>
                       <td className="secondary">{fc.category_name} / {fc.subcategory_name}</td>
+                      {isMultiCycle && <td className="secondary">{(fc as MultiCycleReportData['failed_cases'][number]).cycle_name}</td>}
                       <td><span className={`status-badge status-${fc.status.toLowerCase()}`}>{fc.status}</span></td>
                       <td className="mono">{fc.bug_ref || '—'}</td>
                     </tr>
@@ -194,8 +238,12 @@ export default function ReportsPage() {
 
           {/* Export */}
           <div className="report-export-row">
-            <button className="btn btn-primary" onClick={() => handleExport('pdf')}>Export as PDF</button>
-            <button className="btn btn-secondary" onClick={() => handleExport('html')}>Export as HTML</button>
+            {!isMultiCycle && (
+              <>
+                <button className="btn btn-primary" onClick={() => handleExport('pdf')}>Export as PDF</button>
+                <button className="btn btn-secondary" onClick={() => handleExport('html')}>Export as HTML</button>
+              </>
+            )}
           </div>
         </>
       )}

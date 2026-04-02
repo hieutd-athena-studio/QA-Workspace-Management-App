@@ -113,6 +113,41 @@
   margin-bottom: var(--sp-3);
 }
 
+.cycle-table-actions {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.col-checkbox {
+  width: 36px;
+  text-align: center;
+}
+
+.col-checkbox input[type="checkbox"] {
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.row-selected {
+  background: rgba(159, 64, 61, 0.04);
+}
+
+.btn-danger {
+  background: var(--critical);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-default);
+  padding: 6px 14px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn-danger:hover {
+  opacity: 0.85;
+}
+
 /* Empty state */
 .cycle-empty {
   display: flex;
