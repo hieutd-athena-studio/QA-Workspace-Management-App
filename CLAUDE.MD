@@ -61,7 +61,9 @@ src/
 │   │   ├── migrations/
 │   │   │   ├── 001-initial-schema.ts
 │   │   │   ├── 002-add-projects.ts
-│   │   │   └── 004-restructure-categories.ts
+│   │   │   ├── 003-add-test-case-version.ts
+│   │   │   ├── 004-restructure-categories.ts
+│   │   │   └── 005-add-plan-summary.ts
 │   │   └── repositories/
 │   │       ├── project.repo.ts  # One repo per entity
 │   │       ├── category.repo.ts
@@ -86,6 +88,7 @@ src/
 ├── renderer/
 │   ├── App.tsx                  # Root router + layout
 │   ├── main.tsx                 # React DOM mount
+│   ├── index.html               # Electron renderer entry HTML
 │   ├── contexts/
 │   │   ├── ProjectContext.tsx   # Selected project state
 │   │   ├── NotificationContext.tsx # Toasts
@@ -93,34 +96,33 @@ src/
 │   ├── hooks/
 │   │   └── useApi.ts            # Generic IPC call hook
 │   ├── pages/
-│   │   ├── ProjectsPage.tsx
-│   │   ├── TestLibraryPage.tsx
-│   │   ├── TestPlansPage.tsx
-│   │   ├── TestPlanDetailPage.tsx
-│   │   ├── TestCycleDetailPage.tsx
-│   │   ├── ExecutionPage.tsx
-│   │   ├── GanttPage.tsx
-│   │   └── ReportsPage.tsx
+│   │   ├── ProjectsPage.tsx / .css
+│   │   ├── TestLibraryPage.tsx / .css
+│   │   ├── TestPlansPage.tsx / .css
+│   │   ├── TestPlanDetailPage.tsx / .css
+│   │   ├── TestCycleDetailPage.tsx / .css
+│   │   ├── ExecutionPage.tsx / .css
+│   │   ├── GanttPage.tsx / .css
+│   │   └── ReportsPage.tsx / .css
 │   ├── components/
 │   │   ├── layout/
-│   │   │   ├── MainLayout.tsx
-│   │   │   └── Sidebar.tsx
+│   │   │   ├── MainLayout.tsx / .css
+│   │   │   └── Sidebar.tsx / .css
 │   │   ├── category-panel/
 │   │   │   ├── CategoryPanel.tsx
 │   │   │   └── CategoryPanel.css
 │   │   ├── test-cases/
-│   │   │   ├── TestCaseForm.tsx
-│   │   │   ├── TestCaseForm.css
-│   │   │   └── TestCaseList.tsx
+│   │   │   ├── TestCaseForm.tsx / .css
+│   │   │   └── TestCaseList.tsx / .css
 │   │   ├── execution/
-│   │   │   └── AssignmentPicker.tsx
+│   │   │   ├── AssignmentPicker.tsx
+│   │   │   └── AssignmentPicker.css
 │   │   └── shared/
 │   │       ├── ConfirmDialog.tsx
 │   │       └── EmptyState.tsx
 │   └── assets/
 │       └── styles/
-│           ├── variables.css    # Color & spacing tokens
-│           └── global.css       # Shared utility classes
+│           └── global.css       # Design tokens (CSS vars) + shared utility classes
 ├── shared/
 │   ├── types/                   # Single source of truth for types
 │   │   ├── project.ts
@@ -181,12 +183,16 @@ Then register all handlers in the main process:
 import { IpcMain } from "electron";
 import { Database } from "better-sqlite3";
 import { registerProjectHandlers } from "./project.handlers";
-import { registerFolderHandlers } from "./folder.handlers";
+import { registerCategoryHandlers } from "./category.handlers";
+import { registerSubcategoryHandlers } from "./subcategory.handlers";
+import { registerTestCaseHandlers } from "./test-case.handlers";
 // ... import all other handlers
 
 export const registerAllHandlers = (ipcMain: IpcMain, db: Database) => {
   registerProjectHandlers(ipcMain, db);
-  registerFolderHandlers(ipcMain, db);
+  registerCategoryHandlers(ipcMain, db);
+  registerSubcategoryHandlers(ipcMain, db);
+  registerTestCaseHandlers(ipcMain, db);
   // ... register all others
 };
 
@@ -400,11 +406,11 @@ Compute at insert time in repository, not on-the-fly.
 ### CSS Organization
 
 - **One `.css` file per component.** No CSS-in-JS, no Tailwind.
-- **Global Variables:** `src/renderer/assets/styles/variables.css`
+- **Design Tokens + Shared Patterns:** `src/renderer/assets/styles/global.css` (single file — no separate variables.css)
+  - `:root` block: all CSS custom properties — colors, spacing, radii, typography
   - Colors: `--primary`, `--critical`, `--success`, etc.
-  - Spacing: `--sp-1`, `--sp-2`, `--sp-4`, `--sp-8`, etc.
-  - Typography: Font scales defined in global
-- **Shared Patterns:** `src/renderer/assets/styles/global.css`
+  - Spacing: `--sp-1` through `--sp-16` (4px base grid)
+  - Typography: font imports + scale classes
   - `.no-project-guard` — guard layout for empty project state
   - `.data-table` — standard table styling
   - `.btn`, `.btn-primary`, `.btn-secondary` — button patterns
