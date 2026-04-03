@@ -221,10 +221,12 @@ export function registerTestCaseHandlers(): void {
           // Parse steps
           const rawSteps = colIdx.steps !== -1 ? (fields[colIdx.steps] ?? '').trim() : ''
           const steps: TestStep[] = rawSteps
-            ? rawSteps.split(' | ').map((s, idx) => {
-                const match = s.match(/^\d+\.\s*(.+?)\s*->\s*(.+)$/)
+            ? rawSteps.split(/\s*;\s*|\s*\|\s*/).filter(s => s.trim()).map((s, idx) => {
+                // Strip leading step numbers like "1. " or "1) "
+                const stripped = s.trim().replace(/^\d+[\.\)]\s*/, '')
+                const match = stripped.match(/^(.+?)\s*->\s*(.+)$/)
                 if (match) return { step: idx + 1, action: match[1].trim(), expected: match[2].trim() }
-                return { step: idx + 1, action: s.trim(), expected: '' }
+                return { step: idx + 1, action: stripped, expected: '' }
               })
             : []
 
