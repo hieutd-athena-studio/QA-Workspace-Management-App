@@ -131,7 +131,7 @@ export default function TestPlansPage() {
                   className="plan-card-delete"
                   onClick={(e) => { e.stopPropagation(); setDeleteTarget(plan) }}
                   title="Delete plan"
-                >×</button>
+                >Delete</button>
               </div>
             </div>
           ))}

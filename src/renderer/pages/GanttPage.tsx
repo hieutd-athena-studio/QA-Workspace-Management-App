@@ -131,7 +131,10 @@ export default function GanttPage() {
                   <div key={cycle.id} className="gantt-row gantt-row-cycle">
                     <div className="gantt-label gantt-label-indent">
                       <span className="gantt-label-name">{cycle.name}</span>
-                      <span className="gantt-label-sub">{cycle.build_name}</span>
+                      <span className="gantt-label-sub">
+                        {cycle.build_name}
+                        {cycle.environment && <span className="gantt-env-tag">{cycle.environment}</span>}
+                      </span>
                     </div>
                     <div className="gantt-bar-container">
                       <div

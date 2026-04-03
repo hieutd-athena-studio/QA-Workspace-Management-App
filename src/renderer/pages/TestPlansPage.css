@@ -139,19 +139,21 @@
 }
 
 .plan-card-delete {
-  width: 28px;
   height: 28px;
+  padding: 0 var(--sp-3);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
+  border: 1px solid transparent;
   background: transparent;
   border-radius: var(--radius-default);
-  font-size: 1.1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--on-surface-variant);
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.15s, background 0.15s, color 0.15s;
+  transition: opacity 0.15s, background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
 }
 
 .plan-card:hover .plan-card-delete {
@@ -159,7 +161,8 @@
 }
 
 .plan-card-delete:hover {
-  background: rgba(159, 64, 61, 0.1);
+  background: rgba(159, 64, 61, 0.08);
+  border-color: rgba(159, 64, 61, 0.3);
   color: var(--critical);
 }
 

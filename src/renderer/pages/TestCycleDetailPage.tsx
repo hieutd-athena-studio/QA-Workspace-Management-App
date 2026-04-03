@@ -22,6 +22,24 @@ export default function TestCycleDetailPage() {
   const { notify } = useNotification()
   const [showPicker, setShowPicker] = useState(false)
   const [selectedForRemoval, setSelectedForRemoval] = useState<Set<number>>(new Set())
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set())
+  const [collapsedSubcategories, setCollapsedSubcategories] = useState<Set<string>>(new Set())
+
+  const toggleCategory = (cat: string) => {
+    setCollapsedCategories(prev => {
+      const next = new Set(prev)
+      if (next.has(cat)) next.delete(cat); else next.add(cat)
+      return next
+    })
+  }
+
+  const toggleSubcategory = (key: string) => {
+    setCollapsedSubcategories(prev => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key); else next.add(key)
+      return next
+    })
+  }
 
   const { data: plan } = useApi<TestPlan>(() => window.api.testPlans.getById(Number(planId)), [planId], 'testPlans')
   const { data: cycle } = useApi<TestCycle>(() => window.api.testCycles.getById(Number(cycleId)), [cycleId], 'testCycles')
@@ -174,40 +192,87 @@ export default function TestCycleDetailPage() {
             <button className="btn btn-primary" onClick={() => setShowPicker(true)}>+ Assign Cases</button>
           </div>
         ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th className="col-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={assignments!.length > 0 && selectedForRemoval.size === assignments!.length}
-                    onChange={toggleAllRemoval}
-                  />
-                </th>
-                <th>Category / Sub-category</th>
-                <th>Test Case</th>
-                <th>Status</th>
-                <th>Bug Ref</th>
-              </tr>
-            </thead>
-            <tbody>
-              {assignments!.map((a) => (
-                <tr key={a.id} className={selectedForRemoval.has(a.id) ? 'row-selected' : ''}>
-                  <td className="col-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={selectedForRemoval.has(a.id)}
-                      onChange={() => toggleRemoval(a.id)}
-                    />
-                  </td>
-                  <td className="secondary">{a.category_name} / {a.subcategory_name}</td>
-                  <td>{a.test_case_title}</td>
-                  <td><StatusBadge status={a.status} /></td>
-                  <td className="mono">{a.bug_ref || '—'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="grouped-assignments">
+            {(() => {
+              const grouped = new Map<string, Map<string, typeof assignments>>()
+              assignments!.forEach(a => {
+                if (!grouped.has(a.category_name)) grouped.set(a.category_name, new Map())
+                const catMap = grouped.get(a.category_name)!
+                if (!catMap.has(a.subcategory_name)) catMap.set(a.subcategory_name, [])
+                catMap.get(a.subcategory_name)!.push(a)
+              })
+
+              return Array.from(grouped.entries()).map(([catName, subcatMap]) => {
+                const isCatCollapsed = collapsedCategories.has(catName)
+                const catTotal = Array.from(subcatMap.values()).reduce((acc, items) => acc + items!.length, 0)
+
+                return (
+                  <div key={catName} className="grouped-category">
+                    <div className="grouped-category-header" onClick={() => toggleCategory(catName)}>
+                      <span className="grouped-toggle">{isCatCollapsed ? '▶' : '▼'}</span>
+                      <span className="grouped-category-name">{catName}</span>
+                      <span className="section-count">{catTotal}</span>
+                    </div>
+
+                    {!isCatCollapsed && Array.from(subcatMap.entries()).map(([subcatName, cases]) => {
+                      const subKey = `${catName}::${subcatName}`
+                      const isSubCollapsed = collapsedSubcategories.has(subKey)
+
+                      return (
+                        <div key={subcatName} className="grouped-subcategory">
+                          <div className="grouped-subcategory-header" onClick={() => toggleSubcategory(subKey)}>
+                            <span className="grouped-toggle">{isSubCollapsed ? '▶' : '▼'}</span>
+                            <span className="grouped-subcategory-name">{subcatName}</span>
+                            <span className="section-count">{cases!.length}</span>
+                          </div>
+
+                          {!isSubCollapsed && (
+                            <table className="data-table grouped-cases-table">
+                              <thead>
+                                <tr>
+                                  <th className="col-checkbox">
+                                    <input
+                                      type="checkbox"
+                                      checked={cases!.every(a => selectedForRemoval.has(a.id))}
+                                      onChange={() => {
+                                        const next = new Set(selectedForRemoval)
+                                        const allSelected = cases!.every(a => next.has(a.id))
+                                        cases!.forEach(a => allSelected ? next.delete(a.id) : next.add(a.id))
+                                        setSelectedForRemoval(next)
+                                      }}
+                                    />
+                                  </th>
+                                  <th>Test Case</th>
+                                  <th>Status</th>
+                                  <th>Bug Ref</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {cases!.map((a) => (
+                                  <tr key={a.id} className={selectedForRemoval.has(a.id) ? 'row-selected' : ''}>
+                                    <td className="col-checkbox">
+                                      <input
+                                        type="checkbox"
+                                        checked={selectedForRemoval.has(a.id)}
+                                        onChange={() => toggleRemoval(a.id)}
+                                      />
+                                    </td>
+                                    <td>{a.test_case_title}</td>
+                                    <td><StatusBadge status={a.status} /></td>
+                                    <td className="mono">{a.bug_ref || '—'}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })
+            })()}
+          </div>
         )}
       </div>
 
