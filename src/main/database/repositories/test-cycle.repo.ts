@@ -30,8 +30,8 @@ export class TestCycleRepository {
   create(dto: CreateTestCycleDTO): TestCycle {
     const displayId = this.generateDisplayId(dto.test_plan_id)
     const result = this.db.prepare(
-      'INSERT INTO test_cycle (display_id, name, build_name, test_plan_id, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?)'
-    ).run(displayId, dto.name, dto.build_name, dto.test_plan_id, dto.start_date ?? null, dto.end_date ?? null)
+      'INSERT INTO test_cycle (display_id, name, build_name, test_plan_id, environment, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ).run(displayId, dto.name, dto.build_name, dto.test_plan_id, dto.environment ?? null, dto.start_date ?? null, dto.end_date ?? null)
 
     return this.getById(Number(result.lastInsertRowid))!
   }
@@ -44,6 +44,7 @@ export class TestCycleRepository {
       `UPDATE test_cycle SET
         name = ?,
         build_name = ?,
+        environment = ?,
         start_date = ?,
         end_date = ?,
         updated_at = datetime('now')
@@ -51,6 +52,7 @@ export class TestCycleRepository {
     ).run(
       dto.name ?? existing.name,
       dto.build_name ?? existing.build_name,
+      dto.environment !== undefined ? dto.environment : existing.environment,
       dto.start_date !== undefined ? dto.start_date : existing.start_date,
       dto.end_date !== undefined ? dto.end_date : existing.end_date,
       id

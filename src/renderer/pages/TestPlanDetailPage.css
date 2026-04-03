@@ -236,6 +236,16 @@
   font-family: var(--font-mono);
 }
 
+.cycle-env-badge {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--surface-container-high);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+}
+
 .cycle-row-actions {
   display: flex;
   align-items: center;

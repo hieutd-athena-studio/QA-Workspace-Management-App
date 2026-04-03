@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import type { TestPlan, TestCycle, CreateTestCycleDTO } from '@shared/types'
+import { TestCycleEnvironment } from '@shared/types'
 import { useApi } from '../hooks/useApi'
 import { useInvalidation } from '../contexts/InvalidationContext'
 import { useNotification } from '../contexts/NotificationContext'
@@ -19,6 +20,7 @@ export default function TestPlanDetailPage() {
 
   const [cycleName, setCycleName] = useState('')
   const [buildName, setBuildName] = useState('')
+  const [environment, setEnvironment] = useState<string | null>(null)
 
   const { data: plan } = useApi<TestPlan>(
     () => window.api.testPlans.getById(Number(planId)),
@@ -36,12 +38,13 @@ export default function TestPlanDetailPage() {
       const dto: CreateTestCycleDTO = {
         name: cycleName.trim(),
         build_name: buildName.trim(),
-        test_plan_id: Number(planId)
+        test_plan_id: Number(planId),
+        environment: environment || null
       }
       await window.api.testCycles.create(dto)
       invalidate('testCycles')
       notify('Test cycle created', 'success')
-      setCycleName(''); setBuildName('')
+      setCycleName(''); setBuildName(''); setEnvironment(null)
       setShowCycleForm(false)
     } catch (e: unknown) {
       notify((e as Error).message, 'error')
@@ -174,6 +177,7 @@ export default function TestPlanDetailPage() {
                 <span className="cycle-row-index">{i + 1}</span>
                 <span className="cycle-row-name">{cycle.name}</span>
                 <span className="cycle-build-badge">{cycle.build_name}</span>
+                {cycle.environment && <span className="cycle-env-badge">{cycle.environment}</span>}
               </div>
               <div className="cycle-row-actions">
                 <button
@@ -199,6 +203,15 @@ export default function TestPlanDetailPage() {
               <div className="form-group">
                 <label className="tcf-label">Build Name</label>
                 <input className="input" value={buildName} onChange={(e) => setBuildName(e.target.value)} placeholder="e.g., Build 1.0.1" />
+              </div>
+              <div className="form-group">
+                <label className="tcf-label">Environment</label>
+                <select className="input" value={environment || ''} onChange={(e) => setEnvironment(e.target.value || null)}>
+                  <option value="">-- Select Environment --</option>
+                  <option value={TestCycleEnvironment.DEV_CHEAT}>{TestCycleEnvironment.DEV_CHEAT}</option>
+                  <option value={TestCycleEnvironment.PROD_CHEAT}>{TestCycleEnvironment.PROD_CHEAT}</option>
+                  <option value={TestCycleEnvironment.PROD_NON_CHEAT}>{TestCycleEnvironment.PROD_NON_CHEAT}</option>
+                </select>
               </div>
             </div>
             <div className="tcf-footer">

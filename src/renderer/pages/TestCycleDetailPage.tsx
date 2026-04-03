@@ -91,6 +91,7 @@ export default function TestCycleDetailPage() {
           <div className="plan-detail-hero-title">
             <h1>{cycle.name}</h1>
             <span className="cycle-build-badge">{cycle.build_name}</span>
+            {cycle.environment && <span className="cycle-env-badge">{cycle.environment}</span>}
           </div>
           <div style={{ fontSize: '0.8125rem', color: 'var(--on-surface-variant)' }}>
             Part of <strong>{plan.name}</strong> {plan.version}
