@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import type { TestPlan, TestCycle, TestCaseAssignment } from '@shared/types'
+import type { TestPlan, TestCycle, TestCaseAssignment, UpdateTestCycleDTO } from '@shared/types'
 import { TestCycleEnvironment } from '@shared/types'
 import { useApi } from '../hooks/useApi'
 import { useInvalidation } from '../contexts/InvalidationContext'
@@ -33,6 +33,10 @@ export default function TestCycleDetailPage() {
   const [selectedForRemoval, setSelectedForRemoval] = useState<Set<number>>(new Set())
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set())
   const [collapsedSubcategories, setCollapsedSubcategories] = useState<Set<string>>(new Set())
+  const [isEditing, setIsEditing] = useState(false)
+  const [editName, setEditName] = useState('')
+  const [editBuild, setEditBuild] = useState('')
+  const [editEnv, setEditEnv] = useState<string | null>(null)
 
   const toggleCategory = (cat: string) => {
     setCollapsedCategories(prev => {
@@ -100,6 +104,39 @@ export default function TestCycleDetailPage() {
     }
   }
 
+  const startEdit = () => {
+    if (cycle) {
+      setEditName(cycle.name)
+      setEditBuild(cycle.build_name)
+      setEditEnv(cycle.environment)
+      setIsEditing(true)
+    }
+  }
+
+  const handleSaveEdit = async () => {
+    if (!editName.trim() || !editBuild.trim()) return
+    try {
+      const dto: UpdateTestCycleDTO = {
+        name: editName.trim(),
+        build_name: editBuild.trim(),
+        environment: editEnv || null
+      }
+      await window.api.testCycles.update(Number(cycleId), dto)
+      invalidate('testCycles')
+      notify('Test cycle updated', 'success')
+      setIsEditing(false)
+    } catch (e: unknown) {
+      notify((e as Error).message, 'error')
+    }
+  }
+
+  const cancelEdit = () => {
+    setIsEditing(false)
+    setEditName('')
+    setEditBuild('')
+    setEditEnv(null)
+  }
+
   if (!plan || !cycle) return <div className="text-muted body-sm" style={{ padding: 'var(--sp-8)' }}>Loading…</div>
 
   return (
@@ -114,29 +151,62 @@ export default function TestCycleDetailPage() {
 
       {/* Plan detail hero reused */}
       <div className="plan-detail-hero" style={{ marginBottom: 0 }}>
-        <div className="plan-detail-hero-info">
-          <div className="plan-detail-hero-title">
-            <h1>{cycle.name}</h1>
-            <span className="cycle-build-badge">{cycle.build_name}</span>
-            {cycle.environment && <span className={`cycle-env-badge ${getEnvironmentClass(cycle.environment)}`}>{cycle.environment}</span>}
-          </div>
-          <div style={{ fontSize: '0.8125rem', color: 'var(--on-surface-variant)' }}>
-            Part of <strong>{plan.name}</strong> {plan.version}
-          </div>
-        </div>
-        <div className="plan-detail-hero-actions">
-          <button className="btn btn-secondary" onClick={() => setShowPicker(true)}>Assign Cases</button>
-          <button
-            className="btn btn-primary"
-            onClick={() => navigate(`/plans/${planId}/cycles/${cycleId}/execute`)}
-            disabled={total === 0}
-          >▶ Execute</button>
-          <button
-            className="btn btn-secondary"
-            onClick={() => navigate(`/reports?cycleId=${cycleId}`)}
-            disabled={total === 0}
-          >Report</button>
-        </div>
+        {!isEditing ? (
+          <>
+            <div className="plan-detail-hero-info">
+              <div className="plan-detail-hero-title">
+                <h1>{cycle.name}</h1>
+                <span className="cycle-build-badge">{cycle.build_name}</span>
+                {cycle.environment && <span className={`cycle-env-badge ${getEnvironmentClass(cycle.environment)}`}>{cycle.environment}</span>}
+              </div>
+              <div style={{ fontSize: '0.8125rem', color: 'var(--on-surface-variant)' }}>
+                Part of <strong>{plan.name}</strong> {plan.version}
+              </div>
+            </div>
+            <div className="plan-detail-hero-actions">
+              <button className="btn btn-secondary" onClick={startEdit}>✎ Edit</button>
+              <button className="btn btn-secondary" onClick={() => setShowPicker(true)}>Assign Cases</button>
+              <button
+                className="btn btn-primary"
+                onClick={() => navigate(`/plans/${planId}/cycles/${cycleId}/execute`)}
+                disabled={total === 0}
+              >▶ Execute</button>
+              <button
+                className="btn btn-secondary"
+                onClick={() => navigate(`/reports?cycleId=${cycleId}`)}
+                disabled={total === 0}
+              >Report</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="plan-detail-hero-info" style={{ flex: 1 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--on-surface-variant)' }}>Cycle Name</label>
+                  <input className="input" value={editName} onChange={(e) => setEditName(e.target.value)} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--on-surface-variant)' }}>Build Name</label>
+                  <input className="input" value={editBuild} onChange={(e) => setEditBuild(e.target.value)} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--on-surface-variant)' }}>Environment</label>
+                  <select className="input" value={editEnv || ''} onChange={(e) => setEditEnv(e.target.value || null)}>
+                    <option value="">-- Select Environment --</option>
+                    <option value={TestCycleEnvironment.DEV_CHEAT}>{TestCycleEnvironment.DEV_CHEAT}</option>
+                    <option value={TestCycleEnvironment.PROD_CHEAT}>{TestCycleEnvironment.PROD_CHEAT}</option>
+                    <option value={TestCycleEnvironment.PROD_NON_CHEAT}>{TestCycleEnvironment.PROD_NON_CHEAT}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div className="plan-detail-hero-actions">
+              <button className="btn btn-secondary" onClick={cancelEdit}>Cancel</button>
+              <button className="btn btn-primary" onClick={handleSaveEdit} disabled={!editName.trim() || !editBuild.trim()}>Save</button>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Stats cards */}

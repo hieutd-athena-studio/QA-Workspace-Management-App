@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import type { TestPlan, TestCycle, CreateTestCycleDTO } from '@shared/types'
+import type { TestPlan, TestCycle, CreateTestCycleDTO, UpdateTestCycleDTO } from '@shared/types'
 import { TestCycleEnvironment } from '@shared/types'
 import { useApi } from '../hooks/useApi'
 import { useInvalidation } from '../contexts/InvalidationContext'
@@ -23,6 +23,7 @@ export default function TestPlanDetailPage() {
   const { notify } = useNotification()
   const [showCycleForm, setShowCycleForm] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<TestCycle | null>(null)
+  const [editingCycle, setEditingCycle] = useState<TestCycle | null>(null)
   const [editingSummary, setEditingSummary] = useState(false)
   const [summaryDraft, setSummaryDraft] = useState('')
 
@@ -57,6 +58,38 @@ export default function TestPlanDetailPage() {
     } catch (e: unknown) {
       notify((e as Error).message, 'error')
     }
+  }
+
+  const openEditCycle = (cycle: TestCycle) => {
+    setEditingCycle(cycle)
+    setCycleName(cycle.name)
+    setBuildName(cycle.build_name)
+    setEnvironment(cycle.environment)
+  }
+
+  const handleEditCycle = async () => {
+    if (!editingCycle || !cycleName.trim() || !buildName.trim()) return
+    try {
+      const dto: UpdateTestCycleDTO = {
+        name: cycleName.trim(),
+        build_name: buildName.trim(),
+        environment: environment || null
+      }
+      await window.api.testCycles.update(editingCycle.id, dto)
+      invalidate('testCycles')
+      notify('Test cycle updated', 'success')
+      setCycleName(''); setBuildName(''); setEnvironment(null)
+      setEditingCycle(null)
+    } catch (e: unknown) {
+      notify((e as Error).message, 'error')
+    }
+  }
+
+  const cancelEdit = () => {
+    setEditingCycle(null)
+    setCycleName('')
+    setBuildName('')
+    setEnvironment(null)
   }
 
   useEffect(() => {
@@ -190,7 +223,13 @@ export default function TestPlanDetailPage() {
               <div className="cycle-row-actions">
                 <button
                   className="btn btn-ghost btn-sm"
+                  onClick={(e) => { e.stopPropagation(); openEditCycle(cycle) }}
+                  title="Edit cycle"
+                >✎</button>
+                <button
+                  className="btn btn-ghost btn-sm"
                   onClick={(e) => { e.stopPropagation(); setDeleteTarget(cycle) }}
+                  title="Delete cycle"
                 >×</button>
               </div>
             </div>
@@ -226,6 +265,40 @@ export default function TestPlanDetailPage() {
               <button className="btn btn-secondary" onClick={() => setShowCycleForm(false)}>Cancel</button>
               <button className="btn btn-primary" onClick={handleCreateCycle} disabled={!cycleName.trim() || !buildName.trim()}>
                 Create Cycle
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit cycle modal */}
+      {editingCycle && (
+        <div className="tcf-overlay" onClick={cancelEdit}>
+          <div className="tcf-modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="tcf-title">Edit Test Cycle</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
+              <div className="form-group">
+                <label className="tcf-label">Cycle Name</label>
+                <input className="input" value={cycleName} onChange={(e) => setCycleName(e.target.value)} placeholder="e.g., Cycle 1" autoFocus />
+              </div>
+              <div className="form-group">
+                <label className="tcf-label">Build Name</label>
+                <input className="input" value={buildName} onChange={(e) => setBuildName(e.target.value)} placeholder="e.g., Build 1.0.1" />
+              </div>
+              <div className="form-group">
+                <label className="tcf-label">Environment</label>
+                <select className="input" value={environment || ''} onChange={(e) => setEnvironment(e.target.value || null)}>
+                  <option value="">-- Select Environment --</option>
+                  <option value={TestCycleEnvironment.DEV_CHEAT}>{TestCycleEnvironment.DEV_CHEAT}</option>
+                  <option value={TestCycleEnvironment.PROD_CHEAT}>{TestCycleEnvironment.PROD_CHEAT}</option>
+                  <option value={TestCycleEnvironment.PROD_NON_CHEAT}>{TestCycleEnvironment.PROD_NON_CHEAT}</option>
+                </select>
+              </div>
+            </div>
+            <div className="tcf-footer">
+              <button className="btn btn-secondary" onClick={cancelEdit}>Cancel</button>
+              <button className="btn btn-primary" onClick={handleEditCycle} disabled={!cycleName.trim() || !buildName.trim()}>
+                Save Changes
               </button>
             </div>
           </div>
