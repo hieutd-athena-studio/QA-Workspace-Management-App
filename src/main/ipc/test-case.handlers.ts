@@ -161,7 +161,7 @@ export function registerTestCaseHandlers(): void {
       const headerFields = parseCSVLine(lines[0]).map(h => h.trim().toLowerCase())
       const colIdx = {
         category: headerFields.indexOf('category'),
-        subcategory: headerFields.indexOf('subcategory'),
+        subcategory: Math.max(headerFields.indexOf('subcategory'), headerFields.indexOf('sub-category')),
         title: headerFields.indexOf('title'),
         description: headerFields.indexOf('description'),
         steps: headerFields.indexOf('steps'),
