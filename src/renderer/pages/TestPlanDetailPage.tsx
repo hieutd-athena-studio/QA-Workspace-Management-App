@@ -8,6 +8,14 @@ import { useNotification } from '../contexts/NotificationContext'
 import ConfirmDialog from '../components/shared/ConfirmDialog'
 import './TestPlanDetailPage.css'
 
+const getEnvironmentClass = (env: string | null) => {
+  if (!env) return ''
+  if (env === TestCycleEnvironment.DEV_CHEAT) return 'env-dev-cheat'
+  if (env === TestCycleEnvironment.PROD_CHEAT) return 'env-prod-cheat'
+  if (env === TestCycleEnvironment.PROD_NON_CHEAT) return 'env-prod-non-cheat'
+  return ''
+}
+
 export default function TestPlanDetailPage() {
   const { planId } = useParams<{ planId: string }>()
   const navigate = useNavigate()
@@ -177,7 +185,7 @@ export default function TestPlanDetailPage() {
                 <span className="cycle-row-index">{i + 1}</span>
                 <span className="cycle-row-name">{cycle.name}</span>
                 <span className="cycle-build-badge">{cycle.build_name}</span>
-                {cycle.environment && <span className="cycle-env-badge">{cycle.environment}</span>}
+                {cycle.environment && <span className={`cycle-env-badge ${getEnvironmentClass(cycle.environment)}`}>{cycle.environment}</span>}
               </div>
               <div className="cycle-row-actions">
                 <button

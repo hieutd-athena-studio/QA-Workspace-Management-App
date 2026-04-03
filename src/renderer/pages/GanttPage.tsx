@@ -1,9 +1,18 @@
 import React, { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { TestPlan, TestCycle } from '@shared/types'
+import { TestCycleEnvironment } from '@shared/types'
 import { useApi } from '../hooks/useApi'
 import { useProject } from '../contexts/ProjectContext'
 import './GanttPage.css'
+
+const getEnvironmentClass = (env: string | null) => {
+  if (!env) return ''
+  if (env === TestCycleEnvironment.DEV_CHEAT) return 'env-dev-cheat'
+  if (env === TestCycleEnvironment.PROD_CHEAT) return 'env-prod-cheat'
+  if (env === TestCycleEnvironment.PROD_NON_CHEAT) return 'env-prod-non-cheat'
+  return ''
+}
 
 interface PlanWithCycles extends TestPlan {
   cycles: (TestCycle & { effective_start: string; effective_end: string })[]
@@ -133,7 +142,7 @@ export default function GanttPage() {
                       <span className="gantt-label-name">{cycle.name}</span>
                       <span className="gantt-label-sub">
                         {cycle.build_name}
-                        {cycle.environment && <span className="gantt-env-tag">{cycle.environment}</span>}
+                        {cycle.environment && <span className={`gantt-env-tag ${getEnvironmentClass(cycle.environment)}`}>{cycle.environment}</span>}
                       </span>
                     </div>
                     <div className="gantt-bar-container">

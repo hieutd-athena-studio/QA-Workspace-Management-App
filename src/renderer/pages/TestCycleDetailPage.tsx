@@ -1,11 +1,20 @@
 import React, { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import type { TestPlan, TestCycle, TestCaseAssignment } from '@shared/types'
+import { TestCycleEnvironment } from '@shared/types'
 import { useApi } from '../hooks/useApi'
 import { useInvalidation } from '../contexts/InvalidationContext'
 import { useNotification } from '../contexts/NotificationContext'
 import AssignmentPicker from '../components/execution/AssignmentPicker'
 import './TestCycleDetailPage.css'
+
+const getEnvironmentClass = (env: string | null) => {
+  if (!env) return ''
+  if (env === TestCycleEnvironment.DEV_CHEAT) return 'env-dev-cheat'
+  if (env === TestCycleEnvironment.PROD_CHEAT) return 'env-prod-cheat'
+  if (env === TestCycleEnvironment.PROD_NON_CHEAT) return 'env-prod-non-cheat'
+  return ''
+}
 
 function StatusBadge({ status }: { status: string }) {
   const cls = status === 'Pass' ? 'status-pass'
@@ -109,7 +118,7 @@ export default function TestCycleDetailPage() {
           <div className="plan-detail-hero-title">
             <h1>{cycle.name}</h1>
             <span className="cycle-build-badge">{cycle.build_name}</span>
-            {cycle.environment && <span className="cycle-env-badge">{cycle.environment}</span>}
+            {cycle.environment && <span className={`cycle-env-badge ${getEnvironmentClass(cycle.environment)}`}>{cycle.environment}</span>}
           </div>
           <div style={{ fontSize: '0.8125rem', color: 'var(--on-surface-variant)' }}>
             Part of <strong>{plan.name}</strong> {plan.version}

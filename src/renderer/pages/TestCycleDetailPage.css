@@ -148,6 +148,32 @@
   opacity: 0.85;
 }
 
+/* Environment badge colors */
+.cycle-env-badge {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--surface-container-high);
+  color: var(--on-surface-variant);
+}
+
+.cycle-env-badge.env-dev-cheat {
+  background: rgba(0, 90, 194, 0.12);
+  color: #005ac2;
+}
+
+.cycle-env-badge.env-prod-cheat {
+  background: rgba(234, 88, 12, 0.12);
+  color: #ea580c;
+}
+
+.cycle-env-badge.env-prod-non-cheat {
+  background: rgba(234, 179, 8, 0.12);
+  color: #d97706;
+}
+
 /* Grouped category/subcategory accordion */
 .grouped-assignments {
   display: flex;
