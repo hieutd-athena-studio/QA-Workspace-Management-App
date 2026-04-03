@@ -63,7 +63,8 @@ src/
 │   │   │   ├── 002-add-projects.ts
 │   │   │   ├── 003-add-test-case-version.ts
 │   │   │   ├── 004-restructure-categories.ts
-│   │   │   └── 005-add-plan-summary.ts
+│   │   │   ├── 005-add-plan-summary.ts
+│   │   │   └── 006-add-environment-to-test-cycles.ts
 │   │   └── repositories/
 │   │       ├── project.repo.ts  # One repo per entity
 │   │       ├── category.repo.ts
@@ -357,9 +358,11 @@ The app uses a strict 2-level category structure (replaces unlimited-depth folde
 **Database Schema:**
 - `category` — Main category container (id, name, project_id)
 - `subcategory` — Test case container (id, name, category_id, project_id)
-- `test_case` — Now references `subcategory_id` instead of `folder_id`
+- `test_case` — References `subcategory_id`; stores steps as JSON
+- `test_cycle` — Includes `environment` column (TEXT, nullable) added in migration 006
 
-**Migration 004** (`src/main/database/migrations/004-restructure-categories.ts`) dropped the old recursive `folder` table and created the two-level schema. Safe for re-runs with `tableExists` guard.
+**Migration 004** dropped the old recursive `folder` table and created the two-level schema.
+**Migration 006** adds `environment` to `test_cycle`. Both are idempotent (`PRAGMA table_info` guard).
 
 ### Repository Layer (src/main/database/repositories/)
 
@@ -486,7 +489,50 @@ if (result.error) notify(result.error, "error");
 - **Lazy load:** Pages load on route, not upfront
 - **Tree-shake:** Export only what's used; remove unused re-exports
 
-## 14. Design System
+## 14. Test Cycle Features
+
+### Environment Field
+Test cycles have an `environment` field with three predefined values, exported as an enum from `src/shared/types/test-cycle.ts`:
+
+```typescript
+export enum TestCycleEnvironment {
+  DEV_CHEAT     = 'DEV CHEAT',
+  PROD_CHEAT    = 'PROD CHEAT',
+  PROD_NON_CHEAT = 'PROD NON-CHEAT',
+}
+```
+
+**Color coding** (applied via `getEnvironmentClass()` helper in each page):
+- `env-dev-cheat` — Blue (`#005ac2`)
+- `env-prod-cheat` — Orange (`#ea580c`)
+- `env-prod-non-cheat` — Yellow/amber (`#d97706`)
+
+Environment badge class: `cycle-env-badge` + modifier. Defined in `TestPlanDetailPage.css` and `TestCycleDetailPage.css`.
+
+### Editing Test Cycles
+Cycles are editable in two places:
+1. **TestPlanDetailPage** — ✎ button on each cycle row opens an edit modal (name, build_name, environment)
+2. **TestCycleDetailPage** — ✎ Edit button in the hero section toggles an inline edit form
+
+### Test Case Grouped View (TestCycleDetailPage)
+Assignments are displayed in a two-level collapsible accordion instead of a flat table:
+- **Top level:** Category (collapsible)
+- **Second level:** Subcategory (collapsible)
+- **Rows:** Individual test cases with status badges
+
+State: `collapsedCategories: Set<string>` and `collapsedSubcategories: Set<string>` (keys are `catName` and `catName::subName`).
+
+### CSV Import Rules
+Import via **Test Library → Import CSV**. The parser accepts:
+- `Subcategory` or `Sub-category` (with hyphen) — both valid
+- `Expected Result` or `expected_result` — both valid
+- Steps separated by `;` (semicolon) **or** `|` (pipe) — both valid
+- Leading step numbers like `1.` or `1)` are stripped automatically
+
+Required columns: `Category`, `Subcategory` (or `Sub-category`), `Title`
+Optional: `Description`, `Steps`, `Expected Result`, `Version`
+
+## 15. Design System
 
 All UI colors, typography, spacing, and component patterns are documented in **DESIGN.md**.
 
@@ -500,7 +546,7 @@ All UI colors, typography, spacing, and component patterns are documented in **D
 
 Refer to DESIGN.md for complete component specifications, color palette, shadow rules, and class naming conventions.
 
-## 15. Key Files to Know
+## 16. Key Files to Know
 
 | File                        | Purpose                                                 |
 | --------------------------- | ------------------------------------------------------- |
@@ -513,7 +559,7 @@ Refer to DESIGN.md for complete component specifications, color palette, shadow 
 | `tsconfig.json`             | TypeScript config (strict mode)                         |
 | `DESIGN.md`                 | Complete design system (colors, typography, components) |
 
-## 16. Troubleshooting
+## 17. Troubleshooting
 
 ### IPC Method Not Found
 
