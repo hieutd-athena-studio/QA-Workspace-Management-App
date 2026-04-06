@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import type { TestPlan, TestCycle, TestCaseAssignment, UpdateTestCycleDTO } from '@shared/types'
+import type { TestPlan, TestCycle, TestCaseAssignment, UpdateTestCycleDTO, ExecutionStatus } from '@shared/types'
 import { TestCycleEnvironment } from '@shared/types'
 import { useApi } from '../hooks/useApi'
 import { useInvalidation } from '../contexts/InvalidationContext'
@@ -16,12 +16,18 @@ const getEnvironmentClass = (env: string | null) => {
   return ''
 }
 
-function StatusBadge({ status }: { status: string }) {
+const STATUSES: ExecutionStatus[] = ['Pass', 'Fail', 'Blocked', 'Unexecuted']
+
+function StatusBadge({ status, onClick }: { status: string; onClick?: () => void }) {
   const cls = status === 'Pass' ? 'status-pass'
     : status === 'Fail' ? 'status-fail'
     : status === 'Blocked' ? 'status-blocked'
     : 'status-unexecuted'
-  return <span className={`status-badge ${cls}`}>{status}</span>
+  return (
+    <span className={`status-badge ${cls}${onClick ? ' status-badge-clickable' : ''}`} onClick={onClick}>
+      {status}
+    </span>
+  )
 }
 
 export default function TestCycleDetailPage() {
@@ -29,30 +35,37 @@ export default function TestCycleDetailPage() {
   const navigate = useNavigate()
   const { invalidate } = useInvalidation()
   const { notify } = useNotification()
+
+  // Hero edit state
   const [showPicker, setShowPicker] = useState(false)
-  const [selectedForRemoval, setSelectedForRemoval] = useState<Set<number>>(new Set())
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set())
-  const [collapsedSubcategories, setCollapsedSubcategories] = useState<Set<string>>(new Set())
   const [isEditing, setIsEditing] = useState(false)
   const [editName, setEditName] = useState('')
   const [editBuild, setEditBuild] = useState('')
   const [editEnv, setEditEnv] = useState<string | null>(null)
 
-  const toggleCategory = (cat: string) => {
-    setCollapsedCategories(prev => {
-      const next = new Set(prev)
-      if (next.has(cat)) next.delete(cat); else next.add(cat)
-      return next
-    })
-  }
+  // Unassign mode — checkboxes hidden until activated
+  const [showUnassignMode, setShowUnassignMode] = useState(false)
+  const [selectedForRemoval, setSelectedForRemoval] = useState<Set<number>>(new Set())
 
-  const toggleSubcategory = (key: string) => {
-    setCollapsedSubcategories(prev => {
-      const next = new Set(prev)
-      if (next.has(key)) next.delete(key); else next.add(key)
-      return next
-    })
-  }
+  // Accordion — default collapsed (empty = nothing expanded)
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
+  const [expandedSubcategories, setExpandedSubcategories] = useState<Set<string>>(new Set())
+
+  // Inline status editing
+  const [editingStatusId, setEditingStatusId] = useState<number | null>(null)
+
+  // Arrange drag-and-drop
+  const [showArrange, setShowArrange] = useState(false)
+  const [categoryOrder, setCategoryOrder] = useState<string[]>([])
+  const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null)
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`cycle-cat-order-${cycleId}`)
+    if (saved) {
+      try { setCategoryOrder(JSON.parse(saved)) } catch { /* ignore */ }
+    }
+  }, [cycleId])
 
   const { data: plan } = useApi<TestPlan>(() => window.api.testPlans.getById(Number(planId)), [planId], 'testPlans')
   const { data: cycle } = useApi<TestCycle>(() => window.api.testCycles.getById(Number(cycleId)), [cycleId], 'testCycles')
@@ -66,19 +79,50 @@ export default function TestCycleDetailPage() {
   const executed = total - unexecuted
   const coverage = total > 0 ? Math.round((executed / total) * 100) : 0
 
-  const toggleRemoval = (id: number) => {
-    const next = new Set(selectedForRemoval)
-    if (next.has(id)) next.delete(id); else next.add(id)
-    setSelectedForRemoval(next)
-  }
+  // Build grouped map
+  const grouped = new Map<string, Map<string, TestCaseAssignment[]>>()
+  assignments?.forEach(a => {
+    const cat = a.category_name ?? ''
+    const sub = a.subcategory_name ?? ''
+    if (!grouped.has(cat)) grouped.set(cat, new Map())
+    const catMap = grouped.get(cat)!
+    if (!catMap.has(sub)) catMap.set(sub, [])
+    catMap.get(sub)!.push(a)
+  })
 
-  const toggleAllRemoval = () => {
-    if (!assignments) return
-    if (selectedForRemoval.size === assignments.length) {
-      setSelectedForRemoval(new Set())
-    } else {
-      setSelectedForRemoval(new Set(assignments.map(a => a.id)))
-    }
+  // Apply user-defined category ordering, appending any new categories at the end
+  const allCats = Array.from(grouped.keys())
+  const orderedCategories = [
+    ...categoryOrder.filter(c => allCats.includes(c)),
+    ...allCats.filter(c => !categoryOrder.includes(c))
+  ]
+
+  // Accordion toggles
+  const toggleCategory = (cat: string) =>
+    setExpandedCategories(prev => {
+      const next = new Set(prev)
+      next.has(cat) ? next.delete(cat) : next.add(cat)
+      return next
+    })
+
+  const toggleSubcategory = (key: string) =>
+    setExpandedSubcategories(prev => {
+      const next = new Set(prev)
+      next.has(key) ? next.delete(key) : next.add(key)
+      return next
+    })
+
+  // Unassign
+  const toggleRemoval = (id: number) =>
+    setSelectedForRemoval(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+
+  const toggleUnassignMode = () => {
+    setShowUnassignMode(v => !v)
+    setSelectedForRemoval(new Set())
   }
 
   const handleBatchUnassign = async () => {
@@ -88,11 +132,13 @@ export default function TestCycleDetailPage() {
       invalidate('assignments')
       notify(`${selectedForRemoval.size} test case(s) unassigned`, 'success')
       setSelectedForRemoval(new Set())
+      setShowUnassignMode(false)
     } catch (e: unknown) {
       notify((e as Error).message, 'error')
     }
   }
 
+  // Assign
   const handleAssign = async (testCaseIds: number[]) => {
     try {
       await window.api.assignments.assign(Number(cycleId), testCaseIds)
@@ -104,23 +150,15 @@ export default function TestCycleDetailPage() {
     }
   }
 
+  // Hero edit
   const startEdit = () => {
-    if (cycle) {
-      setEditName(cycle.name)
-      setEditBuild(cycle.build_name)
-      setEditEnv(cycle.environment)
-      setIsEditing(true)
-    }
+    if (cycle) { setEditName(cycle.name); setEditBuild(cycle.build_name); setEditEnv(cycle.environment); setIsEditing(true) }
   }
 
   const handleSaveEdit = async () => {
     if (!editName.trim() || !editBuild.trim()) return
     try {
-      const dto: UpdateTestCycleDTO = {
-        name: editName.trim(),
-        build_name: editBuild.trim(),
-        environment: editEnv || null
-      }
+      const dto: UpdateTestCycleDTO = { name: editName.trim(), build_name: editBuild.trim(), environment: editEnv || null }
       await window.api.testCycles.update(Number(cycleId), dto)
       invalidate('testCycles')
       notify('Test cycle updated', 'success')
@@ -130,11 +168,34 @@ export default function TestCycleDetailPage() {
     }
   }
 
-  const cancelEdit = () => {
-    setIsEditing(false)
-    setEditName('')
-    setEditBuild('')
-    setEditEnv(null)
+  // Inline status edit
+  const handleStatusChange = async (assignmentId: number, newStatus: ExecutionStatus) => {
+    try {
+      await window.api.assignments.updateStatus(assignmentId, { status: newStatus })
+      invalidate('assignments')
+      setEditingStatusId(null)
+    } catch (e: unknown) {
+      notify((e as Error).message, 'error')
+    }
+  }
+
+  // Arrange drag-and-drop
+  const handleDragStart = (idx: number) => setDragIndex(idx)
+  const handleDragOver = (e: React.DragEvent, idx: number) => { e.preventDefault(); setDragOverIdx(idx) }
+  const handleDrop = (targetIdx: number) => {
+    if (dragIndex === null || dragIndex === targetIdx) { setDragIndex(null); setDragOverIdx(null); return }
+    const next = [...orderedCategories]
+    const [removed] = next.splice(dragIndex, 1)
+    next.splice(targetIdx, 0, removed)
+    setCategoryOrder(next)
+    setDragIndex(null)
+    setDragOverIdx(null)
+  }
+
+  const saveArrange = () => {
+    localStorage.setItem(`cycle-cat-order-${cycleId}`, JSON.stringify(categoryOrder))
+    setShowArrange(false)
+    notify('Category order saved', 'success')
   }
 
   if (!plan || !cycle) return <div className="text-muted body-sm" style={{ padding: 'var(--sp-8)' }}>Loading…</div>
@@ -149,7 +210,7 @@ export default function TestCycleDetailPage() {
         <span>{cycle.name}</span>
       </div>
 
-      {/* Plan detail hero reused */}
+      {/* Hero */}
       <div className="plan-detail-hero" style={{ marginBottom: 0 }}>
         {!isEditing ? (
           <>
@@ -166,16 +227,8 @@ export default function TestCycleDetailPage() {
             <div className="plan-detail-hero-actions">
               <button className="btn btn-secondary" onClick={startEdit}>✎ Edit</button>
               <button className="btn btn-secondary" onClick={() => setShowPicker(true)}>Assign Cases</button>
-              <button
-                className="btn btn-primary"
-                onClick={() => navigate(`/plans/${planId}/cycles/${cycleId}/execute`)}
-                disabled={total === 0}
-              >▶ Execute</button>
-              <button
-                className="btn btn-secondary"
-                onClick={() => navigate(`/reports?cycleId=${cycleId}`)}
-                disabled={total === 0}
-              >Report</button>
+              <button className="btn btn-primary" onClick={() => navigate(`/plans/${planId}/cycles/${cycleId}/execute`)} disabled={total === 0}>▶ Execute</button>
+              <button className="btn btn-secondary" onClick={() => navigate(`/reports?cycleId=${cycleId}`)} disabled={total === 0}>Report</button>
             </div>
           </>
         ) : (
@@ -202,49 +255,32 @@ export default function TestCycleDetailPage() {
               </div>
             </div>
             <div className="plan-detail-hero-actions">
-              <button className="btn btn-secondary" onClick={cancelEdit}>Cancel</button>
+              <button className="btn btn-secondary" onClick={() => setIsEditing(false)}>Cancel</button>
               <button className="btn btn-primary" onClick={handleSaveEdit} disabled={!editName.trim() || !editBuild.trim()}>Save</button>
             </div>
           </>
         )}
       </div>
 
-      {/* Stats cards */}
+      {/* Stats */}
       {total > 0 && (
         <>
           <div className="cycle-stats-row">
-            <div className="cycle-stat-card stat-pass">
-              <span className="cycle-stat-value">{passed}</span>
-              <span className="cycle-stat-label">Passed</span>
-            </div>
-            <div className="cycle-stat-card stat-fail">
-              <span className="cycle-stat-value">{failed}</span>
-              <span className="cycle-stat-label">Failed</span>
-            </div>
-            <div className="cycle-stat-card stat-blocked">
-              <span className="cycle-stat-value">{blocked}</span>
-              <span className="cycle-stat-label">Blocked</span>
-            </div>
-            <div className="cycle-stat-card stat-unexecuted">
-              <span className="cycle-stat-value">{unexecuted}</span>
-              <span className="cycle-stat-label">Pending</span>
-            </div>
+            <div className="cycle-stat-card stat-pass"><span className="cycle-stat-value">{passed}</span><span className="cycle-stat-label">Passed</span></div>
+            <div className="cycle-stat-card stat-fail"><span className="cycle-stat-value">{failed}</span><span className="cycle-stat-label">Failed</span></div>
+            <div className="cycle-stat-card stat-blocked"><span className="cycle-stat-value">{blocked}</span><span className="cycle-stat-label">Blocked</span></div>
+            <div className="cycle-stat-card stat-unexecuted"><span className="cycle-stat-value">{unexecuted}</span><span className="cycle-stat-label">Pending</span></div>
           </div>
-
           <div className="cycle-coverage-bar">
             <span className="cycle-coverage-label">Coverage</span>
-            <div className="coverage-track">
-              <div className="coverage-fill" style={{ width: `${coverage}%` }} />
-            </div>
+            <div className="coverage-track"><div className="coverage-fill" style={{ width: `${coverage}%` }} /></div>
             <span className="cycle-coverage-pct">{coverage}%</span>
-            <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)' }}>
-              {executed} of {total} executed
-            </span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-variant)' }}>{executed} of {total} executed</span>
           </div>
         </>
       )}
 
-      {/* Assignments */}
+      {/* Test Cases */}
       <div className="cycle-table-section">
         {total > 0 && (
           <div className="cycle-table-header">
@@ -253,12 +289,22 @@ export default function TestCycleDetailPage() {
               <span className="section-count">{total}</span>
             </span>
             <div className="cycle-table-actions">
-              {selectedForRemoval.size > 0 && (
-                <button className="btn btn-danger btn-sm" onClick={handleBatchUnassign}>
-                  Unassign ({selectedForRemoval.size})
-                </button>
+              {showUnassignMode ? (
+                <>
+                  {selectedForRemoval.size > 0 && (
+                    <button className="btn btn-danger btn-sm" onClick={handleBatchUnassign}>
+                      Confirm Unassign ({selectedForRemoval.size})
+                    </button>
+                  )}
+                  <button className="btn btn-secondary btn-sm" onClick={toggleUnassignMode}>Cancel</button>
+                </>
+              ) : (
+                <>
+                  <button className="btn btn-secondary btn-sm" onClick={() => setShowArrange(true)}>⇅ Arrange</button>
+                  <button className="btn btn-secondary btn-sm" onClick={toggleUnassignMode}>Unassign</button>
+                  <button className="btn btn-secondary btn-sm" onClick={() => setShowPicker(true)}>+ Assign Cases</button>
+                </>
               )}
-              <button className="btn btn-secondary btn-sm" onClick={() => setShowPicker(true)}>+ Assign Cases</button>
             </div>
           </div>
         )}
@@ -272,85 +318,100 @@ export default function TestCycleDetailPage() {
           </div>
         ) : (
           <div className="grouped-assignments">
-            {(() => {
-              const grouped = new Map<string, Map<string, typeof assignments>>()
-              assignments!.forEach(a => {
-                if (!grouped.has(a.category_name)) grouped.set(a.category_name, new Map())
-                const catMap = grouped.get(a.category_name)!
-                if (!catMap.has(a.subcategory_name)) catMap.set(a.subcategory_name, [])
-                catMap.get(a.subcategory_name)!.push(a)
-              })
+            {orderedCategories.map(catName => {
+              const subcatMap = grouped.get(catName)!
+              const isCatExpanded = expandedCategories.has(catName)
+              const catTotal = Array.from(subcatMap.values()).reduce((sum, items) => sum + items.length, 0)
 
-              return Array.from(grouped.entries()).map(([catName, subcatMap]) => {
-                const isCatCollapsed = collapsedCategories.has(catName)
-                const catTotal = Array.from(subcatMap.values()).reduce((acc, items) => acc + items!.length, 0)
+              return (
+                <div key={catName} className="grouped-category">
+                  <div className="grouped-category-header" onClick={() => toggleCategory(catName)}>
+                    <span className="grouped-toggle">{isCatExpanded ? '▼' : '▶'}</span>
+                    <span className="grouped-category-name">{catName}</span>
+                    <span className="section-count">{catTotal}</span>
+                  </div>
 
-                return (
-                  <div key={catName} className="grouped-category">
-                    <div className="grouped-category-header" onClick={() => toggleCategory(catName)}>
-                      <span className="grouped-toggle">{isCatCollapsed ? '▶' : '▼'}</span>
-                      <span className="grouped-category-name">{catName}</span>
-                      <span className="section-count">{catTotal}</span>
-                    </div>
+                  {isCatExpanded && Array.from(subcatMap.entries()).map(([subcatName, cases]) => {
+                    const subKey = `${catName}::${subcatName}`
+                    const isSubExpanded = expandedSubcategories.has(subKey)
 
-                    {!isCatCollapsed && Array.from(subcatMap.entries()).map(([subcatName, cases]) => {
-                      const subKey = `${catName}::${subcatName}`
-                      const isSubCollapsed = collapsedSubcategories.has(subKey)
+                    return (
+                      <div key={subcatName} className="grouped-subcategory">
+                        <div className="grouped-subcategory-header" onClick={() => toggleSubcategory(subKey)}>
+                          <span className="grouped-toggle">{isSubExpanded ? '▼' : '▶'}</span>
+                          <span className="grouped-subcategory-name">{subcatName}</span>
+                          <span className="section-count">{cases.length}</span>
+                        </div>
 
-                      return (
-                        <div key={subcatName} className="grouped-subcategory">
-                          <div className="grouped-subcategory-header" onClick={() => toggleSubcategory(subKey)}>
-                            <span className="grouped-toggle">{isSubCollapsed ? '▶' : '▼'}</span>
-                            <span className="grouped-subcategory-name">{subcatName}</span>
-                            <span className="section-count">{cases!.length}</span>
-                          </div>
-
-                          {!isSubCollapsed && (
-                            <table className="data-table grouped-cases-table">
-                              <thead>
-                                <tr>
-                                  <th className="col-checkbox">
+                        {isSubExpanded && (
+                          <table className="data-table grouped-cases-table">
+                            <colgroup>
+                              {showUnassignMode && <col className="col-check" />}
+                              <col className="col-title" />
+                              <col className="col-status" />
+                              <col className="col-bugref" />
+                            </colgroup>
+                            <thead>
+                              <tr>
+                                {showUnassignMode && (
+                                  <th>
                                     <input
                                       type="checkbox"
-                                      checked={cases!.every(a => selectedForRemoval.has(a.id))}
+                                      checked={cases.every(a => selectedForRemoval.has(a.id))}
                                       onChange={() => {
                                         const next = new Set(selectedForRemoval)
-                                        const allSelected = cases!.every(a => next.has(a.id))
-                                        cases!.forEach(a => allSelected ? next.delete(a.id) : next.add(a.id))
+                                        const allSelected = cases.every(a => next.has(a.id))
+                                        cases.forEach(a => allSelected ? next.delete(a.id) : next.add(a.id))
                                         setSelectedForRemoval(next)
                                       }}
                                     />
                                   </th>
-                                  <th>Test Case</th>
-                                  <th>Status</th>
-                                  <th>Bug Ref</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {cases!.map((a) => (
-                                  <tr key={a.id} className={selectedForRemoval.has(a.id) ? 'row-selected' : ''}>
-                                    <td className="col-checkbox">
+                                )}
+                                <th>Test Case</th>
+                                <th>Status</th>
+                                <th>Bug Ref</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {cases.map(a => (
+                                <tr key={a.id} className={selectedForRemoval.has(a.id) ? 'row-selected' : ''}>
+                                  {showUnassignMode && (
+                                    <td>
                                       <input
                                         type="checkbox"
                                         checked={selectedForRemoval.has(a.id)}
                                         onChange={() => toggleRemoval(a.id)}
                                       />
                                     </td>
-                                    <td>{a.test_case_title}</td>
-                                    <td><StatusBadge status={a.status} /></td>
-                                    <td className="mono">{a.bug_ref || '—'}</td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )
-              })
-            })()}
+                                  )}
+                                  <td>{a.test_case_title}</td>
+                                  <td>
+                                    {editingStatusId === a.id ? (
+                                      <select
+                                        className="status-inline-select"
+                                        autoFocus
+                                        value={a.status}
+                                        onChange={(e) => handleStatusChange(a.id, e.target.value as ExecutionStatus)}
+                                        onBlur={() => setEditingStatusId(null)}
+                                      >
+                                        {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                                      </select>
+                                    ) : (
+                                      <StatusBadge status={a.status} onClick={() => setEditingStatusId(a.id)} />
+                                    )}
+                                  </td>
+                                  <td className="mono">{a.bug_ref || '—'}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            })}
           </div>
         )}
       </div>
@@ -362,6 +423,37 @@ export default function TestCycleDetailPage() {
           onAssign={handleAssign}
           onClose={() => setShowPicker(false)}
         />
+      )}
+
+      {/* Arrange modal */}
+      {showArrange && (
+        <div className="tcf-overlay" onClick={() => setShowArrange(false)}>
+          <div className="tcf-modal arrange-modal" onClick={e => e.stopPropagation()}>
+            <h2 className="tcf-title">Arrange Categories</h2>
+            <p className="arrange-hint">Drag to set execution order</p>
+            <div className="arrange-list">
+              {orderedCategories.map((cat, idx) => (
+                <div
+                  key={cat}
+                  className={`arrange-item${dragOverIdx === idx ? ' arrange-drag-over' : ''}`}
+                  draggable
+                  onDragStart={() => handleDragStart(idx)}
+                  onDragOver={(e) => handleDragOver(e, idx)}
+                  onDrop={() => handleDrop(idx)}
+                  onDragEnd={() => { setDragIndex(null); setDragOverIdx(null) }}
+                >
+                  <span className="arrange-handle">⠿</span>
+                  <span className="arrange-cat-name">{cat}</span>
+                  <span className="section-count">{grouped.get(cat)?.size ?? 0} sub</span>
+                </div>
+              ))}
+            </div>
+            <div className="tcf-footer">
+              <button className="btn btn-secondary" onClick={() => setShowArrange(false)}>Cancel</button>
+              <button className="btn btn-primary" onClick={saveArrange}>Save Order</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

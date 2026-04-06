@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import type { TestPlan, TestCycle, TestCaseAssignment, ExecutionStatus } from '@shared/types'
 import { parseSteps } from '@shared/utils/steps'
@@ -14,6 +14,7 @@ export default function ExecutionPage() {
   const { notify } = useNotification()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [bugRef, setBugRef] = useState('')
+  const hasInitialized = useRef(false)
 
   const { data: plan } = useApi<TestPlan>(() => window.api.testPlans.getById(Number(planId)), [planId])
   const { data: cycle } = useApi<TestCycle>(() => window.api.testCycles.getById(Number(cycleId)), [cycleId])
@@ -23,6 +24,14 @@ export default function ExecutionPage() {
 
   const current = assignments?.[currentIndex]
   const steps = current?.test_case_steps ? parseSteps(current.test_case_steps) : []
+
+  // On first load, jump to the first unexecuted test case
+  useEffect(() => {
+    if (!assignments || hasInitialized.current) return
+    hasInitialized.current = true
+    const firstUnexecuted = assignments.findIndex(a => a.status === 'Unexecuted')
+    if (firstUnexecuted !== -1) setCurrentIndex(firstUnexecuted)
+  }, [assignments])
 
   useEffect(() => {
     if (current) setBugRef(current.bug_ref || '')
