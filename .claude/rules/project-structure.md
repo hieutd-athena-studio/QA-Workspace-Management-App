@@ -147,5 +147,15 @@ State: `collapsedCategories: Set<string>`, `collapsedSubcategories: Set<string>`
 - Accepts `Expected Result` or `expected_result`
 - Steps separated by `;` or `|` — both valid
 - Leading step numbers (`1.`, `1)`) stripped automatically
+- Per-step expected results use `->` inline: `action -> expected result`
 - Required: `Category`, `Subcategory`, `Title`
 - Optional: `Description`, `Steps`, `Expected Result`, `Version`
+
+**Steps column example:**
+```
+Enter username -> Field accepts input | Click submit -> Dashboard loads
+```
+
+**Two distinct expected result fields:**
+- `Steps` column: `action -> expected` → maps to `TestStep.expected` (per-step)
+- `Expected Result` column → maps to `TestCase.expected_result` (overall summary)
