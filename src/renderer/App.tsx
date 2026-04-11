@@ -9,6 +9,7 @@ import TestCycleDetailPage from './pages/TestCycleDetailPage'
 import ExecutionPage from './pages/ExecutionPage'
 import GanttPage from './pages/GanttPage'
 import ReportsPage from './pages/ReportsPage'
+import TestTypesPage from './pages/TestTypesPage'
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route index element={<Navigate to="/projects" replace />} />
         <Route path="projects" element={<ProjectsPage />} />
         <Route path="library" element={<TestLibraryPage />} />
+        <Route path="test-types" element={<TestTypesPage />} />
         <Route path="plans" element={<TestPlansPage />} />
         <Route path="plans/:planId" element={<TestPlanDetailPage />} />
         <Route path="plans/:planId/cycles/:cycleId" element={<TestCycleDetailPage />} />

@@ -59,5 +59,15 @@ export const IPC = {
     GET_DATA: 'reports:get-data',
     GET_MULTI_CYCLE_DATA: 'reports:get-multi-cycle-data',
     GET_BY_CYCLE: 'reports:get-by-cycle'
+  },
+  TEST_TYPES: {
+    GET_BY_PROJECT: 'test-types:get-by-project',
+    GET_BY_ID: 'test-types:get-by-id',
+    CREATE: 'test-types:create',
+    UPDATE: 'test-types:update',
+    DELETE: 'test-types:delete',
+    ADD_TEST_CASE: 'test-types:add-test-case',
+    REMOVE_TEST_CASE: 'test-types:remove-test-case',
+    GET_TEST_CASE_IDS: 'test-types:get-test-case-ids'
   }
 } as const

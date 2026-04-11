@@ -45,12 +45,20 @@ const IconReport = () => (
   </svg>
 )
 
+const IconTag = () => (
+  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2 2h5l6 6-5 5-6-6V2z"/>
+    <circle cx="5" cy="5" r="1" fill="currentColor" stroke="none"/>
+  </svg>
+)
+
 /* --- Nav Items Config --- */
 const workspaceNavItems = [
-  { to: '/library', Icon: IconList,      label: 'Test Library' },
-  { to: '/plans',   Icon: IconClipboard, label: 'Test Plans' },
-  { to: '/gantt',   Icon: IconGantt,     label: 'Gantt Chart' },
-  { to: '/reports', Icon: IconReport,    label: 'Reports' },
+  { to: '/library',    Icon: IconList,      label: 'Test Library' },
+  { to: '/test-types', Icon: IconTag,       label: 'Test Types' },
+  { to: '/plans',      Icon: IconClipboard, label: 'Test Plans' },
+  { to: '/gantt',      Icon: IconGantt,     label: 'Gantt Chart' },
+  { to: '/reports',    Icon: IconReport,    label: 'Reports' },
 ]
 
 export default function Sidebar() {

@@ -6,6 +6,7 @@ import { registerTestPlanHandlers } from './test-plan.handlers'
 import { registerTestCycleHandlers } from './test-cycle.handlers'
 import { registerAssignmentHandlers } from './assignment.handlers'
 import { registerReportHandlers } from './report.handlers'
+import { registerTestTypeHandlers } from './test-type.handlers'
 
 export function registerAllHandlers(): void {
   registerProjectHandlers()
@@ -16,4 +17,5 @@ export function registerAllHandlers(): void {
   registerTestCycleHandlers()
   registerAssignmentHandlers()
   registerReportHandlers()
+  registerTestTypeHandlers()
 }

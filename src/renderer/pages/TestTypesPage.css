@@ -1,0 +1,77 @@
+.tt-page {
+  padding: var(--sp-6) var(--sp-8);
+  max-width: 860px;
+}
+
+.tt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-2);
+}
+
+.tt-desc {
+  color: var(--on-surface-variant);
+  font-size: 0.875rem;
+  margin-bottom: var(--sp-6);
+}
+
+/* Empty state */
+.tt-empty {
+  text-align: center;
+  padding: var(--sp-12) var(--sp-8);
+  color: var(--on-surface-variant);
+}
+.tt-empty-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--on-surface);
+  margin-bottom: var(--sp-1);
+}
+.tt-empty-desc {
+  font-size: 0.875rem;
+  margin-bottom: var(--sp-4);
+}
+
+/* Cards */
+.tt-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.tt-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-default);
+  gap: var(--sp-4);
+}
+
+.tt-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+
+.tt-card-name {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--on-surface);
+}
+
+.tt-card-count {
+  font-size: 0.8125rem;
+  color: var(--on-surface-variant);
+}
+
+.tt-card-actions {
+  display: flex;
+  gap: var(--sp-2);
+  flex-shrink: 0;
+}
+

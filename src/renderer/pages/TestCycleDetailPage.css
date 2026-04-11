@@ -361,3 +361,44 @@
   line-height: 1.6;
   margin-bottom: var(--sp-1);
 }
+
+/* Test Type Picker */
+.tcf-hint {
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+  margin-bottom: var(--sp-4);
+}
+
+.tt-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.tt-picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-default);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s;
+}
+.tt-picker-item:hover {
+  background: var(--primary-container);
+  border-color: var(--primary);
+}
+
+.tt-picker-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--on-surface);
+}
+
+.tt-picker-count {
+  font-size: 0.8rem;
+  color: var(--on-surface-variant);
+}

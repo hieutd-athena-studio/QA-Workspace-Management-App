@@ -21,7 +21,7 @@ export default function TestLibraryPage() {
   const { notify } = useNotification()
 
   const handleCopyHeader = () => {
-    const headerText = 'Category,Sub-category,Title,Description,Steps,Expected Result'
+    const headerText = 'Category,Sub-category,Title,Description,Steps,Expected Result,Version'
     navigator.clipboard.writeText(headerText).then(() => {
       notify('Header row copied to clipboard', 'success')
     }).catch(() => {
@@ -156,7 +156,7 @@ export default function TestLibraryPage() {
               </p>
               <div className="csv-help-code-wrapper">
                 <div className="csv-help-code">
-                  Category,Sub-category,Title,Description,Steps,Expected Result
+                  Category,Sub-category,Title,Description,Steps,Expected Result,Version
                   <button className="csv-copy-icon-btn" onClick={handleCopyHeader} title="Copy header row">⧉</button>
                 </div>
               </div>
@@ -200,6 +200,11 @@ export default function TestLibraryPage() {
                     <td>No</td>
                     <td>Overall expected outcome of the test case (summary). Different from per-step results.</td>
                   </tr>
+                  <tr>
+                    <td className="mono">Version</td>
+                    <td>No</td>
+                    <td>Test case version string (e.g. <span className="mono">1.0</span>, <span className="mono">2.1</span>). Defaults to <span className="mono">1.0</span> if omitted.</td>
+                  </tr>
                 </tbody>
               </table>
 
@@ -214,9 +219,9 @@ export default function TestLibraryPage() {
 
               <p className="csv-help-section-label">Example</p>
               <div className="csv-help-code csv-help-code-example">
-Category,Sub-category,Title,Description,Steps,Expected Result
-{`Authentication,Login,Valid login,Verify login with correct credentials,"Enter username -> Field accepts input | Enter password -> Field accepts input | Click Login -> Dashboard loads",User is authenticated`}
-{`Authentication,Login,Invalid password,Verify error on wrong password,"Enter username -> Field accepts input | Enter wrong password -> Field accepts input | Click Login -> Error displayed",Proper error message shown`}
+Category,Sub-category,Title,Description,Steps,Expected Result,Version
+{`Authentication,Login,Valid login,Verify login with correct credentials,"Enter username -> Field accepts input | Enter password -> Field accepts input | Click Login -> Dashboard loads",User is authenticated,1.0`}
+{`Authentication,Login,Invalid password,Verify error on wrong password,"Enter username -> Field accepts input | Enter wrong password -> Field accepts input | Click Login -> Error displayed",Proper error message shown,1.0`}
               </div>
             </div>
           </div>

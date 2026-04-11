@@ -69,6 +69,16 @@ const api = {
     getMultiCycleData: async (cycleIds: number[]) => unwrap(await ipcRenderer.invoke(IPC.REPORTS.GET_MULTI_CYCLE_DATA, cycleIds)),
     getByCycle: async (cycleId: number) => unwrap(await ipcRenderer.invoke(IPC.REPORTS.GET_BY_CYCLE, cycleId)),
     generate: async (cycleId: number, format: 'pdf' | 'html') => unwrap(await ipcRenderer.invoke(IPC.REPORTS.GENERATE, cycleId, format))
+  },
+  testTypes: {
+    getByProject: async (projectId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_TYPES.GET_BY_PROJECT, projectId)),
+    getById: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_TYPES.GET_BY_ID, id)),
+    create: async (dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.TEST_TYPES.CREATE, dto)),
+    update: async (id: number, dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.TEST_TYPES.UPDATE, id, dto)),
+    delete: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_TYPES.DELETE, id)),
+    addTestCase: async (testTypeId: number, testCaseId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_TYPES.ADD_TEST_CASE, testTypeId, testCaseId)),
+    removeTestCase: async (testTypeId: number, testCaseId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_TYPES.REMOVE_TEST_CASE, testTypeId, testCaseId)),
+    getTestCaseIds: async (testTypeId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_TYPES.GET_TEST_CASE_IDS, testTypeId))
   }
 }
 
