@@ -21,7 +21,7 @@ export default function TestLibraryPage() {
   const { notify } = useNotification()
 
   const handleCopyHeader = () => {
-    const headerText = 'Category,Sub-category,Title,Description,Steps,Expected Result'
+    const headerText = 'Category,Sub-category,Title,Description,Steps,Expected Result,Version'
     navigator.clipboard.writeText(headerText).then(() => {
       notify('Header row copied to clipboard', 'success')
     }).catch(() => {
@@ -156,7 +156,7 @@ export default function TestLibraryPage() {
               </p>
               <div className="csv-help-code-wrapper">
                 <div className="csv-help-code">
-                  Category,Sub-category,Title,Description,Steps,Expected Result
+                  Category,Sub-category,Title,Description,Steps,Expected Result,Version
                   <button className="csv-copy-icon-btn" onClick={handleCopyHeader} title="Copy header row">⧉</button>
                 </div>
               </div>
@@ -193,18 +193,25 @@ export default function TestLibraryPage() {
                   <tr>
                     <td className="mono">Steps</td>
                     <td>No</td>
-                    <td>Test steps. Use semicolons or newlines to separate multiple steps.</td>
+                    <td>Test steps separated by semicolons or pipes. Add per-step expected results using <span className="mono">-&gt;</span> syntax: <span className="mono">action -&gt; expected result</span></td>
                   </tr>
                   <tr>
                     <td className="mono">Expected Result</td>
                     <td>No</td>
-                    <td>The expected outcome when the test passes.</td>
+                    <td>Overall expected outcome of the test case (summary). Different from per-step results.</td>
+                  </tr>
+                  <tr>
+                    <td className="mono">Version</td>
+                    <td>No</td>
+                    <td>Test case version string (e.g. <span className="mono">1.0</span>, <span className="mono">2.1</span>). Defaults to <span className="mono">1.0</span> if omitted.</td>
                   </tr>
                 </tbody>
               </table>
 
               <p className="csv-help-section-label">Notes</p>
               <ul className="csv-help-notes">
+                <li><strong>Per-step expected results:</strong> Use <span className="mono">action -&gt; expected result</span> format in the Steps column. Example: <span className="mono">Click submit -&gt; Form saves successfully</span>. Each step's expected result will be stored separately.</li>
+                <li><strong>Overall expected result:</strong> The <span className="mono">Expected Result</span> column is for the test case summary—what the user expects at the end of all steps.</li>
                 <li>Fields containing commas or newlines must be wrapped in double quotes.</li>
                 <li>To include a literal double quote inside a field, escape it as <span className="mono">""</span>.</li>
                 <li>Existing categories and subcategories are matched by name — no duplicates are created.</li>
@@ -212,9 +219,9 @@ export default function TestLibraryPage() {
 
               <p className="csv-help-section-label">Example</p>
               <div className="csv-help-code csv-help-code-example">
-Category,Sub-category,Title,Description,Steps,Expected Result
-Authentication,Login,Valid login,Verify login with correct credentials,"1. Enter valid username;2. Enter password;3. Click Login",User reaches dashboard
-Authentication,Login,Invalid password,Verify error on wrong password,"1. Enter valid username;2. Enter wrong password;3. Click Login",Error message is shown
+Category,Sub-category,Title,Description,Steps,Expected Result,Version
+{`Authentication,Login,Valid login,Verify login with correct credentials,"Enter username -> Field accepts input | Enter password -> Field accepts input | Click Login -> Dashboard loads",User is authenticated,1.0`}
+{`Authentication,Login,Invalid password,Verify error on wrong password,"Enter username -> Field accepts input | Enter wrong password -> Field accepts input | Click Login -> Error displayed",Proper error message shown,1.0`}
               </div>
             </div>
           </div>

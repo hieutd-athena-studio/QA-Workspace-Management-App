@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import type { TestPlan, TestCycle, TestCaseAssignment, UpdateTestCycleDTO, ExecutionStatus } from '@shared/types'
+import type { TestPlan, TestCycle, TestCaseAssignment, UpdateTestCycleDTO, ExecutionStatus, TestType } from '@shared/types'
 import { TestCycleEnvironment } from '@shared/types'
 import { useApi } from '../hooks/useApi'
 import { useInvalidation } from '../contexts/InvalidationContext'
 import { useNotification } from '../contexts/NotificationContext'
+import { useProject } from '../contexts/ProjectContext'
 import AssignmentPicker from '../components/execution/AssignmentPicker'
 import './TestCycleDetailPage.css'
 
@@ -17,6 +18,42 @@ const getEnvironmentClass = (env: string | null) => {
 }
 
 const STATUSES: ExecutionStatus[] = ['Pass', 'Fail', 'Blocked', 'Unexecuted']
+
+function TestTypePicker({ projectId, onSelect, onClose }: { projectId: number; onSelect: (id: number) => void; onClose: () => void }) {
+  const { data: testTypes, loading } = useApi<TestType[]>(
+    () => window.api.testTypes.getByProject(projectId),
+    [projectId],
+    'testTypes'
+  )
+  return (
+    <div className="tcf-overlay" onClick={onClose}>
+      <div className="tcf-modal" onClick={e => e.stopPropagation()}>
+        <div className="tcf-header">
+          <span className="tcf-title">Import from Test Type</span>
+          <button className="tcf-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="tcf-body">
+          <p className="tcf-hint">Select a test type to assign all its cases to this cycle.</p>
+          {loading && <p className="text-muted">Loading…</p>}
+          {!loading && (!testTypes || testTypes.length === 0) && (
+            <p className="text-muted">No test types found. Create them in the Test Types section.</p>
+          )}
+          <div className="tt-picker-list">
+            {testTypes?.map(tt => (
+              <button key={tt.id} className="tt-picker-item" onClick={() => onSelect(tt.id)}>
+                <span className="tt-picker-name">{tt.name}</span>
+                <span className="tt-picker-count">{tt.test_case_count} case{tt.test_case_count !== 1 ? 's' : ''}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="tcf-footer">
+          <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function StatusBadge({ status, onClick }: { status: string; onClick?: () => void }) {
   const cls = status === 'Pass' ? 'status-pass'
@@ -36,8 +73,11 @@ export default function TestCycleDetailPage() {
   const { invalidate } = useInvalidation()
   const { notify } = useNotification()
 
+  const { selectedProject } = useProject()
+
   // Hero edit state
   const [showPicker, setShowPicker] = useState(false)
+  const [showTestTypePicker, setShowTestTypePicker] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editName, setEditName] = useState('')
   const [editBuild, setEditBuild] = useState('')
@@ -145,6 +185,26 @@ export default function TestCycleDetailPage() {
       invalidate('assignments')
       notify(`${testCaseIds.length} test case(s) assigned`, 'success')
       setShowPicker(false)
+    } catch (e: unknown) {
+      notify((e as Error).message, 'error')
+    }
+  }
+
+  // Import from Test Type
+  const handleImportTestType = async (testTypeId: number) => {
+    try {
+      const caseIds = await window.api.testTypes.getTestCaseIds(testTypeId)
+      const assignedIds = new Set((assignments || []).map(a => a.test_case_id))
+      const newIds = caseIds.filter(id => !assignedIds.has(id))
+      if (newIds.length === 0) {
+        notify('All cases from this test type are already assigned', 'info')
+        setShowTestTypePicker(false)
+        return
+      }
+      await window.api.assignments.assign(Number(cycleId), newIds)
+      invalidate('assignments')
+      notify(`${newIds.length} test case(s) imported from test type`, 'success')
+      setShowTestTypePicker(false)
     } catch (e: unknown) {
       notify((e as Error).message, 'error')
     }
@@ -302,6 +362,7 @@ export default function TestCycleDetailPage() {
                 <>
                   <button className="btn btn-secondary btn-sm" onClick={() => setShowArrange(true)}>⇅ Arrange</button>
                   <button className="btn btn-secondary btn-sm" onClick={toggleUnassignMode}>Unassign</button>
+                  <button className="btn btn-secondary btn-sm" onClick={() => setShowTestTypePicker(true)}>⚡ Test Type</button>
                   <button className="btn btn-secondary btn-sm" onClick={() => setShowPicker(true)}>+ Assign Cases</button>
                 </>
               )}
@@ -422,6 +483,14 @@ export default function TestCycleDetailPage() {
           existingAssignments={assignments || []}
           onAssign={handleAssign}
           onClose={() => setShowPicker(false)}
+        />
+      )}
+
+      {showTestTypePicker && selectedProject && (
+        <TestTypePicker
+          projectId={selectedProject.id}
+          onSelect={handleImportTestType}
+          onClose={() => setShowTestTypePicker(false)}
         />
       )}
 
