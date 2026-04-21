@@ -67,4 +67,25 @@ export class TestTypeRepository {
     ).all(testTypeId) as Array<{ test_case_id: number }>
     return rows.map(r => r.test_case_id)
   }
+
+  getTestCasesWithDisplayIds(testTypeId: number): Array<{ id: number; display_id: string; title: string }> {
+    return this.db.prepare(`
+      SELECT tc.id, tc.display_id, tc.title
+      FROM test_case tc
+      JOIN test_type_case ttc ON ttc.test_case_id = tc.id
+      WHERE ttc.test_type_id = ?
+      ORDER BY tc.display_id
+    `).all(testTypeId) as Array<{ id: number; display_id: string; title: string }>
+  }
+
+  getTestCaseIdsByDisplayIds(projectId: number, displayIds: string[]): Array<{ id: number; display_id: string }> {
+    if (displayIds.length === 0) return []
+    const placeholders = displayIds.map(() => '?').join(',')
+    return this.db.prepare(`
+      SELECT tc.id, tc.display_id
+      FROM test_case tc
+      JOIN subcategory sub ON tc.subcategory_id = sub.id
+      WHERE sub.project_id = ? AND tc.display_id IN (${placeholders})
+    `).all(projectId, ...displayIds) as Array<{ id: number; display_id: string }>
+  }
 }

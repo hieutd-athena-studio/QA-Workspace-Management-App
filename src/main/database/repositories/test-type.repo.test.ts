@@ -226,4 +226,54 @@ describe('TestTypeRepository', () => {
       expect(repo.getTestCaseIds(type.id)).toHaveLength(0)
     })
   })
+
+  describe('getTestCasesWithDisplayIds', () => {
+    it('returns display_id and title for linked test cases', () => {
+      const type = repo.create({ name: 'Smoke Testing', project_id: 1 })
+      repo.addTestCase(type.id, 1)
+      repo.addTestCase(type.id, 2)
+      const cases = repo.getTestCasesWithDisplayIds(type.id)
+      expect(cases).toHaveLength(2)
+      expect(cases[0]).toHaveProperty('display_id')
+      expect(cases[0]).toHaveProperty('title')
+      expect(cases.map(c => c.display_id)).toContain('TST-TC001')
+      expect(cases.map(c => c.display_id)).toContain('TST-TC002')
+    })
+
+    it('returns empty array when no cases linked', () => {
+      const type = repo.create({ name: 'Empty', project_id: 1 })
+      expect(repo.getTestCasesWithDisplayIds(type.id)).toEqual([])
+    })
+  })
+
+  describe('getTestCaseIdsByDisplayIds', () => {
+    it('returns id+display_id for matching display_ids in project', () => {
+      const result = repo.getTestCaseIdsByDisplayIds(1, ['TST-TC001', 'TST-TC002'])
+      expect(result).toHaveLength(2)
+      expect(result.map(r => r.display_id)).toContain('TST-TC001')
+      expect(result.map(r => r.display_id)).toContain('TST-TC002')
+      expect(result[0]).toHaveProperty('id')
+    })
+
+    it('returns only matching entries (ignores unknown display_ids)', () => {
+      const result = repo.getTestCaseIdsByDisplayIds(1, ['TST-TC001', 'TST-TC999'])
+      expect(result).toHaveLength(1)
+      expect(result[0].display_id).toBe('TST-TC001')
+    })
+
+    it('returns empty array when no matches', () => {
+      expect(repo.getTestCaseIdsByDisplayIds(1, ['TST-TC999'])).toEqual([])
+    })
+
+    it('does not return test cases from a different project', () => {
+      db.prepare('INSERT INTO project (name, code) VALUES (?, ?)').run('Other', 'OTH')
+      const otherCat = db.prepare('INSERT INTO category (name, project_id) VALUES (?, ?)').run('X', 2)
+      const otherSub = db.prepare('INSERT INTO subcategory (name, category_id, project_id) VALUES (?, ?, ?)').run('Y', otherCat.lastInsertRowid, 2)
+      db.prepare('INSERT INTO test_case (display_id, title, subcategory_id) VALUES (?, ?, ?)').run('TST-TC001', 'Dup', otherSub.lastInsertRowid)
+
+      const result = repo.getTestCaseIdsByDisplayIds(2, ['TST-TC001'])
+      expect(result).toHaveLength(1)
+      expect(result[0].id).not.toBe(1)
+    })
+  })
 })

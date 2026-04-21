@@ -78,7 +78,9 @@ const api = {
     delete: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_TYPES.DELETE, id)),
     addTestCase: async (testTypeId: number, testCaseId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_TYPES.ADD_TEST_CASE, testTypeId, testCaseId)),
     removeTestCase: async (testTypeId: number, testCaseId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_TYPES.REMOVE_TEST_CASE, testTypeId, testCaseId)),
-    getTestCaseIds: async (testTypeId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_TYPES.GET_TEST_CASE_IDS, testTypeId))
+    getTestCaseIds: async (testTypeId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_TYPES.GET_TEST_CASE_IDS, testTypeId)),
+    exportTypes: async (projectId: number, testTypeIds: number[]) => unwrap(await ipcRenderer.invoke(IPC.TEST_TYPES.EXPORT, projectId, testTypeIds)),
+    importTypes: async (projectId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_TYPES.IMPORT, projectId))
   }
 }
 

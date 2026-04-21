@@ -213,6 +213,59 @@ const ManageCasesModal = ({ testType, selectedIds, categories, subcategories, on
   )
 }
 
+// --- Export Selection Modal ---
+
+interface ExportModalProps {
+  testTypes: TestType[]
+  onExport: (ids: number[]) => void
+  onClose: () => void
+}
+const ExportModal = ({ testTypes, onExport, onClose }: ExportModalProps) => {
+  const [selected, setSelected] = useState<Set<number>>(new Set(testTypes.map(tt => tt.id)))
+
+  const toggle = (id: number) => setSelected(prev => {
+    const next = new Set(prev)
+    next.has(id) ? next.delete(id) : next.add(id)
+    return next
+  })
+
+  const toggleAll = () => setSelected(
+    selected.size === testTypes.length ? new Set() : new Set(testTypes.map(tt => tt.id))
+  )
+
+  return (
+    <div className="tcf-overlay" onClick={onClose}>
+      <div className="tcf-modal" onClick={e => e.stopPropagation()}>
+        <div className="tcf-header">
+          <span className="tcf-title">Export Test Types</span>
+          <button className="tcf-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="tcf-body">
+          <p className="tcf-hint">Select test types to export as a JSON file.</p>
+          <label className="picker-case-item" style={{ marginBottom: 'var(--sp-2)', fontWeight: 600 }}>
+            <input type="checkbox" checked={selected.size === testTypes.length} onChange={toggleAll} />
+            <span>Select all</span>
+          </label>
+          <div className="picker-case-list">
+            {testTypes.map(tt => (
+              <label key={tt.id} className="picker-case-item">
+                <input type="checkbox" checked={selected.has(tt.id)} onChange={() => toggle(tt.id)} />
+                <span>{tt.name}</span>
+                <span className="tt-card-count">{tt.test_case_count} case{tt.test_case_count !== 1 ? 's' : ''}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+        <div className="tcf-footer">
+          <span className="body-sm text-muted">{selected.size} selected</span>
+          <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
+          <button className="btn btn-primary" disabled={selected.size === 0} onClick={() => onExport(Array.from(selected))}>Export</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // --- Main Page ---
 
 export default function TestTypesPage() {
@@ -222,6 +275,7 @@ export default function TestTypesPage() {
   const navigate = useNavigate()
 
   const [showCreate, setShowCreate] = useState(false)
+  const [showExport, setShowExport] = useState(false)
   const [renaming, setRenaming] = useState<TestType | null>(null)
   const [managing, setManaging] = useState<TestType | null>(null)
   const [managedIds, setManagedIds] = useState<Set<number>>(new Set())
@@ -314,11 +368,33 @@ export default function TestTypesPage() {
     invalidate('testTypes')
   }
 
+  const handleExport = async (ids: number[]) => {
+    if (!selectedProject) return
+    try {
+      const result = await window.api.testTypes.exportTypes(selectedProject.id, ids) as { count: number; path: string }
+      notify(`Exported ${result.count} test type(s)`, 'success')
+      setShowExport(false)
+    } catch (e: unknown) { notify((e as Error).message, 'error') }
+  }
+
+  const handleImport = async () => {
+    if (!selectedProject) return
+    try {
+      const result = await window.api.testTypes.importTypes(selectedProject.id) as { count: number }
+      invalidate('testTypes')
+      notify(`Imported ${result.count} test type(s)`, 'success')
+    } catch (e: unknown) { notify((e as Error).message, 'error') }
+  }
+
   return (
     <div className="tt-page">
       <div className="tt-header">
         <h1 className="headline-sm">Test Types</h1>
-        <button className="btn btn-primary btn-sm" onClick={() => setShowCreate(true)}>+ New Test Type</button>
+        <div style={{ display: 'flex', gap: 'var(--sp-2)' }}>
+          <button className="btn btn-secondary btn-sm" onClick={handleImport}>↓ Import</button>
+          <button className="btn btn-secondary btn-sm" disabled={!testTypes || testTypes.length === 0} onClick={() => setShowExport(true)}>↑ Export</button>
+          <button className="btn btn-primary btn-sm" onClick={() => setShowCreate(true)}>+ New Test Type</button>
+        </div>
       </div>
 
       <p className="tt-desc">
@@ -354,6 +430,9 @@ export default function TestTypesPage() {
         </div>
       )}
 
+      {showExport && testTypes && testTypes.length > 0 && (
+        <ExportModal testTypes={testTypes} onExport={handleExport} onClose={() => setShowExport(false)} />
+      )}
       {showCreate && <CreateModal onSave={handleCreate} onClose={() => setShowCreate(false)} />}
       {renaming && <RenameModal current={renaming.name} onSave={handleRename} onClose={() => setRenaming(null)} />}
       {managing && (

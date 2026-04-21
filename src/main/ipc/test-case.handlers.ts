@@ -6,6 +6,7 @@ import type { TestStep } from '@shared/types'
 import { TestCaseRepository } from '../database/repositories/test-case.repo'
 import { CategoryRepository } from '../database/repositories/category.repo'
 import { SubcategoryRepository } from '../database/repositories/subcategory.repo'
+import { ProjectRepository } from '../database/repositories/project.repo'
 import { getDatabase } from '../database/connection'
 
 function parseCSVLine(line: string): string[] {
@@ -48,6 +49,7 @@ function escapeCSV(value: string): string {
 export function registerTestCaseHandlers(): void {
   const db = getDatabase()
   const repo = new TestCaseRepository(db)
+  const projectRepo = new ProjectRepository(db)
 
   ipcMain.handle(IPC.TEST_CASES.GET_BY_SUBCATEGORY, (_e, subcategoryId: number) => {
     try {
@@ -112,8 +114,11 @@ export function registerTestCaseHandlers(): void {
     try {
       const rows = repo.getByProjectWithHierarchy(projectId)
 
+      const project = projectRepo.getById(projectId)
+      const projectCode = project?.code ?? 'export'
+      const date = new Date().toISOString().slice(0, 10)
       const result = await dialog.showSaveDialog({
-        defaultPath: `test-cases-export-${new Date().toISOString().slice(0, 10)}.csv`,
+        defaultPath: `${projectCode}-Test-Cases-${date}.csv`,
         filters: [{ name: 'CSV Files', extensions: ['csv'] }]
       })
       if (result.canceled || !result.filePath) {

@@ -68,6 +68,8 @@ export const IPC = {
     DELETE: 'test-types:delete',
     ADD_TEST_CASE: 'test-types:add-test-case',
     REMOVE_TEST_CASE: 'test-types:remove-test-case',
-    GET_TEST_CASE_IDS: 'test-types:get-test-case-ids'
+    GET_TEST_CASE_IDS: 'test-types:get-test-case-ids',
+    EXPORT: 'test-types:export',
+    IMPORT: 'test-types:import'
   }
 } as const

@@ -374,8 +374,11 @@ export default function TestCycleDetailPage() {
           <div className="cycle-empty">
             <div className="cycle-empty-icon">📋</div>
             <p className="cycle-empty-title">No test cases assigned</p>
-            <p className="cycle-empty-desc">Assign test cases from your library to start executing this cycle.</p>
-            <button className="btn btn-primary" onClick={() => setShowPicker(true)}>+ Assign Cases</button>
+            <p className="cycle-empty-desc">Assign test cases from your library or import from a test type.</p>
+            <div style={{ display: 'flex', gap: 'var(--sp-3)', justifyContent: 'center' }}>
+              <button className="btn btn-secondary" onClick={() => setShowTestTypePicker(true)}>⚡ Import from Test Type</button>
+              <button className="btn btn-primary" onClick={() => setShowPicker(true)}>+ Assign Cases</button>
+            </div>
           </div>
         ) : (
           <div className="grouped-assignments">

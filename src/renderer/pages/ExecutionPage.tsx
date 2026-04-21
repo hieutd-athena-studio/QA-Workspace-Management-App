@@ -22,16 +22,38 @@ export default function ExecutionPage() {
     () => window.api.assignments.getByCycle(Number(cycleId)), [cycleId], 'assignments'
   )
 
-  const current = assignments?.[currentIndex]
+  // Apply user-defined category order from localStorage (same logic as TestCycleDetailPage)
+  const orderedAssignments = React.useMemo(() => {
+    if (!assignments) return []
+    const saved = localStorage.getItem(`cycle-cat-order-${cycleId}`)
+    if (!saved) return assignments
+    try {
+      const categoryOrder: string[] = JSON.parse(saved)
+      const allCats = Array.from(new Set(assignments.map(a => a.category_name ?? '')))
+      const orderedCats = [
+        ...categoryOrder.filter(c => allCats.includes(c)),
+        ...allCats.filter(c => !categoryOrder.includes(c))
+      ]
+      return [...assignments].sort((a, b) => {
+        const ai = orderedCats.indexOf(a.category_name ?? '')
+        const bi = orderedCats.indexOf(b.category_name ?? '')
+        if (ai !== bi) return ai - bi
+        return (a.subcategory_name ?? '').localeCompare(b.subcategory_name ?? '') ||
+               (a.test_case_title ?? '').localeCompare(b.test_case_title ?? '')
+      })
+    } catch { return assignments }
+  }, [assignments, cycleId])
+
+  const current = orderedAssignments[currentIndex]
   const steps = current?.test_case_steps ? parseSteps(current.test_case_steps) : []
 
   // On first load, jump to the first unexecuted test case
   useEffect(() => {
-    if (!assignments || hasInitialized.current) return
+    if (!orderedAssignments.length || hasInitialized.current) return
     hasInitialized.current = true
-    const firstUnexecuted = assignments.findIndex(a => a.status === 'Unexecuted')
+    const firstUnexecuted = orderedAssignments.findIndex(a => a.status === 'Unexecuted')
     if (firstUnexecuted !== -1) setCurrentIndex(firstUnexecuted)
-  }, [assignments])
+  }, [orderedAssignments])
 
   useEffect(() => {
     if (current) setBugRef(current.bug_ref || '')
@@ -45,13 +67,13 @@ export default function ExecutionPage() {
       invalidate('assignments')
       refetch()
       notify(`Marked as ${status}`, 'success')
-      if (currentIndex < (assignments?.length || 0) - 1) {
+      if (currentIndex < orderedAssignments.length - 1) {
         setCurrentIndex(currentIndex + 1)
       }
     } catch (e: unknown) {
       notify((e as Error).message, 'error')
     }
-  }, [current, bugRef, currentIndex, assignments?.length])
+  }, [current, bugRef, currentIndex, orderedAssignments.length])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -60,17 +82,17 @@ export default function ExecutionPage() {
       else if (e.key === 'f' || e.key === 'F') handleStatus('Fail')
       else if (e.key === 'b' || e.key === 'B') handleStatus('Blocked')
       else if (e.key === 'ArrowLeft' && currentIndex > 0) setCurrentIndex(currentIndex - 1)
-      else if (e.key === 'ArrowRight' && currentIndex < (assignments?.length || 0) - 1) setCurrentIndex(currentIndex + 1)
+      else if (e.key === 'ArrowRight' && currentIndex < orderedAssignments.length - 1) setCurrentIndex(currentIndex + 1)
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [handleStatus, currentIndex, assignments?.length])
+  }, [handleStatus, currentIndex, orderedAssignments.length])
 
   if (!plan || !cycle || !assignments) return <div className="text-muted body-sm" style={{ padding: 'var(--sp-8)' }}>Loading…</div>
-  if (assignments.length === 0) { navigate(`/plans/${planId}/cycles/${cycleId}`); return null }
+  if (orderedAssignments.length === 0) { navigate(`/plans/${planId}/cycles/${cycleId}`); return null }
 
-  const executed = assignments.filter(a => a.status !== 'Unexecuted').length
-  const progressPct = Math.round((executed / assignments.length) * 100)
+  const executed = orderedAssignments.filter(a => a.status !== 'Unexecuted').length
+  const progressPct = Math.round((executed / orderedAssignments.length) * 100)
 
   return (
     <div className="execution-page">
@@ -87,7 +109,7 @@ export default function ExecutionPage() {
       <div className="execution-header">
         <span className="execution-title">Test Execution</span>
         <div className="execution-progress-wrap">
-          <span className="execution-progress-label">{executed}/{assignments.length}</span>
+          <span className="execution-progress-label">{executed}/{orderedAssignments.length}</span>
           <div className="execution-progress-track">
             <div className="execution-progress-fill" style={{ width: `${progressPct}%` }} />
           </div>
@@ -99,7 +121,7 @@ export default function ExecutionPage() {
         <div className="execution-card">
           <div className="execution-card-top">
             <div>
-              <div className="execution-case-number">Case {currentIndex + 1} of {assignments.length}</div>
+              <div className="execution-case-number">Case {currentIndex + 1} of {orderedAssignments.length}</div>
               <div className="execution-case-title">{current.test_case_title}</div>
             </div>
             {current.status !== 'Unexecuted' && (
@@ -175,7 +197,7 @@ export default function ExecutionPage() {
             onChange={(e) => setCurrentIndex(Number(e.target.value))}
             style={{ width: 220 }}
           >
-            {assignments.map((a, i) => (
+            {orderedAssignments.map((a, i) => (
               <option key={a.id} value={i}>
                 {i + 1}. {a.test_case_title} [{a.status}]
               </option>
@@ -184,8 +206,8 @@ export default function ExecutionPage() {
         </div>
         <button
           className="btn btn-secondary btn-sm"
-          onClick={() => setCurrentIndex(Math.min(assignments.length - 1, currentIndex + 1))}
-          disabled={currentIndex === assignments.length - 1}
+          onClick={() => setCurrentIndex(Math.min(orderedAssignments.length - 1, currentIndex + 1))}
+          disabled={currentIndex === orderedAssignments.length - 1}
         >Next →</button>
       </div>
     </div>
