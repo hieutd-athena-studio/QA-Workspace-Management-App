@@ -2,6 +2,20 @@
 
 Guidance for Claude Code working in this repository.
 
+## ⚠️ START HERE — Your Brain (Obsidian Vault)
+
+**Every session:** Read [`Brain/QA-Workspace-Management-App/QA-Workspace-Management-App-Context.md`](Brain/QA-Workspace-Management-App/QA-Workspace-Management-App-Context.md) first. This is your Home Base.
+
+Your persistent memory lives in the Obsidian vault at `Brain/`:
+- **Rules:** `Brain/QA-Workspace-Management-App/Rules/*.md` — authoritative project constraints
+- **Decisions:** `Brain/QA-Workspace-Management-App/ADR/` — architectural decisions
+- **Journals:** `Brain/QA-Workspace-Management-App/Journals/` — session logs and follow-ups
+- **System overview:** `Brain/Architecture.md` — how the vault is organized
+
+See **Knowledge Vault** section below for full details.
+
+---
+
 ## Quick Start
 
 ```bash
@@ -22,12 +36,27 @@ npm install       # Install deps + electron-builder setup
 
 ## Knowledge Vault
 
-Claude's persistent context, decisions, and session memory live in the Obsidian vault at `Brain/`:
+The Obsidian vault at `Brain/` is your **long-term memory** across sessions.
+
+### Session Workflow
+
+1. **Start:** Read [`Brain/QA-Workspace-Management-App/QA-Workspace-Management-App-Context.md`](Brain/QA-Workspace-Management-App/QA-Workspace-Management-App-Context.md) (Home Base)
+2. **Skim:** Last 1–2 journals in `Brain/QA-Workspace-Management-App/Journals/` for follow-ups
+3. **Reference:** Check relevant rule files in `Brain/QA-Workspace-Management-App/Rules/` before suggesting patterns
+4. **End:** Write a journal entry to `Brain/QA-Workspace-Management-App/Journals/YYYY-MM-DD-slug.md` summarizing:
+   - What shipped
+   - Key decisions
+   - Unresolved items
+   - Follow-ups for next Claude
+
+See [`Brain/Workflows/session-start-workflow.md`](Brain/Workflows/session-start-workflow.md) and [`Brain/Workflows/session-end-workflow.md`](Brain/Workflows/session-end-workflow.md) for detailed checklists.
+
+### Key Files
 
 - **System overview:** [`Brain/Architecture.md`](Brain/Architecture.md)
-- **Project Home Base:** [`Brain/QA-Workspace-Management-App/QA-Workspace-Management-App-Context.md`](Brain/QA-Workspace-Management-App/QA-Workspace-Management-App-Context.md) — read this first each session
-
-Session logs (`Brain/QA-Workspace-Management-App/Journals/`), ADRs, and lessons-learned all live under `Brain/`.
+- **ADRs:** [`Brain/QA-Workspace-Management-App/ADR/`](Brain/QA-Workspace-Management-App/ADR/) — one-time decisions
+- **Lessons-Learned:** [`Brain/Library/Lessons-Learned/`](Brain/Library/Lessons-Learned/) — bugs taking > 30min to diagnose
+- **File map:** [`Brain/QA-Workspace-Management-App/Context/file-map.md`](Brain/QA-Workspace-Management-App/Context/file-map.md) — exhaustive file listing
 
 ## Rules
 
