@@ -14,6 +14,30 @@
 - **Lazy load:** Pages load on route, not upfront
 - **Tree-shake:** Export only what's used; remove unused re-exports
 
+## Fork PR Automation
+
+If working in a **fork** of this repo, use the session-end automation to submit work back to upstream:
+
+**End of session — Run once:**
+```powershell
+# Windows
+.\.claude\fork-pr-submit.ps1
+```
+```bash
+# macOS/Linux
+bash .claude/fork-pr-submit.sh
+```
+
+This:
+- Verifies upstream remote exists
+- Commits all changes (`Session work: YYYY-MM-DD`)
+- Pushes to your fork origin
+- Creates a PR to upstream `main`
+
+**Requires:** GitHub CLI (`gh`) installed + authenticated
+
+See [[session-end-workflow]] step 7 for full details.
+
 ## Dev Commands
 
 ```bash

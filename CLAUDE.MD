@@ -20,20 +20,29 @@ npm install       # Install deps + electron-builder setup
 - Preload Bridge: strict contextBridge (`src/preload/index.ts`)
 - Build: electron-vite | Styling: CSS per component (no Tailwind)
 
+## Knowledge Vault
+
+Claude's persistent context, decisions, and session memory live in the Obsidian vault at `Brain/`:
+
+- **System overview:** [`Brain/Architecture.md`](Brain/Architecture.md)
+- **Project Home Base:** [`Brain/QA-Workspace-Management-App/QA-Workspace-Management-App-Context.md`](Brain/QA-Workspace-Management-App/QA-Workspace-Management-App-Context.md) — read this first each session
+
+Session logs (`Brain/QA-Workspace-Management-App/Journals/`), ADRs, and lessons-learned all live under `Brain/`.
+
 ## Rules
 
-Detailed rules live in `.claude/rules/`:
+Detailed rules live in `Brain/QA-Workspace-Management-App/Rules/`:
 
 | Rule File | Covers |
 |-----------|--------|
-| [`project-structure.md`](.claude/rules/project-structure.md) | Directory layout, key files, routing, test cycle features, CSV import |
-| [`code-style.md`](.claude/rules/code-style.md) | TypeScript, components, CSS organization, class naming |
-| [`api-conventions.md`](.claude/rules/api-conventions.md) | IPC pattern, preload bridge, React hooks, state management |
-| [`database.md`](.claude/rules/database.md) | Repository pattern, category hierarchy, display IDs, migrations |
-| [`error-handling.md`](.claude/rules/error-handling.md) | IPC error wrapping, troubleshooting checklist |
-| [`security.md`](.claude/rules/security.md) | Validation boundaries, IPC security, SQL injection prevention |
-| [`git-workflow.md`](.claude/rules/git-workflow.md) | Commit style, build targets, performance |
-| [`testing.md`](.claude/rules/testing.md) | Testing strategy and scope |
+| [`project-structure.md`](Brain/QA-Workspace-Management-App/Rules/project-structure.md) | Directory layout, key files, routing, test cycle features, CSV import |
+| [`code-style.md`](Brain/QA-Workspace-Management-App/Rules/code-style.md) | TypeScript, components, CSS organization, class naming |
+| [`api-conventions.md`](Brain/QA-Workspace-Management-App/Rules/api-conventions.md) | IPC pattern, preload bridge, React hooks, state management |
+| [`database.md`](Brain/QA-Workspace-Management-App/Rules/database.md) | Repository pattern, category hierarchy, display IDs, migrations |
+| [`error-handling.md`](Brain/QA-Workspace-Management-App/Rules/error-handling.md) | IPC error wrapping, troubleshooting checklist |
+| [`security.md`](Brain/QA-Workspace-Management-App/Rules/security.md) | Validation boundaries, IPC security, SQL injection prevention |
+| [`git-workflow.md`](Brain/QA-Workspace-Management-App/Rules/git-workflow.md) | Commit style, build targets, performance |
+| [`testing.md`](Brain/QA-Workspace-Management-App/Rules/testing.md) | Testing strategy and scope |
 
 ## Design System
 

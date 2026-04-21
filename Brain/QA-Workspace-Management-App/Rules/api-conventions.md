@@ -84,3 +84,21 @@ Test cases: `window.api.testCases.getBySubcategory(subcategoryId)`
 const { invalidate } = useInvalidation();
 invalidate("testCases"); // After create/update/delete
 ```
+
+## Why this rule exists
+
+Electron exposes three execution contexts:
+
+- **Main process** — Node.js access, database, filesystem, app lifecycle
+- **Renderer process** — Chromium, React UI, no direct Node.js access
+- **Preload** — bridge that can selectively expose Main APIs to Renderer
+
+A naive Electron app gives the Renderer direct Node integration for convenience. That opens the door to XSS → RCE and makes the attack surface huge. It also couples the UI to Node APIs, which complicates testing.
+
+The contextBridge + typed `window.api` pattern above is the mitigation:
+
+- Renderer cannot touch the filesystem or DB directly → clear security boundary.
+- Typed `window.api` gives IDE autocomplete and catches missing handlers at build time.
+- Easy to mock IPC in component tests (replace `window.api` with a stub).
+
+**Tradeoff:** Every new IPC method touches 4 files (channel constant, handler, preload bridge, preload types). That friction is intentional — the consistency is worth more than saving a file or two.

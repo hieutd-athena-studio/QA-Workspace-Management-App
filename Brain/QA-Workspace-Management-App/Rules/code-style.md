@@ -62,6 +62,30 @@ Use shared `tcf-*` CSS classes:
 - **State:** `.active`, `.disabled`, `.loading`
 - **Utility:** `.text-muted`, `.mono`, `.secondary`
 
+## Why this rule exists (CSS per component)
+
+Three common approaches to styling React apps were considered:
+
+1. **Tailwind / utility CSS** — class-name heavy markup, tooling dependency.
+2. **CSS-in-JS** (styled-components, Emotion) — runtime cost, SSR complications.
+3. **Plain CSS files, one per component** — zero runtime cost, zero toolchain surprise.
+
+This project is a local Electron app — no SSR, no hydration, no design-agency branding refresh every quarter. The primary non-functional goals are:
+
+- Keep the renderer bundle small (target: CSS < 100 kB per page).
+- Keep build config boring (electron-vite + Vite only; no PostCSS plugins).
+- Keep diffs readable (class lists in JSX don't drift ten-wide).
+
+Approach #3 wins on all three counts.
+
+**Benefits:**
+
+- Fastest possible iteration loop — edit CSS, see change, no build step.
+- Designers can grep the codebase for a token and find all usages.
+- No "why doesn't this class work" debugging (Tailwind purge, specificity wars).
+
+**Tradeoff:** Slightly more boilerplate per new component (two files instead of one). No compile-time guarantee that a `className` exists — mitigated by keeping components small and CSS colocated.
+
 ## Response Mode (AI)
 
 - Be concise, no preambles
