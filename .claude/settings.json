@@ -6,7 +6,12 @@
     "deny": [
       "mcp__google_search:*",
       "mcp__terminal_recorder:*",
-      "mcp__browser_usage:*"
+      "mcp__browser_usage:*",
+      "mcp__plugin_everything-claude-code_playwright:*",
+      "mcp__plugin_everything-claude-code_exa:*",
+      "mcp__plugin_everything-claude-code_sequential-thinking:*",
+      "mcp__Claude_Preview:*",
+      "mcp__Claude_in_Chrome:*"
     ]
   },
   "enableAllProjectMcpServers": false

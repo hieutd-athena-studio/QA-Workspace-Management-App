@@ -159,3 +159,22 @@ Enter username -> Field accepts input | Click submit -> Dashboard loads
 **Two distinct expected result fields:**
 - `Steps` column: `action -> expected` → maps to `TestStep.expected` (per-step)
 - `Expected Result` column → maps to `TestCase.expected_result` (overall summary)
+
+## Doc-Sync Rule
+
+**Whenever `src/` structure changes, update these docs in the same commit — no exceptions:**
+
+| Changed | Update |
+|---|---|
+| Folder added / moved / renamed inside `src/` | Directory Structure tree in this file (above) |
+| File added, moved, or renamed in `src/` | `Brain/QA-Workspace-Management-App/Context/file-map.md` per-file table |
+| New top-level folder at repo root | `Brain/Architecture.md` §4 repo diagram |
+| Build scripts or entry-point paths change | `CLAUDE.md` Quick Start section |
+
+When the `Brain/` vault structure itself changes (new folder, renamed path):
+- `Brain/Architecture.md` §2 vault diagram **and** §4 repo diagram
+- If a `Rules/` file is added or removed: `QA-Workspace-Management-App-Context.md` Rules section + `CLAUDE.md` Rules table
+
+Stale diagrams → Claude misreads the project on the next session start. Keep them current.
+
+**Before deleting any vault file**, grep `Brain/` for its name and remove all wikilinks and table rows that reference it. See the Link Cleanup Rule in `Brain/Architecture.md` §8 for the exact steps.

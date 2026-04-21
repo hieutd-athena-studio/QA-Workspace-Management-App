@@ -1,0 +1,221 @@
+{
+  "main": {
+    "id": "40568e91bab7661e",
+    "type": "split",
+    "children": [
+      {
+        "id": "b6280e5bdfcbd8c8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "60a1c28d0361e25a",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "73b35ac766b651c9",
+    "type": "split",
+    "children": [
+      {
+        "id": "544f08029c9bf12b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "368138efebbd916a",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "afd02a536219e469",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "3d383d47a366ab8d",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "0e978faa766de7f0",
+    "type": "split",
+    "children": [
+      {
+        "id": "1327b7a6f6adebc8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a3a55a4a977e46f2",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Architecture.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Architecture"
+            }
+          },
+          {
+            "id": "83cf348c88245eee",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Architecture.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Architecture"
+            }
+          },
+          {
+            "id": "b5879017e33b8576",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "0025d1d9e64684f4",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "3b4c6bacded8c8de",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Architecture.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Architecture"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "60a1c28d0361e25a",
+  "lastOpenFiles": [
+    "QA-Workspace-Management-App/Journals/2026-04-21-vault-audit-github-automation.md",
+    "Architecture.md",
+    "Workflows/session-start-workflow.md",
+    "Workflows/session-end-workflow.md",
+    "Templates/ADR-template.md",
+    "Templates/Journal-template.md",
+    "Templates/Context-Map-template.md",
+    "Welcome.md",
+    "QA-Workspace-Management-App/QA-Workspace-Management-App-Context.md",
+    "QA-Workspace-Management-App/Context/file-map.md",
+    "QA-Workspace-Management-App/Context/README.md",
+    "Workflows/README.md",
+    "Workflows/new-feature-workflow.md",
+    "Templates/Lesson-Learned-template.md",
+    "Templates/README.md",
+    "Templates",
+    "Workflows",
+    "LLM-Config/Tool-Schemas/README.md",
+    "LLM-Config/Tool-Schemas",
+    "LLM-Config/System-Prompts/default-claude-persona.md",
+    "LLM-Config/System-Prompts/README.md",
+    "LLM-Config/System-Prompts",
+    "LLM-Config/README.md",
+    "LLM-Config",
+    "Library/Lessons-Learned/README.md",
+    "Library/Lessons-Learned",
+    "Library/Boilerplates/README.md",
+    "Library/Boilerplates",
+    "Library/Patterns/README.md",
+    "Library/Patterns",
+    "Library/README.md",
+    "Library",
+    "Projects/README.md",
+    "new-feature-workflow.md",
+    "Projects/QA-Workspace-Management-App/ADR/ADR-002-two-level-category-hierarchy.md",
+    "Projects/QA-Workspace-Management-App/Journals"
+  ]
+}
