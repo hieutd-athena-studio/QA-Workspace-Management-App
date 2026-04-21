@@ -2,8 +2,10 @@
 date: 2026-04-20
 session_type: planning
 participants: [hieutd, claude]
-related_adrs: [[ADR-001-electron-process-separation], [[ADR-002-two-level-category-hierarchy]], [[ADR-003-no-tailwind-css-per-component]], [[ADR-004-react-context-over-redux]]]
+related_adrs: [[ADR-004-react-context-over-redux]]
 ---
+
+> **Note (2026-04-21):** ADR-001, ADR-002, and ADR-003 were merged into rule files on 2026-04-21 to consolidate duplicate documentation. See [[session-end-workflow]] step 7 for the Link Cleanup Rule.
 
 # 2026-04-20 — Vault initialized
 
@@ -14,11 +16,11 @@ related_adrs: [[ADR-001-electron-process-separation], [[ADR-002-two-level-catego
 - Created the project context pack for **QA-Workspace-Management-App**:
   - [[QA-Workspace-Management-App-Context]] (entry point / Home Base)
   - Four seed ADRs extracted from `CLAUDE.md` + `.claude/rules/*`:
-    - [[ADR-001-electron-process-separation]]
-    - [[ADR-002-two-level-category-hierarchy]]
-    - [[ADR-003-no-tailwind-css-per-component]]
-    - [[ADR-004-react-context-over-redux]]
-  - Context files: [[tech-stack]], [[file-map]], [[critical-paths]]
+    - ADR-001 (merged into `Rules/api-conventions.md`)
+    - ADR-002 (merged into `Rules/database.md`)
+    - ADR-003 (merged into `Rules/code-style.md`)
+    - [[ADR-004-react-context-over-redux]] (kept as standalone ADR)
+  - Context files: [[file-map]]
 - Added templates, workflows, and cross-project Library scaffolding.
 
 ## Key decisions

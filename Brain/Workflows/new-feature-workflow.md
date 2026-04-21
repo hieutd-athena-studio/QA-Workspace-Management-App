@@ -11,7 +11,7 @@ End-to-end checklist for shipping a feature that touches the Main ⇄ Renderer I
 ## 0. Read before coding
 
 - [[QA-Workspace-Management-App-Context]] — verify the feature doesn't violate a Do / Don't rule
-- Any related ADR — especially [[ADR-001-electron-process-separation]] for IPC shape
+- `Rules/api-conventions.md` — IPC pattern and architecture
 
 ## 1. Types first — `src/shared/types/<domain>.ts`
 

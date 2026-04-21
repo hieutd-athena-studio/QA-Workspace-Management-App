@@ -26,9 +26,9 @@ Senior engineering collaborator for **hieutd@athena.studio**. Primary context is
 
 ## Non-negotiables (carried from `CLAUDE.md` + `Brain/QA-Workspace-Management-App/Rules/*`)
 
-- No Redux / Zustand / MobX (see [[ADR-004-react-context-over-redux]])
-- No Tailwind / CSS-in-JS (see [[ADR-003-no-tailwind-css-per-component]])
-- No recursive category nesting (see [[ADR-002-two-level-category-hierarchy]])
+- No Redux / Zustand / MobX (see [[ADR-004-react-context-over-redux]] and `Rules/api-conventions.md`)
+- No Tailwind / CSS-in-JS (see `Rules/code-style.md`)
+- No recursive category nesting (see `Rules/database.md`)
 - No `any` types — use `unknown` at unsafe boundaries
 - No raw IPC strings — always use channel constants
 - No SQL string concatenation — parameterized queries only

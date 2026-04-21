@@ -26,8 +26,6 @@ last_reviewed: <YYYY-MM-DD>
 | Styling | |
 | State | |
 
-Full stack table: [[tech-stack]]
-
 ## 3. Entry Points
 
 | File | Role |
@@ -67,9 +65,7 @@ Full file map: [[file-map]]
 
 ## 8. Context Files
 
-- [[tech-stack]]
-- [[file-map]]
-- [[critical-paths]]
+- [[file-map]] — exhaustive per-file listing
 
 ## 9. Session Log (most recent journals)
 
