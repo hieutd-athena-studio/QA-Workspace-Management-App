@@ -5,7 +5,7 @@ status: Proposed
 date: <YYYY-MM-DD>
 supersedes: <optional, e.g. ADR-XXX>
 superseded_by: <optional, filled in later>
-tags: [<tag1>, <tag2>]
+tags:
 ---
 
 # ADR-NNN · <Short decision title>
