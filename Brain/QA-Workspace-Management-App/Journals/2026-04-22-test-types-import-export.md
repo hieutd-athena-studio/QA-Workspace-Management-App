@@ -57,15 +57,8 @@ status: shipped
 
 ## Unresolved Items
 
-1. **UI Maximize Compatibility** — Not addressed
-   - Need visual inspection when window is maximized
-   - Likely CSS overflow/padding issues
-   - Start with: `npm run dev` → open DevTools → maximize window
-
-2. **Test Runner Broken** — Pre-existing issue
-   - `better-sqlite3` compiled for different Node.js version
-   - Affects vitest execution
-   - Tests validate via TypeScript compilation, not runtime
+~~1. **UI Maximize Compatibility**~~ — ✅ Fixed (commit `6f1d022`)
+~~2. **Test Runner Broken**~~ — ✅ Fixed (npm rebuild better-sqlite3, 25/25 GREEN)
 
 ## Follow-ups for Next Claude
 

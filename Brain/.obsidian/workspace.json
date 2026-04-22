@@ -185,8 +185,10 @@
   },
   "active": "60a1c28d0361e25a",
   "lastOpenFiles": [
-    "QA-Workspace-Management-App/Journals/2026-04-20-vault-initialized.md",
+    "QA-Workspace-Management-App/Journals/README.md",
     "QA-Workspace-Management-App/Journals/2026-04-22-test-types-import-export.md",
+    "QA-Workspace-Management-App/Journals/2026-04-22-test-types-import-export.md.tmp.75416.1776830889605",
+    "QA-Workspace-Management-App/Journals/2026-04-20-vault-initialized.md",
     "LLM-Config/README.md",
     "QA-Workspace-Management-App/Journals/2026-04-22-test-types-import-export.md.tmp.75416.1776830033294",
     "LLM-Config/Tool-Schemas/README.md",
@@ -211,7 +213,6 @@
     "Workflows/session-end-workflow.md",
     "Welcome.md",
     "QA-Workspace-Management-App/QA-Workspace-Management-App-Context.md",
-    "Templates/README.md",
     "Templates",
     "Workflows",
     "LLM-Config/Tool-Schemas",
@@ -219,7 +220,6 @@
     "LLM-Config",
     "Library/Lessons-Learned",
     "Library/Boilerplates",
-    "Library/Patterns",
-    "Library"
+    "Library/Patterns"
   ]
 }
