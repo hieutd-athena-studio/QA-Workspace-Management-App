@@ -3,6 +3,8 @@
 .gantt-page {
   display: flex;
   flex-direction: column;
+  max-width: 1600px;
+  width: 100%;
 }
 
 .gantt-page-header {

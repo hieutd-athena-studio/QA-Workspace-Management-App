@@ -21,7 +21,13 @@
       "Bash(git fetch:*)",
       "mcp__Claude_Preview__preview_start",
       "Bash(dir \"C:\\\\Users\\\\PC\\\\.claude\\\\\" && dir \"C:\\\\Users\\\\PC\\\\AppData\\\\Roaming\\\\Claude\\\\\")",
-      "PowerShell(cd \"D:\\\\personal-code-projects\\\\QA-Workspace-Management-App\"; powershell -ExecutionPolicy Bypass -File .\\\\.claude\\\\fork-pr-submit.ps1)"
+      "PowerShell(cd \"D:\\\\personal-code-projects\\\\QA-Workspace-Management-App\"; powershell -ExecutionPolicy Bypass -File .\\\\.claude\\\\fork-pr-submit.ps1)",
+      "Bash(git remote *)",
+      "Bash(git pull *)",
+      "Bash(gh auth *)",
+      "Bash(git credential *)",
+      "Bash(npm test *)",
+      "Bash(npm rebuild *)"
     ]
   }
 }

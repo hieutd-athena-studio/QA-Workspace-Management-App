@@ -3,6 +3,8 @@
 .cycle-detail-page {
   display: flex;
   flex-direction: column;
+  max-width: 1400px;
+  width: 100%;
 }
 
 /* Hero stats row */
@@ -116,6 +118,8 @@
 .cycle-table-actions {
   display: flex;
   gap: var(--sp-2);
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .col-checkbox {

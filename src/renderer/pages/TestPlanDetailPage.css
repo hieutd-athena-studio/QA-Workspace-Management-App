@@ -3,6 +3,8 @@
 .plan-detail-page {
   display: flex;
   flex-direction: column;
+  max-width: 1400px;
+  width: 100%;
 }
 
 /* Breadcrumb */
@@ -102,10 +104,17 @@
   color: var(--on-surface);
 }
 
+.plan-detail-hero-info {
+  min-width: 0;
+  flex: 1;
+}
+
 .plan-detail-hero-actions {
   display: flex;
   gap: var(--sp-2);
   flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 /* Summary section */
