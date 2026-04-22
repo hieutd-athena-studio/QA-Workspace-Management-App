@@ -9,42 +9,6 @@ import { SubcategoryRepository } from '../database/repositories/subcategory.repo
 import { ProjectRepository } from '../database/repositories/project.repo'
 import { getDatabase } from '../database/connection'
 
-function parseCSVLine(line: string): string[] {
-  const fields: string[] = []
-  let current = ''
-  let inQuotes = false
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i]
-    if (inQuotes) {
-      if (ch === '"' && line[i + 1] === '"') {
-        current += '"'
-        i++
-      } else if (ch === '"') {
-        inQuotes = false
-      } else {
-        current += ch
-      }
-    } else {
-      if (ch === '"') {
-        inQuotes = true
-      } else if (ch === ',') {
-        fields.push(current)
-        current = ''
-      } else {
-        current += ch
-      }
-    }
-  }
-  fields.push(current)
-  return fields
-}
-
-function escapeCSV(value: string): string {
-  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-    return `"${value.replace(/"/g, '""')}"`
-  }
-  return value
-}
 
 export function registerTestCaseHandlers(): void {
   const db = getDatabase()
@@ -110,141 +74,109 @@ export function registerTestCaseHandlers(): void {
     }
   })
 
-  ipcMain.handle(IPC.TEST_CASES.EXPORT_CSV, async (_e, projectId: number) => {
+  ipcMain.handle(IPC.TEST_CASES.EXPORT_JSON, async (_e, projectId: number) => {
     try {
       const rows = repo.getByProjectWithHierarchy(projectId)
-
       const project = projectRepo.getById(projectId)
       const projectCode = project?.code ?? 'export'
       const date = new Date().toISOString().slice(0, 10)
+
       const result = await dialog.showSaveDialog({
-        defaultPath: `${projectCode}-Test-Cases-${date}.csv`,
-        filters: [{ name: 'CSV Files', extensions: ['csv'] }]
+        defaultPath: `${projectCode}-Test-Cases-${date}.json`,
+        filters: [{ name: 'JSON Files', extensions: ['json'] }]
       })
       if (result.canceled || !result.filePath) {
         return wrapError('TC_EXPORT_CANCELLED', 'Export cancelled')
       }
 
-      const header = 'Category,Subcategory,Title,Description,Steps,Expected Result,Version'
-      const lines = rows.map(tc => {
-        const stepsStr = tc.steps.map((s: TestStep) => `${s.step}. ${s.action} -> ${s.expected}`).join(' | ')
-        return [
-          escapeCSV(tc.category_name),
-          escapeCSV(tc.subcategory_name),
-          escapeCSV(tc.title),
-          escapeCSV(tc.description || ''),
-          escapeCSV(stepsStr),
-          escapeCSV(tc.expected_result || ''),
-          escapeCSV(tc.version || '')
-        ].join(',')
-      })
+      const payload = {
+        version: '1.0',
+        project_code: projectCode,
+        exported_at: new Date().toISOString(),
+        test_cases: rows.map(tc => ({
+          category: tc.category_name,
+          subcategory: tc.subcategory_name,
+          title: tc.title,
+          description: tc.description || '',
+          steps: tc.steps.map((s: TestStep) => ({ step: s.step, action: s.action, expected: s.expected })),
+          expected_result: tc.expected_result || '',
+          version: tc.version || '1.0'
+        }))
+      }
 
-      writeFileSync(result.filePath, [header, ...lines].join('\n'), 'utf-8')
+      writeFileSync(result.filePath, JSON.stringify(payload, null, 2), 'utf-8')
       return wrapSuccess({ count: rows.length, path: result.filePath })
     } catch (e: unknown) {
       return wrapError('TC_EXPORT', (e as Error).message)
     }
   })
 
-  ipcMain.handle(IPC.TEST_CASES.IMPORT_CSV, async (_e, projectId: number) => {
+  ipcMain.handle(IPC.TEST_CASES.IMPORT_JSON, async (_e, projectId: number) => {
     try {
       const fileResult = await dialog.showOpenDialog({
         properties: ['openFile'],
-        filters: [{ name: 'CSV Files', extensions: ['csv'] }]
+        filters: [{ name: 'JSON Files', extensions: ['json'] }]
       })
       if (fileResult.canceled || !fileResult.filePaths.length) {
         return wrapError('TC_IMPORT_CANCELLED', 'Import cancelled')
       }
 
       const content = readFileSync(fileResult.filePaths[0], 'utf-8')
-      const lines = content.split(/\r?\n/).filter(l => l.trim())
-      if (lines.length < 2) {
-        return wrapError('TC_IMPORT', 'CSV file is empty or has no data rows')
+      let parsed: unknown
+      try {
+        parsed = JSON.parse(content)
+      } catch {
+        return wrapError('TC_IMPORT', 'Invalid JSON file')
       }
 
-      // Parse header to find column indices
-      const headerFields = parseCSVLine(lines[0]).map(h => h.trim().toLowerCase())
-      const colIdx = {
-        category: headerFields.indexOf('category'),
-        subcategory: Math.max(headerFields.indexOf('subcategory'), headerFields.indexOf('sub-category')),
-        title: headerFields.indexOf('title'),
-        description: headerFields.indexOf('description'),
-        steps: headerFields.indexOf('steps'),
-        expectedResult: Math.max(headerFields.indexOf('expected result'), headerFields.indexOf('expected_result')),
-        version: headerFields.indexOf('version')
-      }
-
-      if (colIdx.category === -1 || colIdx.subcategory === -1 || colIdx.title === -1) {
-        return wrapError('TC_IMPORT', 'CSV must have Category, Subcategory, and Title columns')
+      const data = parsed as { test_cases?: unknown[] }
+      if (!Array.isArray(data.test_cases) || data.test_cases.length === 0) {
+        return wrapError('TC_IMPORT', 'JSON file has no test_cases array')
       }
 
       const catRepo = new CategoryRepository(db)
       const subRepo = new SubcategoryRepository(db)
-
-      // Cache for category/subcategory lookups
       const catCache = new Map<string, number>()
       const subCache = new Map<string, number>()
-
       let importedCount = 0
 
       const importAll = db.transaction(() => {
-        for (let i = 1; i < lines.length; i++) {
-          const fields = parseCSVLine(lines[i])
-          const catName = (fields[colIdx.category] ?? '').trim()
-          const subName = (fields[colIdx.subcategory] ?? '').trim()
-          const title = (fields[colIdx.title] ?? '').trim()
-
+        for (const raw of data.test_cases!) {
+          const tc = raw as Record<string, unknown>
+          const catName = String(tc.category ?? '').trim()
+          const subName = String(tc.subcategory ?? '').trim()
+          const title = String(tc.title ?? '').trim()
           if (!catName || !subName || !title) continue
 
-          // Resolve or create category
           let categoryId = catCache.get(catName)
           if (categoryId === undefined) {
             const existing = catRepo.findByName(projectId, catName)
-            if (existing) {
-              categoryId = existing.id
-            } else {
-              const created = catRepo.create({ name: catName, project_id: projectId })
-              categoryId = created.id
-            }
+            categoryId = existing ? existing.id : catRepo.create({ name: catName, project_id: projectId }).id
             catCache.set(catName, categoryId)
           }
 
-          // Resolve or create subcategory
           const subKey = `${categoryId}::${subName}`
           let subcategoryId = subCache.get(subKey)
           if (subcategoryId === undefined) {
             const existing = subRepo.findByName(categoryId, subName)
-            if (existing) {
-              subcategoryId = existing.id
-            } else {
-              const created = subRepo.create({ name: subName, category_id: categoryId, project_id: projectId })
-              subcategoryId = created.id
-            }
+            subcategoryId = existing ? existing.id : subRepo.create({ name: subName, category_id: categoryId, project_id: projectId }).id
             subCache.set(subKey, subcategoryId)
           }
 
-          // Parse steps
-          const rawSteps = colIdx.steps !== -1 ? (fields[colIdx.steps] ?? '').trim() : ''
-          const steps: TestStep[] = rawSteps
-            ? rawSteps.split(/\s*;\s*|\s*\|\s*/).filter(s => s.trim()).map((s, idx) => {
-                // Strip leading step numbers like "1. " or "1) "
-                const stripped = s.trim().replace(/^\d+[\.\)]\s*/, '')
-                const match = stripped.match(/^(.+?)\s*->\s*(.+)$/)
-                if (match) return { step: idx + 1, action: match[1].trim(), expected: match[2].trim() }
-                return { step: idx + 1, action: stripped, expected: '' }
-              })
+          const steps: TestStep[] = Array.isArray(tc.steps)
+            ? (tc.steps as Record<string, unknown>[]).map((s, idx) => ({
+                step: idx + 1,
+                action: String(s.action ?? '').trim(),
+                expected: String(s.expected ?? '').trim()
+              }))
             : []
-
-          const description = colIdx.description !== -1 ? (fields[colIdx.description] ?? '').trim() : ''
-          const expectedResult = colIdx.expectedResult !== -1 ? (fields[colIdx.expectedResult] ?? '').trim() : ''
-          const version = colIdx.version !== -1 ? (fields[colIdx.version] ?? '').trim() : '1.0'
 
           repo.create({
             title,
-            description,
+            description: String(tc.description ?? '').trim(),
             steps,
-            expected_result: expectedResult,
-            version: version || '1.0',
+            expected_result: String(tc.expected_result ?? '').trim(),
+            version: String(tc.version ?? '1.0').trim() || '1.0',
             subcategory_id: subcategoryId
           })
           importedCount++

@@ -16,18 +16,9 @@ export default function TestLibraryPage() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<Subcategory | null>(null)
   const [editingCase, setEditingCase] = useState<TestCase | null>(null)
   const [showForm, setShowForm] = useState(false)
-  const [showCsvHelp, setShowCsvHelp] = useState(false)
+  const [showJsonHelp, setShowJsonHelp] = useState(false)
   const { invalidate } = useInvalidation()
   const { notify } = useNotification()
-
-  const handleCopyHeader = () => {
-    const headerText = 'Category,Sub-category,Title,Description,Steps,Expected Result,Version'
-    navigator.clipboard.writeText(headerText).then(() => {
-      notify('Header row copied to clipboard', 'success')
-    }).catch(() => {
-      notify('Failed to copy', 'error')
-    })
-  }
 
   const { data: testCases, loading } = useApi<TestCase[]>(
     () => selectedSubcategory
@@ -70,9 +61,9 @@ export default function TestLibraryPage() {
     }
   }
 
-  const handleImportCSV = async () => {
+  const handleImportJSON = async () => {
     try {
-      const result = await window.api.testCases.importCSV(selectedProject!.id)
+      const result = await window.api.testCases.importJSON(selectedProject!.id)
       invalidate('testCases')
       invalidate('categories')
       invalidate('subcategories')
@@ -83,9 +74,9 @@ export default function TestLibraryPage() {
     }
   }
 
-  const handleExportCSV = async () => {
+  const handleExportJSON = async () => {
     try {
-      const result = await window.api.testCases.exportCSV(selectedProject!.id)
+      const result = await window.api.testCases.exportJSON(selectedProject!.id)
       notify(`Exported ${result.count} test case(s)`, 'success')
     } catch (e: unknown) {
       const msg = (e as Error).message
@@ -106,9 +97,9 @@ export default function TestLibraryPage() {
       <div className="library-header">
         <h1 className="headline-sm">Test Library</h1>
         <div className="library-header-actions">
-          <button className="btn btn-secondary btn-sm" onClick={handleImportCSV}>Import CSV</button>
-          <button className="btn btn-secondary btn-sm" onClick={handleExportCSV}>Export CSV</button>
-          <button className="csv-help-btn" onClick={() => setShowCsvHelp(true)} title="CSV format guide">?</button>
+          <button className="btn btn-secondary btn-sm" onClick={handleImportJSON}>↓ Import JSON</button>
+          <button className="btn btn-secondary btn-sm" onClick={handleExportJSON}>↑ Export JSON</button>
+          <button className="csv-help-btn" onClick={() => setShowJsonHelp(true)} title="JSON format guide">?</button>
         </div>
       </div>
       <div className="library-content">
@@ -143,86 +134,92 @@ export default function TestLibraryPage() {
         />
       )}
 
-      {showCsvHelp && (
-        <div className="tcf-overlay" onClick={() => setShowCsvHelp(false)}>
+      {showJsonHelp && (
+        <div className="tcf-overlay" onClick={() => setShowJsonHelp(false)}>
           <div className="tcf-modal csv-help-modal" onClick={(e) => e.stopPropagation()}>
             <div className="tcf-header">
-              <span className="tcf-title">CSV Import Format</span>
-              <button className="tcf-close" onClick={() => setShowCsvHelp(false)}>✕</button>
+              <span className="tcf-title">JSON Import Format</span>
+              <button className="tcf-close" onClick={() => setShowJsonHelp(false)}>✕</button>
             </div>
             <div className="csv-help-body">
               <p className="csv-help-intro">
-                Your CSV file must include a header row with these exact column names:
+                Import file must be a valid JSON file exported from this app, or manually crafted with the structure below.
               </p>
-              <div className="csv-help-code-wrapper">
-                <div className="csv-help-code">
-                  Category,Sub-category,Title,Description,Steps,Expected Result,Version
-                  <button className="csv-copy-icon-btn" onClick={handleCopyHeader} title="Copy header row">⧉</button>
-                </div>
-              </div>
 
               <table className="csv-help-table">
                 <thead>
                   <tr>
-                    <th>Column</th>
+                    <th>Field</th>
                     <th>Required</th>
                     <th>Description</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="mono">Category</td>
+                    <td className="mono">category</td>
                     <td className="csv-help-req">Yes</td>
                     <td>Main category name. Auto-created if it doesn't exist.</td>
                   </tr>
                   <tr>
-                    <td className="mono">Sub-category</td>
+                    <td className="mono">subcategory</td>
                     <td className="csv-help-req">Yes</td>
-                    <td>Subcategory name. Auto-created under the Category if it doesn't exist.</td>
+                    <td>Subcategory name. Auto-created under the category if it doesn't exist.</td>
                   </tr>
                   <tr>
-                    <td className="mono">Title</td>
+                    <td className="mono">title</td>
                     <td className="csv-help-req">Yes</td>
                     <td>Short name for the test case.</td>
                   </tr>
                   <tr>
-                    <td className="mono">Description</td>
+                    <td className="mono">description</td>
                     <td>No</td>
                     <td>Detailed description of what is being tested.</td>
                   </tr>
                   <tr>
-                    <td className="mono">Steps</td>
+                    <td className="mono">steps</td>
                     <td>No</td>
-                    <td>Test steps separated by semicolons or pipes. Add per-step expected results using <span className="mono">-&gt;</span> syntax: <span className="mono">action -&gt; expected result</span></td>
+                    <td>Array of step objects: <span className="mono">{`{ "action": "...", "expected": "..." }`}</span></td>
                   </tr>
                   <tr>
-                    <td className="mono">Expected Result</td>
+                    <td className="mono">expected_result</td>
                     <td>No</td>
-                    <td>Overall expected outcome of the test case (summary). Different from per-step results.</td>
+                    <td>Overall expected outcome (summary across all steps).</td>
                   </tr>
                   <tr>
-                    <td className="mono">Version</td>
+                    <td className="mono">version</td>
                     <td>No</td>
-                    <td>Test case version string (e.g. <span className="mono">1.0</span>, <span className="mono">2.1</span>). Defaults to <span className="mono">1.0</span> if omitted.</td>
+                    <td>Version string (e.g. <span className="mono">1.0</span>). Defaults to <span className="mono">1.0</span> if omitted.</td>
                   </tr>
                 </tbody>
               </table>
 
+              <p className="csv-help-section-label">Example</p>
+              <div className="csv-help-code csv-help-code-example">{`{
+  "version": "1.0",
+  "project_code": "ARR",
+  "test_cases": [
+    {
+      "category": "Authentication",
+      "subcategory": "Login",
+      "title": "Valid login",
+      "description": "Verify login with correct credentials",
+      "steps": [
+        { "action": "Enter username", "expected": "Field accepts input" },
+        { "action": "Enter password", "expected": "Field accepts input" },
+        { "action": "Click Login", "expected": "Dashboard loads" }
+      ],
+      "expected_result": "User is authenticated",
+      "version": "1.0"
+    }
+  ]
+}`}</div>
+
               <p className="csv-help-section-label">Notes</p>
               <ul className="csv-help-notes">
-                <li><strong>Per-step expected results:</strong> Use <span className="mono">action -&gt; expected result</span> format in the Steps column. Example: <span className="mono">Click submit -&gt; Form saves successfully</span>. Each step's expected result will be stored separately.</li>
-                <li><strong>Overall expected result:</strong> The <span className="mono">Expected Result</span> column is for the test case summary—what the user expects at the end of all steps.</li>
-                <li>Fields containing commas or newlines must be wrapped in double quotes.</li>
-                <li>To include a literal double quote inside a field, escape it as <span className="mono">""</span>.</li>
                 <li>Existing categories and subcategories are matched by name — no duplicates are created.</li>
+                <li>Export from this app always produces a valid import file.</li>
+                <li><span className="mono">version</span>, <span className="mono">description</span>, and <span className="mono">expected_result</span> can be omitted or set to empty string.</li>
               </ul>
-
-              <p className="csv-help-section-label">Example</p>
-              <div className="csv-help-code csv-help-code-example">
-Category,Sub-category,Title,Description,Steps,Expected Result,Version
-{`Authentication,Login,Valid login,Verify login with correct credentials,"Enter username -> Field accepts input | Enter password -> Field accepts input | Click Login -> Dashboard loads",User is authenticated,1.0`}
-{`Authentication,Login,Invalid password,Verify error on wrong password,"Enter username -> Field accepts input | Enter wrong password -> Field accepts input | Click Login -> Error displayed",Proper error message shown,1.0`}
-              </div>
             </div>
           </div>
         </div>

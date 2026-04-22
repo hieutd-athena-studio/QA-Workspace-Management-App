@@ -29,8 +29,8 @@ export const IPC = {
     UPDATE: 'test-cases:update',
     DELETE: 'test-cases:delete',
     SEARCH: 'test-cases:search',
-    IMPORT_CSV: 'test-cases:import-csv',
-    EXPORT_CSV: 'test-cases:export-csv'
+    IMPORT_JSON: 'test-cases:import-json',
+    EXPORT_JSON: 'test-cases:export-json'
   },
   TEST_PLANS: {
     GET_ALL: 'test-plans:get-all',

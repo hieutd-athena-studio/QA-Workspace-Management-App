@@ -39,8 +39,8 @@ const api = {
     update: async (id: number, dto: unknown) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.UPDATE, id, dto)),
     delete: async (id: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.DELETE, id)),
     search: async (query: string, projectId?: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.SEARCH, query, projectId)),
-    importCSV: async (projectId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.IMPORT_CSV, projectId)),
-    exportCSV: async (projectId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.EXPORT_CSV, projectId))
+    importJSON: async (projectId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.IMPORT_JSON, projectId)),
+    exportJSON: async (projectId: number) => unwrap(await ipcRenderer.invoke(IPC.TEST_CASES.EXPORT_JSON, projectId))
   },
   testPlans: {
     getAll: async () => unwrap(await ipcRenderer.invoke(IPC.TEST_PLANS.GET_ALL)),

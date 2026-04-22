@@ -19,6 +19,7 @@ export default function TestCaseForm({ subcategoryId, testCase, onSave, onCancel
       ? testCase.steps
       : [{ step: 1, action: '', expected: '' }]
   )
+  const [showPreview, setShowPreview] = useState(true)
 
   const addStep = () => {
     setSteps([...steps, { step: steps.length + 1, action: '', expected: '' }])
@@ -47,9 +48,19 @@ export default function TestCaseForm({ subcategoryId, testCase, onSave, onCancel
 
   return (
     <div className="tcf-overlay" onClick={onCancel}>
-      <div className="tcf-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="tcf-container">
+        <div className="tcf-modal" onClick={(e) => e.stopPropagation()}>
 
-        <h2 className="tcf-title">{testCase ? 'Edit Test Case' : 'New Test Case'}</h2>
+          <div className="tcf-header">
+          <h2 className="tcf-title">{testCase ? 'Edit Test Case' : 'New Test Case'}</h2>
+          <button
+            className="tcf-preview-toggle"
+            onClick={() => setShowPreview(!showPreview)}
+            title={showPreview ? 'Hide preview' : 'Show preview'}
+          >
+            {showPreview ? 'Preview' : 'Preview'}
+          </button>
+        </div>
 
         <div className="tcf-field">
           <label className="tcf-label">Title</label>
@@ -83,59 +94,92 @@ export default function TestCaseForm({ subcategoryId, testCase, onSave, onCancel
           />
         </div>
 
-        <div className="tcf-field">
-          <label className="tcf-label">Steps</label>
-          <div className="tcf-steps">
-            <div className="tcf-steps-head">
-              <span className="tcf-col-num">#</span>
-              <span className="tcf-col-action">ACTION</span>
-              <span className="tcf-col-expected">EXPECTED RESULT</span>
-              <span className="tcf-col-del" />
-            </div>
-            {steps.map((step, i) => (
-              <div key={i} className="tcf-step-row">
-                <span className="tcf-col-num mono">{step.step}</span>
-                <input
-                  className="input tcf-step-input"
-                  value={step.action}
-                  onChange={(e) => updateStep(i, 'action', e.target.value)}
-                  placeholder="Action..."
-                />
-                <input
-                  className="input tcf-step-input"
-                  value={step.expected}
-                  onChange={(e) => updateStep(i, 'expected', e.target.value)}
-                  placeholder="Expected..."
-                />
-                <button
-                  className="tcf-del-btn"
-                  onClick={() => removeStep(i)}
-                  disabled={steps.length <= 1}
-                  title="Remove step"
-                >×</button>
+        <div className="tcf-body">
+          <div className="tcf-field">
+            <label className="tcf-label">Steps</label>
+            <div className="tcf-steps">
+              <div className="tcf-steps-head">
+                <span className="tcf-col-num">#</span>
+                <span className="tcf-col-action">ACTION</span>
+                <span className="tcf-col-expected">EXPECTED RESULT</span>
+                <span className="tcf-col-del" />
               </div>
-            ))}
-            <button className="tcf-add-step" onClick={addStep}>+ Add Step</button>
+              {steps.map((step, i) => (
+                <div key={i} className="tcf-step-row">
+                  <span className="tcf-col-num mono">{step.step}</span>
+                  <input
+                    className="input tcf-step-input"
+                    value={step.action}
+                    onChange={(e) => updateStep(i, 'action', e.target.value)}
+                    placeholder="Action..."
+                  />
+                  <input
+                    className="input tcf-step-input"
+                    value={step.expected}
+                    onChange={(e) => updateStep(i, 'expected', e.target.value)}
+                    placeholder="Expected..."
+                  />
+                  <button
+                    className="tcf-del-btn"
+                    onClick={() => removeStep(i)}
+                    disabled={steps.length <= 1}
+                    title="Remove step"
+                  >×</button>
+                </div>
+              ))}
+              <button className="tcf-add-step" onClick={addStep}>+ Add Step</button>
+            </div>
+          </div>
+
+          <div className="tcf-field">
+            <label className="tcf-label">Overall Expected Result</label>
+            <textarea
+              className="textarea"
+              value={expectedResult}
+              onChange={(e) => setExpectedResult(e.target.value)}
+              placeholder="The overall expected outcome..."
+              rows={2}
+            />
           </div>
         </div>
 
-        <div className="tcf-field">
-          <label className="tcf-label">Overall Expected Result</label>
-          <textarea
-            className="textarea"
-            value={expectedResult}
-            onChange={(e) => setExpectedResult(e.target.value)}
-            placeholder="The overall expected outcome..."
-            rows={2}
-          />
+          <div className="tcf-footer">
+            <button className="btn btn-secondary" onClick={onCancel}>Cancel</button>
+            <button className="btn btn-primary" onClick={handleSubmit} disabled={!title.trim()}>
+              {testCase ? 'Save Changes' : 'Create Test Case'}
+            </button>
+          </div>
         </div>
 
-        <div className="tcf-footer">
-          <button className="btn btn-secondary" onClick={onCancel}>Cancel</button>
-          <button className="btn btn-primary" onClick={handleSubmit} disabled={!title.trim()}>
-            {testCase ? 'Save Changes' : 'Create Test Case'}
-          </button>
+        {showPreview && (
+          <div className="tcf-preview-popup" onClick={(e) => e.stopPropagation()}>
+          <h3 className="tcf-preview-title">Preview</h3>
+          <div className="tcf-preview-content">
+            <div className="tcf-preview-section">
+              <h4 className="tcf-preview-heading">Steps</h4>
+              <div className="tcf-preview-steps">
+                {steps.filter(s => s.action.trim()).map((step) => (
+                  <div key={step.step} className="tcf-preview-step">
+                    <div className="tcf-preview-step-num">{step.step}.</div>
+                    <div className="tcf-preview-step-content">
+                      <div className="tcf-preview-action">{step.action || '(empty)'}</div>
+                      {step.expected.trim() && (
+                        <div className="tcf-preview-expected">→ {step.expected}</div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {expectedResult.trim() && (
+              <div className="tcf-preview-section">
+                <h4 className="tcf-preview-heading">Overall Expected Result</h4>
+                <div className="tcf-preview-overall">{expectedResult}</div>
+              </div>
+            )}
+          </div>
         </div>
+        )}
       </div>
     </div>
   )
