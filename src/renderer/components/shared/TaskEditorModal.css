@@ -1,0 +1,180 @@
+.task-editor-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.task-editor-modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
+.task-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-5) var(--sp-6);
+  border-bottom: 1px solid var(--outline-variant);
+}
+
+.task-editor-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin: 0;
+}
+
+.task-editor-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  padding: var(--sp-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+
+.task-editor-close:hover {
+  color: var(--on-surface);
+}
+
+.task-editor-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-5) var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+/* Budget info card */
+.task-budget-info {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  background: var(--surface-container-low);
+  border-radius: var(--radius-default);
+  padding: var(--sp-4);
+  border: 1px solid var(--outline-variant);
+}
+
+.task-budget-info--over {
+  background: rgba(234, 88, 12, 0.08);
+  border-color: rgba(234, 88, 12, 0.25);
+}
+
+.task-budget-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.task-budget-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--on-surface-variant);
+}
+
+.task-budget-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  font-variant-numeric: tabular-nums;
+}
+
+.task-budget-divider {
+  width: 1px;
+  height: 32px;
+  background: var(--outline-variant);
+  opacity: 0.5;
+}
+
+.task-budget-overflow {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.task-budget-overflow-text {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #ea580c;
+}
+
+/* Task list */
+.task-editor-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.task-editor-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  background: var(--surface-container-lowest);
+  border-radius: var(--radius-default);
+  border: 1px solid var(--outline-variant);
+}
+
+.task-editor-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.task-editor-text {
+  flex: 1;
+  font-size: 0.875rem;
+}
+
+.task-editor-days {
+  width: 100px;
+  font-size: 0.875rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.task-editor-delete {
+  color: var(--critical);
+  flex-shrink: 0;
+}
+
+/* Add button */
+.task-editor-add {
+  align-self: flex-start;
+  margin-top: var(--sp-1);
+}
+
+/* Footer */
+.task-editor-footer {
+  display: flex;
+  gap: var(--sp-3);
+  justify-content: flex-end;
+  padding: var(--sp-4) var(--sp-6);
+  border-top: 1px solid var(--outline-variant);
+  background: var(--surface-container-lowest);
+}

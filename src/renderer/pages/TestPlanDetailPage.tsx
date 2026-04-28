@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import type { TestPlan, TestCycle, CreateTestCycleDTO, UpdateTestCycleDTO, UpdateTestPlanDTO } from '@shared/types'
-import { calculateWorkingDaysBetween, getTotalTaskDays } from '@shared/utils/working-days'
 import { TestCycleEnvironment } from '@shared/types'
 import { useApi } from '../hooks/useApi'
 import { useInvalidation } from '../contexts/InvalidationContext'
 import { useNotification } from '../contexts/NotificationContext'
 import ConfirmDialog from '../components/shared/ConfirmDialog'
+import TaskEditorModal from '../components/shared/TaskEditorModal'
 import './TestPlanDetailPage.css'
 
 const getEnvironmentClass = (env: string | null) => {
@@ -215,66 +215,19 @@ export default function TestPlanDetailPage() {
       <div className="plan-summary-section">
         <div className="plan-summary-header">
           <span className="section-title">Tasks</span>
-          {!editingTasks && (
-            <button className="btn btn-ghost btn-sm" onClick={() => { setTasksDraft(parseTasks(plan.summary)); setEditingTasks(true) }}>Edit</button>
-          )}
+          <button className="btn btn-ghost btn-sm" onClick={() => setEditingTasks(true)}>Edit</button>
         </div>
-        {editingTasks ? (
-          <div className="plan-summary-edit">
-            <div className="task-list-edit">
-              {tasksDraft.map((task, i) => (
-                <div key={i} className="task-edit-row">
-                  <input
-                    className="input task-edit-input"
-                    value={task.text}
-                    onChange={(e) => setTasksDraft(tasksDraft.map((t, idx) => idx === i ? { ...t, text: e.target.value } : t))}
-                    placeholder="Task description…"
-                  />
-                  <input
-                    className="input task-edit-days"
-                    type="number"
-                    min="0"
-                    max="999"
-                    value={(task as { text: string; done: boolean; days?: number }).days ?? ''}
-                    onChange={(e) => {
-                      const val = e.target.value === '' ? undefined : Math.max(0, parseInt(e.target.value, 10) || 0)
-                      setTasksDraft(tasksDraft.map((t, idx) => idx === i ? { ...t, days: val } : t))
-                    }}
-                    placeholder="days"
-                    title="Working days for this task"
-                  />
-                  <button className="btn btn-ghost btn-sm task-edit-remove" onClick={() => setTasksDraft(tasksDraft.filter((_, idx) => idx !== i))}>✕</button>
-                </div>
-              ))}
-              <button className="btn btn-ghost btn-sm" onClick={() => setTasksDraft([...tasksDraft, { text: '', done: false }])}>+ Add task</button>
-            </div>
-            {(() => {
-              const totalDays = getTotalTaskDays(JSON.stringify(tasksDraft))
-              const budgetDays = calculateWorkingDaysBetween(plan.start_date, plan.end_date)
-              return totalDays > 0 && totalDays > budgetDays ? (
-                <div className="task-budget-warning">
-                  ⚠ {totalDays} working days assigned — only {budgetDays} available. Review task estimates.
-                </div>
-              ) : null
-            })()}
-            <div className="plan-summary-edit-actions">
-              <button className="btn btn-secondary btn-sm" onClick={() => setEditingTasks(false)}>Cancel</button>
-              <button className="btn btn-primary btn-sm" onClick={handleSaveTasks}>Save</button>
-            </div>
-          </div>
-        ) : (
-          <div className="task-list-view">
-            {parseTasks(plan.summary).length === 0
-              ? <span className="text-muted">No tasks yet. Click Edit to add tasks.</span>
-              : parseTasks(plan.summary).map((task, i) => (
-                <label key={i} className={`task-item${task.done ? ' task-item--done' : ''}`}>
-                  <input type="checkbox" checked={task.done} onChange={() => handleToggleTask(i)} />
-                  <span>{task.text}</span>
-                </label>
-              ))
-            }
-          </div>
-        )}
+        <div className="task-list-view">
+          {parseTasks(plan.summary).length === 0
+            ? <span className="text-muted">No tasks yet. Click Edit to add tasks.</span>
+            : parseTasks(plan.summary).map((task, i) => (
+              <label key={i} className={`task-item${task.done ? ' task-item--done' : ''}`}>
+                <input type="checkbox" checked={task.done} onChange={() => handleToggleTask(i)} />
+                <span>{task.text}</span>
+              </label>
+            ))
+          }
+        </div>
       </div>
 
       {/* Cycles section */}
@@ -438,6 +391,15 @@ export default function TestPlanDetailPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {editingTasks && (
+        <TaskEditorModal
+          tasks={parseTasks(plan.summary)}
+          plan={plan}
+          onSave={handleSaveTasks}
+          onCancel={() => setEditingTasks(false)}
+        />
       )}
     </div>
   )
