@@ -113,7 +113,7 @@ export default function TestPlansPage() {
       ) : (
         <div className="plans-grid">
           {plans.map((plan) => {
-            const status = getDeadlineStatus(plan.end_date)
+            const status = getDeadlineStatus(plan.end_date, plan.summary)
             const taskProgress = getTaskProgressPercent(plan.summary)
             const progress = taskProgress !== null ? taskProgress : getProgressPercent(plan.start_date, plan.end_date)
             const daysLabel = formatDaysRemaining(plan.end_date)

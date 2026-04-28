@@ -43,7 +43,19 @@ const IconTag = () => (
   </svg>
 )
 
+const IconDashboard = () => (
+  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="7.5" cy="7.5" r="5.5"/>
+    <path d="M7.5 7.5L10.5 4.5"/>
+    <circle cx="7.5" cy="7.5" r="1" fill="currentColor" stroke="none"/>
+  </svg>
+)
+
 /* --- Nav Items Config --- */
+const globalNavItems = [
+  { to: '/dashboard', Icon: IconDashboard, label: 'Dashboard' },
+]
+
 const workspaceNavItems = [
   { to: '/library',    Icon: IconList,      label: 'Test Library' },
   { to: '/test-types', Icon: IconTag,       label: 'Test Types' },
@@ -63,7 +75,7 @@ export default function Sidebar() {
         <span className="sidebar-brand-text">Workspace</span>
       </div>
 
-      {/* Projects nav */}
+      {/* Global nav */}
       <nav className="sidebar-nav">
         <NavLink
           to="/projects"
@@ -72,6 +84,16 @@ export default function Sidebar() {
           <span className="sidebar-link-icon"><IconGrid /></span>
           <span className="sidebar-link-label">Projects</span>
         </NavLink>
+        {globalNavItems.map(({ to, Icon, label }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) => `sidebar-link ${isActive ? 'sidebar-link-active' : ''}`}
+          >
+            <span className="sidebar-link-icon"><Icon /></span>
+            <span className="sidebar-link-label">{label}</span>
+          </NavLink>
+        ))}
       </nav>
 
       {/* Current project */}

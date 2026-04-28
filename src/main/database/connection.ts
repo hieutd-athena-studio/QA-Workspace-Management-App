@@ -6,6 +6,7 @@ import { runMigration004 } from './migrations/004-restructure-categories'
 import { runMigration005 } from './migrations/005-add-plan-summary'
 import { runMigration006 } from './migrations/006-add-environment-to-test-cycles'
 import { runMigration007 } from './migrations/007-add-test-types'
+import { runMigration008 } from './migrations/008-add-project-color'
 
 let dbInstance: Database.Database | null = null
 
@@ -20,6 +21,7 @@ export function createDatabase(dbPath: string): Database.Database {
   runMigration005(db)
   runMigration006(db)
   runMigration007(db)
+  runMigration008(db)
   return db
 }
 

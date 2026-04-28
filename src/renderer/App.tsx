@@ -7,6 +7,7 @@ import TestPlansPage from './pages/TestPlansPage'
 import TestPlanDetailPage from './pages/TestPlanDetailPage'
 import TestCycleDetailPage from './pages/TestCycleDetailPage'
 import ExecutionPage from './pages/ExecutionPage'
+import DashboardPage from './pages/DashboardPage'
 import ReportsPage from './pages/ReportsPage'
 import TestTypesPage from './pages/TestTypesPage'
 
@@ -14,7 +15,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
-        <Route index element={<Navigate to="/projects" replace />} />
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route path="dashboard" element={<DashboardPage />} />
         <Route path="projects" element={<ProjectsPage />} />
         <Route path="library" element={<TestLibraryPage />} />
         <Route path="test-types" element={<TestTypesPage />} />

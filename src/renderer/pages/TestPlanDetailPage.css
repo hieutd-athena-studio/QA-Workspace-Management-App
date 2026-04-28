@@ -197,6 +197,24 @@
   color: var(--critical);
 }
 
+.task-edit-days {
+  width: 72px;
+  flex-shrink: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.task-budget-warning {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--warning);
+  background: rgba(180, 120, 0, 0.08);
+  border: 1px solid rgba(180, 120, 0, 0.25);
+  border-radius: var(--radius-default);
+  padding: var(--sp-2) var(--sp-3);
+  margin-top: var(--sp-2);
+}
+
 /* Section header */
 .section-header {
   display: flex;

@@ -70,6 +70,7 @@
   gap: var(--sp-4);
   position: relative;
   border: 1.5px solid var(--surface-variant);
+  border-left: 4px solid var(--project-accent, var(--primary));
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
@@ -179,4 +180,28 @@
   font-weight: 400;
   color: var(--on-surface-variant);
   margin-left: var(--sp-2);
+}
+
+/* Color picker */
+.proj-color-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.proj-color-input {
+  width: 44px;
+  height: 36px;
+  padding: 2px;
+  border: 1.5px solid var(--outline-variant);
+  border-radius: var(--radius-default);
+  background: var(--surface-container-lowest);
+  cursor: pointer;
+}
+
+.proj-color-value {
+  font-size: 0.8125rem;
+  color: var(--on-surface-variant);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  letter-spacing: 0.04em;
 }

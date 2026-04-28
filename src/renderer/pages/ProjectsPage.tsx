@@ -14,7 +14,7 @@ const STATUS_COLORS: Record<ProjectStatus, string> = {
   'Dropped': '#6b7280'
 }
 
-const EMPTY_FORM = { name: '', code: '', status: 'On-going' as ProjectStatus, description: '' }
+const EMPTY_FORM = { name: '', code: '', status: 'On-going' as ProjectStatus, description: '', color: '' }
 
 interface ProjectFormProps {
   initial?: typeof EMPTY_FORM
@@ -83,6 +83,27 @@ function ProjectForm({ initial = EMPTY_FORM, isEdit = false, onSave, onCancel }:
               placeholder="Brief description of the project…"
               style={{ resize: 'vertical', minHeight: 72 }}
             />
+          </div>
+
+          <div className="form-group">
+            <label className="tcf-label">Card Color</label>
+            <div className="proj-color-row">
+              <input
+                type="color"
+                className="proj-color-input"
+                value={form.color || '#005AC2'}
+                onChange={e => set('color', e.target.value)}
+              />
+              <span className="proj-color-value">{form.color || 'Default'}</span>
+              {form.color && (
+                <button
+                  className="btn btn-ghost btn-sm"
+                  type="button"
+                  onClick={() => set('color', '')}
+                  title="Reset to default color"
+                >Reset</button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -201,6 +222,7 @@ export default function ProjectsPage() {
               <div
                 key={project.id}
                 className={`project-card ${isActive ? 'project-card-active' : ''}`}
+                style={project.color ? { '--project-accent': project.color } as React.CSSProperties : undefined}
                 onClick={() => handleSelect(project)}
               >
                 <div className="project-card-top">
@@ -262,7 +284,8 @@ export default function ProjectsPage() {
             name: editTarget.name,
             code: editTarget.code,
             status: editTarget.status,
-            description: editTarget.description
+            description: editTarget.description,
+            color: editTarget.color ?? ''
           }}
           onSave={handleEdit}
           onCancel={() => setEditTarget(null)}

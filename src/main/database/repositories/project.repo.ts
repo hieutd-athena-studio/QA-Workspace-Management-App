@@ -22,8 +22,8 @@ export class ProjectRepository {
     if (existing) throw new Error(`Project code "${code}" is already in use`)
 
     const result = this.db.prepare(
-      `INSERT INTO project (name, code, status, description) VALUES (?, ?, ?, ?)`
-    ).run(dto.name, code, dto.status, dto.description)
+      `INSERT INTO project (name, code, status, description, color) VALUES (?, ?, ?, ?, ?)`
+    ).run(dto.name, code, dto.status, dto.description, dto.color ?? null)
 
     return this.getById(Number(result.lastInsertRowid))!
   }
@@ -45,6 +45,7 @@ export class ProjectRepository {
         code = ?,
         status = ?,
         description = ?,
+        color = ?,
         updated_at = datetime('now')
       WHERE id = ?`
     ).run(
@@ -52,6 +53,7 @@ export class ProjectRepository {
       dto.code ?? existing.code,
       dto.status ?? existing.status,
       dto.description ?? existing.description,
+      dto.color !== undefined ? dto.color : (existing.color ?? null),
       id
     )
 

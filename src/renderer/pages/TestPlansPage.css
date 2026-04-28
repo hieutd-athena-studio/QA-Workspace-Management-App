@@ -52,6 +52,11 @@
   border-radius: 4px 0 0 4px;
 }
 
+.plan-card--safe::before    { background: var(--success); }
+.plan-card--warning::before { background: var(--warning); }
+.plan-card--critical::before{ background: var(--critical); }
+.plan-card--overdue::before { background: var(--on-surface-variant); opacity: 0.4; }
+
 .plan-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 32px rgba(17, 48, 105, 0.08);
@@ -99,6 +104,41 @@
   opacity: 0.4;
   flex-shrink: 0;
 }
+
+/* Deadline progress bar */
+.plan-deadline-bar {
+  height: 4px;
+  background: var(--outline-variant);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.plan-deadline-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--primary-dim);
+  transition: width 0.3s ease;
+}
+
+.plan-card--safe .plan-deadline-bar-fill     { background: var(--success); }
+.plan-card--warning .plan-deadline-bar-fill  { background: var(--warning); }
+.plan-card--critical .plan-deadline-bar-fill { background: var(--critical); }
+.plan-card--overdue .plan-deadline-bar-fill  { background: var(--on-surface-variant); opacity: 0.5; }
+
+/* Deadline badge */
+.plan-deadline-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.plan-deadline-badge--safe     { background: rgba(0, 120, 80, 0.1);  color: var(--success); }
+.plan-deadline-badge--warning  { background: rgba(180, 120, 0, 0.1); color: var(--warning); }
+.plan-deadline-badge--critical { background: rgba(159, 64, 61, 0.1); color: var(--critical); }
+.plan-deadline-badge--overdue  { background: rgba(100, 100, 100, 0.1); color: var(--on-surface-variant); }
 
 .plan-card-footer {
   display: flex;

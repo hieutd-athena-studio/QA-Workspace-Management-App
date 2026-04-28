@@ -6,6 +6,7 @@ export interface Project {
   code: string
   status: ProjectStatus
   description: string
+  color?: string
   created_at: string
   updated_at: string
 }
@@ -15,6 +16,7 @@ export interface CreateProjectDTO {
   code: string
   status: ProjectStatus
   description: string
+  color?: string
 }
 
 export interface UpdateProjectDTO {
@@ -22,4 +24,5 @@ export interface UpdateProjectDTO {
   code?: string
   status?: ProjectStatus
   description?: string
+  color?: string
 }

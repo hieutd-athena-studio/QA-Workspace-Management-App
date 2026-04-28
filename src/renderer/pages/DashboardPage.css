@@ -1,0 +1,204 @@
+/* === Dashboard Page === */
+
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  max-width: 1400px;
+  width: 100%;
+}
+
+.dashboard-header {
+  margin-bottom: var(--sp-6);
+}
+
+.dashboard-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--on-surface);
+}
+
+.dashboard-subtitle {
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+  margin-top: var(--sp-1);
+}
+
+.dashboard-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-16);
+  text-align: center;
+}
+
+.dashboard-empty-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
+/* Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--sp-4);
+}
+
+/* Card */
+.dashboard-card {
+  background: var(--surface-container-lowest);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(17, 48, 105, 0.08);
+}
+
+.dashboard-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.dashboard-card-name-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-project-code {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--primary);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.dashboard-project-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Health badge */
+.health-badge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.health-badge.health--green  { background: rgba(0, 120, 80, 0.12);  color: var(--success); }
+.health-badge.health--amber  { background: rgba(180, 120, 0, 0.12); color: var(--warning); }
+.health-badge.health--red    { background: rgba(159, 64, 61, 0.12); color: var(--critical); }
+
+/* Health bar */
+.dashboard-health-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.dashboard-health-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--outline-variant);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.dashboard-health-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.dashboard-health-bar-fill.health--green { background: var(--success); }
+.dashboard-health-bar-fill.health--amber { background: var(--warning); }
+.dashboard-health-bar-fill.health--red   { background: var(--critical); }
+
+.dashboard-health-pct {
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--on-surface-variant);
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Plan list */
+.dashboard-no-plans {
+  font-size: 0.8125rem;
+  color: var(--on-surface-variant);
+  font-style: italic;
+}
+
+.dashboard-plan-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  border-top: 1px solid var(--outline-variant);
+  padding-top: var(--sp-3);
+}
+
+.dashboard-plan-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 0.8125rem;
+}
+
+.dashboard-plan-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--on-surface-variant);
+}
+
+.dashboard-plan-row--safe .dashboard-plan-dot     { background: var(--success); }
+.dashboard-plan-row--warning .dashboard-plan-dot  { background: var(--warning); }
+.dashboard-plan-row--critical .dashboard-plan-dot { background: var(--critical); }
+.dashboard-plan-row--overdue .dashboard-plan-dot  { background: var(--on-surface-variant); opacity: 0.5; }
+
+.dashboard-plan-name {
+  flex: 1;
+  color: var(--on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-plan-version {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: rgba(0, 90, 194, 0.1);
+  padding: 1px 6px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.dashboard-more {
+  font-size: 0.75rem;
+  color: var(--on-surface-variant);
+  padding-left: var(--sp-4);
+}
