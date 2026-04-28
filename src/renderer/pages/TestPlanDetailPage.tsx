@@ -24,8 +24,8 @@ export default function TestPlanDetailPage() {
   const [showCycleForm, setShowCycleForm] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<TestCycle | null>(null)
   const [editingCycle, setEditingCycle] = useState<TestCycle | null>(null)
-  const [editingSummary, setEditingSummary] = useState(false)
-  const [summaryDraft, setSummaryDraft] = useState('')
+  const [editingTasks, setEditingTasks] = useState(false)
+  const [tasksDraft, setTasksDraft] = useState<{ text: string; done: boolean }[]>([])
 
   const [cycleName, setCycleName] = useState('')
   const [buildName, setBuildName] = useState('')
@@ -92,16 +92,35 @@ export default function TestPlanDetailPage() {
     setEnvironment(null)
   }
 
+  const parseTasks = (raw: string | undefined): { text: string; done: boolean }[] => {
+    if (!raw) return []
+    try {
+      const parsed = JSON.parse(raw)
+      if (Array.isArray(parsed)) return parsed
+    } catch { /* legacy plain text — ignore */ }
+    return []
+  }
+
   useEffect(() => {
-    if (plan) setSummaryDraft(plan.summary || '')
+    if (plan) setTasksDraft(parseTasks(plan.summary))
   }, [plan?.id, plan?.summary])
 
-  const handleSaveSummary = async () => {
+  const handleSaveTasks = async () => {
     try {
-      await window.api.testPlans.update(Number(planId), { summary: summaryDraft.trim() })
+      await window.api.testPlans.update(Number(planId), { summary: JSON.stringify(tasksDraft) })
       invalidate('testPlans')
-      notify('Summary updated', 'success')
-      setEditingSummary(false)
+      notify('Tasks saved', 'success')
+      setEditingTasks(false)
+    } catch (e: unknown) {
+      notify((e as Error).message, 'error')
+    }
+  }
+
+  const handleToggleTask = async (index: number) => {
+    const updated = parseTasks(plan!.summary).map((t, i) => i === index ? { ...t, done: !t.done } : t)
+    try {
+      await window.api.testPlans.update(Number(planId), { summary: JSON.stringify(updated) })
+      invalidate('testPlans')
     } catch (e: unknown) {
       notify((e as Error).message, 'error')
     }
@@ -158,33 +177,47 @@ export default function TestPlanDetailPage() {
         </div>
       </div>
 
-      {/* Summary section */}
+      {/* Task list section */}
       <div className="plan-summary-section">
         <div className="plan-summary-header">
-          <span className="section-title">Summary</span>
-          {!editingSummary && (
-            <button className="btn btn-ghost btn-sm" onClick={() => { setSummaryDraft(plan.summary || ''); setEditingSummary(true) }}>Edit</button>
+          <span className="section-title">Tasks</span>
+          {!editingTasks && (
+            <button className="btn btn-ghost btn-sm" onClick={() => { setTasksDraft(parseTasks(plan.summary)); setEditingTasks(true) }}>Edit</button>
           )}
         </div>
-        {editingSummary ? (
+        {editingTasks ? (
           <div className="plan-summary-edit">
-            <textarea
-              className="input plan-summary-textarea"
-              value={summaryDraft}
-              onChange={(e) => setSummaryDraft(e.target.value)}
-              placeholder="Describe the features being tested in this plan…"
-              rows={4}
-              autoFocus
-            />
+            <div className="task-list-edit">
+              {tasksDraft.map((task, i) => (
+                <div key={i} className="task-edit-row">
+                  <input
+                    className="input task-edit-input"
+                    value={task.text}
+                    onChange={(e) => setTasksDraft(tasksDraft.map((t, idx) => idx === i ? { ...t, text: e.target.value } : t))}
+                    placeholder="Task description…"
+                  />
+                  <button className="btn btn-ghost btn-sm task-edit-remove" onClick={() => setTasksDraft(tasksDraft.filter((_, idx) => idx !== i))}>✕</button>
+                </div>
+              ))}
+              <button className="btn btn-ghost btn-sm" onClick={() => setTasksDraft([...tasksDraft, { text: '', done: false }])}>+ Add task</button>
+            </div>
             <div className="plan-summary-edit-actions">
-              <button className="btn btn-secondary btn-sm" onClick={() => setEditingSummary(false)}>Cancel</button>
-              <button className="btn btn-primary btn-sm" onClick={handleSaveSummary}>Save</button>
+              <button className="btn btn-secondary btn-sm" onClick={() => setEditingTasks(false)}>Cancel</button>
+              <button className="btn btn-primary btn-sm" onClick={handleSaveTasks}>Save</button>
             </div>
           </div>
         ) : (
-          <p className="plan-summary-text">
-            {plan.summary || <span className="text-muted">No summary added yet. Click Edit to describe the features tested in this plan.</span>}
-          </p>
+          <div className="task-list-view">
+            {parseTasks(plan.summary).length === 0
+              ? <span className="text-muted">No tasks yet. Click Edit to add tasks.</span>
+              : parseTasks(plan.summary).map((task, i) => (
+                <label key={i} className={`task-item${task.done ? ' task-item--done' : ''}`}>
+                  <input type="checkbox" checked={task.done} onChange={() => handleToggleTask(i)} />
+                  <span>{task.text}</span>
+                </label>
+              ))
+            }
+          </div>
         )}
       </div>
 

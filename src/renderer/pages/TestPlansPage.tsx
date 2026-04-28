@@ -39,10 +39,10 @@ export default function TestPlansPage() {
   const [deleteTarget, setDeleteTarget] = useState<TestPlan | null>(null)
 
   const [name, setName] = useState('')
-  const [summary, setSummary] = useState('')
   const [version, setVersion] = useState('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
+  const [taskList, setTaskList] = useState('')
 
   const { data: plans, loading } = useApi<TestPlan[]>(
     () => selectedProject
@@ -61,16 +61,19 @@ export default function TestPlansPage() {
   )
 
   const resetForm = () => {
-    setName(''); setSummary(''); setVersion(''); setStartDate(''); setEndDate('')
+    setName(''); setVersion(''); setStartDate(''); setEndDate(''); setTaskList('')
     setShowForm(false)
   }
 
   const handleCreate = async () => {
     if (!name.trim() || !version.trim() || !startDate || !endDate || !selectedProject) return
     try {
+      const tasks = taskList.trim()
+        ? taskList.split('\n').map(line => ({ text: line.trim(), done: false })).filter(t => t.text)
+        : []
       const dto: CreateTestPlanDTO = {
         project_id: selectedProject.id,
-        name: name.trim(), summary: summary.trim(),
+        name: name.trim(), summary: JSON.stringify(tasks),
         version: version.trim(),
         start_date: startDate, end_date: endDate
       }
@@ -117,9 +120,6 @@ export default function TestPlansPage() {
               {plan.display_id && (
                 <span className="plan-card-display-id">{plan.display_id}</span>
               )}
-              {plan.summary && (
-                <p className="plan-card-summary">{plan.summary}</p>
-              )}
               <div className="plan-card-dates">
                 <span>{new Date(plan.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                 <span className="plan-card-dates-sep" />
@@ -152,8 +152,8 @@ export default function TestPlansPage() {
                 <input className="input" value={version} onChange={(e) => setVersion(e.target.value)} placeholder="e.g., v2.0" />
               </div>
               <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                <label className="tcf-label">Summary</label>
-                <textarea className="input plan-summary-input" value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="Describe the features being tested in this plan…" rows={3} />
+                <label className="tcf-label">Initial Tasks (one per line)</label>
+                <textarea className="input plan-summary-input" value={taskList} onChange={(e) => setTaskList(e.target.value)} placeholder="e.g., Login flow&#10;Payment processing&#10;Error handling" rows={3} />
               </div>
               <div className="plan-form-dates">
                 <div className="form-group">

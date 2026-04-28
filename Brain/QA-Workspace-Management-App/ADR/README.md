@@ -45,6 +45,7 @@ Required sections: **Context · Decision · Consequences**. See [[ADR-template]]
 | ID | Title | Status |
 |----|-------|--------|
 | [[ADR-004-react-context-over-redux]] | React Context for app-level state (no Redux) | Accepted |
+| [[ADR-005-task-list-json-storage]] | Task list stored as JSON in summary column | Accepted |
 
 ## Adding a new ADR
 

@@ -132,30 +132,69 @@
   margin-bottom: var(--sp-3);
 }
 
-.plan-summary-text {
-  font-size: 0.875rem;
-  line-height: 1.6;
-  color: var(--on-surface);
-  white-space: pre-wrap;
-}
-
 .plan-summary-edit {
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
 }
 
-.plan-summary-textarea {
-  resize: vertical;
-  min-height: 80px;
-  font-size: 0.875rem;
-  line-height: 1.6;
-}
-
 .plan-summary-edit-actions {
   display: flex;
   gap: var(--sp-2);
   justify-content: flex-end;
+}
+
+/* Task list view */
+.task-list-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-size: 0.875rem;
+  color: var(--on-surface);
+  cursor: pointer;
+  user-select: none;
+}
+
+.task-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.task-item--done span {
+  text-decoration: line-through;
+  color: var(--on-surface-variant);
+}
+
+/* Task list edit */
+.task-list-edit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.task-edit-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.task-edit-input {
+  flex: 1;
+  font-size: 0.875rem;
+}
+
+.task-edit-remove {
+  flex-shrink: 0;
+  color: var(--critical);
 }
 
 /* Section header */

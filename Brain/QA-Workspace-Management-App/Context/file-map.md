@@ -10,6 +10,7 @@ last_reviewed: 2026-04-20
 
 ## Main Process — `src/main/`
 
+
 | File | Purpose |
 |------|---------|
 | `index.ts` | App lifecycle, window creation, IPC registration |
