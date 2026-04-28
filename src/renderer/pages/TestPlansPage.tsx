@@ -6,6 +6,7 @@ import { useInvalidation } from '../contexts/InvalidationContext'
 import { useNotification } from '../contexts/NotificationContext'
 import { useProject } from '../contexts/ProjectContext'
 import ConfirmDialog from '../components/shared/ConfirmDialog'
+import { getDeadlineStatus, getProgressPercent, getTaskProgressPercent, formatDaysRemaining } from '@shared/utils/working-days'
 import './TestPlansPage.css'
 
 function PlansEmptyState({ onAction }: { onAction: () => void }) {
@@ -111,30 +112,40 @@ export default function TestPlansPage() {
         <PlansEmptyState onAction={() => setShowForm(true)} />
       ) : (
         <div className="plans-grid">
-          {plans.map((plan) => (
-            <div key={plan.id} className="plan-card" onClick={() => navigate(`/plans/${plan.id}`)}>
-              <div className="plan-card-top">
-                <span className="plan-card-name">{plan.name}</span>
-                <span className="version-badge">{plan.version}</span>
+          {plans.map((plan) => {
+            const status = getDeadlineStatus(plan.end_date)
+            const taskProgress = getTaskProgressPercent(plan.summary)
+            const progress = taskProgress !== null ? taskProgress : getProgressPercent(plan.start_date, plan.end_date)
+            const daysLabel = formatDaysRemaining(plan.end_date)
+            return (
+              <div key={plan.id} className={`plan-card plan-card--${status}`} onClick={() => navigate(`/plans/${plan.id}`)}>
+                <div className="plan-card-top">
+                  <span className="plan-card-name">{plan.name}</span>
+                  <span className="version-badge">{plan.version}</span>
+                </div>
+                {plan.display_id && (
+                  <span className="plan-card-display-id">{plan.display_id}</span>
+                )}
+                <div className="plan-card-dates">
+                  <span>{new Date(plan.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                  <span className="plan-card-dates-sep" />
+                  <span>{new Date(plan.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                </div>
+                <div className="plan-deadline-bar">
+                  <div className="plan-deadline-bar-fill" style={{ width: `${progress}%` }} />
+                </div>
+                <div className="plan-card-footer">
+                  <span className="plan-card-meta">Click to view cycles →</span>
+                  <span className={`plan-deadline-badge plan-deadline-badge--${status}`}>{daysLabel}</span>
+                  <button
+                    className="plan-card-delete"
+                    onClick={(e) => { e.stopPropagation(); setDeleteTarget(plan) }}
+                    title="Delete plan"
+                  >Delete</button>
+                </div>
               </div>
-              {plan.display_id && (
-                <span className="plan-card-display-id">{plan.display_id}</span>
-              )}
-              <div className="plan-card-dates">
-                <span>{new Date(plan.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                <span className="plan-card-dates-sep" />
-                <span>{new Date(plan.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-              </div>
-              <div className="plan-card-footer">
-                <span className="plan-card-meta">Click to view cycles →</span>
-                <button
-                  className="plan-card-delete"
-                  onClick={(e) => { e.stopPropagation(); setDeleteTarget(plan) }}
-                  title="Delete plan"
-                >Delete</button>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 

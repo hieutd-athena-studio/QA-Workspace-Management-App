@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import type { TestPlan, TestCycle, CreateTestCycleDTO, UpdateTestCycleDTO } from '@shared/types'
+import type { TestPlan, TestCycle, CreateTestCycleDTO, UpdateTestCycleDTO, UpdateTestPlanDTO } from '@shared/types'
 import { TestCycleEnvironment } from '@shared/types'
 import { useApi } from '../hooks/useApi'
 import { useInvalidation } from '../contexts/InvalidationContext'
@@ -26,6 +26,11 @@ export default function TestPlanDetailPage() {
   const [editingCycle, setEditingCycle] = useState<TestCycle | null>(null)
   const [editingTasks, setEditingTasks] = useState(false)
   const [tasksDraft, setTasksDraft] = useState<{ text: string; done: boolean }[]>([])
+  const [editingPlan, setEditingPlan] = useState(false)
+  const [planNameDraft, setPlanNameDraft] = useState('')
+  const [planVersionDraft, setPlanVersionDraft] = useState('')
+  const [planStartDraft, setPlanStartDraft] = useState('')
+  const [planEndDraft, setPlanEndDraft] = useState('')
 
   const [cycleName, setCycleName] = useState('')
   const [buildName, setBuildName] = useState('')
@@ -116,6 +121,33 @@ export default function TestPlanDetailPage() {
     }
   }
 
+  const openEditPlan = () => {
+    if (!plan) return
+    setPlanNameDraft(plan.name)
+    setPlanVersionDraft(plan.version)
+    setPlanStartDraft(plan.start_date)
+    setPlanEndDraft(plan.end_date)
+    setEditingPlan(true)
+  }
+
+  const handleSavePlan = async () => {
+    if (!planNameDraft.trim() || !planVersionDraft.trim() || !planStartDraft || !planEndDraft) return
+    try {
+      const dto: UpdateTestPlanDTO = {
+        name: planNameDraft.trim(),
+        version: planVersionDraft.trim(),
+        start_date: planStartDraft,
+        end_date: planEndDraft,
+      }
+      await window.api.testPlans.update(Number(planId), dto)
+      invalidate('testPlans')
+      notify('Plan updated', 'success')
+      setEditingPlan(false)
+    } catch (e: unknown) {
+      notify((e as Error).message, 'error')
+    }
+  }
+
   const handleToggleTask = async (index: number) => {
     const updated = parseTasks(plan!.summary).map((t, i) => i === index ? { ...t, done: !t.done } : t)
     try {
@@ -173,6 +205,7 @@ export default function TestPlanDetailPage() {
         </div>
         <div className="plan-detail-hero-actions">
           <button className="btn btn-primary" onClick={() => setShowCycleForm(true)}>+ New Cycle</button>
+          <button className="btn btn-secondary" onClick={openEditPlan}>Edit Plan</button>
           <button className="btn btn-secondary" onClick={() => navigate('/plans')}>Back</button>
         </div>
       </div>
@@ -346,6 +379,42 @@ export default function TestPlanDetailPage() {
           onConfirm={() => handleDeleteCycle(deleteTarget.id)}
           onCancel={() => setDeleteTarget(null)}
         />
+      )}
+
+      {editingPlan && (
+        <div className="tcf-overlay" onClick={() => setEditingPlan(false)}>
+          <div className="tcf-modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="tcf-title">Edit Test Plan</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
+              <div className="form-group">
+                <label className="tcf-label">Name</label>
+                <input className="input" value={planNameDraft} onChange={(e) => setPlanNameDraft(e.target.value)} autoFocus />
+              </div>
+              <div className="form-group">
+                <label className="tcf-label">Version</label>
+                <input className="input" value={planVersionDraft} onChange={(e) => setPlanVersionDraft(e.target.value)} />
+              </div>
+              <div style={{ display: 'flex', gap: 'var(--sp-3)' }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label className="tcf-label">Start Date</label>
+                  <input className="input" type="date" value={planStartDraft} onChange={(e) => setPlanStartDraft(e.target.value)} />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label className="tcf-label">End Date</label>
+                  <input className="input" type="date" value={planEndDraft} onChange={(e) => setPlanEndDraft(e.target.value)} />
+                </div>
+              </div>
+            </div>
+            <div className="tcf-footer">
+              <button className="btn btn-secondary" onClick={() => setEditingPlan(false)}>Cancel</button>
+              <button
+                className="btn btn-primary"
+                onClick={handleSavePlan}
+                disabled={!planNameDraft.trim() || !planVersionDraft.trim() || !planStartDraft || !planEndDraft}
+              >Save Changes</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

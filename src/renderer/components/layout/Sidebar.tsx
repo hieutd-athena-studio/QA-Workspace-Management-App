@@ -27,15 +27,6 @@ const IconClipboard = () => (
   </svg>
 )
 
-const IconGantt = () => (
-  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
-    <path d="M2 4.5h6M2 7.5h9M2 10.5h5"/>
-    <circle cx="9" cy="4.5" r="1" fill="currentColor" stroke="none"/>
-    <circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none"/>
-    <circle cx="8" cy="10.5" r="1" fill="currentColor" stroke="none"/>
-  </svg>
-)
-
 const IconReport = () => (
   <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
     <path d="M2.5 12 L5.5 8 L8.5 9.5 L12.5 4"/>
@@ -57,7 +48,6 @@ const workspaceNavItems = [
   { to: '/library',    Icon: IconList,      label: 'Test Library' },
   { to: '/test-types', Icon: IconTag,       label: 'Test Types' },
   { to: '/plans',      Icon: IconClipboard, label: 'Test Plans' },
-  { to: '/gantt',      Icon: IconGantt,     label: 'Gantt Chart' },
   { to: '/reports',    Icon: IconReport,    label: 'Reports' },
 ]
 
