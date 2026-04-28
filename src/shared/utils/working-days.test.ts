@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { getTaskProgressPercent } from './working-days'
+import {
+  getTaskProgressPercent,
+  getDeadlineStatus,
+  calculateWorkingDaysBetween,
+  getTotalTaskDays,
+} from './working-days'
 
 describe('getTaskProgressPercent', () => {
   it('returns null for empty string summary', () => {
@@ -45,5 +50,82 @@ describe('getTaskProgressPercent', () => {
       { text: 'C', done: false },
     ])
     expect(getTaskProgressPercent(tasks)).toBe(33)
+  })
+})
+
+describe('getDeadlineStatus with summary (Task 1)', () => {
+  const allDone = JSON.stringify([{ text: 'A', done: true }, { text: 'B', done: true }])
+  const notDone = JSON.stringify([{ text: 'A', done: false }])
+
+  it('returns safe when all tasks done and deadline not yet passed', () => {
+    expect(getDeadlineStatus('2099-12-31', allDone)).toBe('safe')
+  })
+
+  it('returns overdue when all tasks done but deadline already passed', () => {
+    expect(getDeadlineStatus('2020-01-01', allDone)).toBe('overdue')
+  })
+
+  it('uses normal calculation when tasks not all done', () => {
+    // Far future, not done → safe from days-remaining logic
+    expect(getDeadlineStatus('2099-12-31', notDone)).toBe('safe')
+  })
+
+  it('returns safe without summary (original behavior)', () => {
+    expect(getDeadlineStatus('2099-12-31')).toBe('safe')
+  })
+})
+
+describe('calculateWorkingDaysBetween (Task 2)', () => {
+  it('counts two consecutive weekdays', () => {
+    // Mon 2026-04-27 → Tue 2026-04-28 = 2 working days
+    expect(calculateWorkingDaysBetween('2026-04-27', '2026-04-28')).toBe(2)
+  })
+
+  it('skips weekends', () => {
+    // Fri 2026-04-24 → Mon 2026-04-27 = 2 working days (Fri + Mon)
+    expect(calculateWorkingDaysBetween('2026-04-24', '2026-04-27')).toBe(2)
+  })
+
+  it('returns 0 for same-day weekend', () => {
+    // Sat 2026-04-25 → Sat 2026-04-25 = 0 working days
+    expect(calculateWorkingDaysBetween('2026-04-25', '2026-04-25')).toBe(0)
+  })
+
+  it('returns 1 for same-day weekday', () => {
+    // Mon 2026-04-27 only = 1 working day
+    expect(calculateWorkingDaysBetween('2026-04-27', '2026-04-27')).toBe(1)
+  })
+
+  it('skips Vietnamese holidays', () => {
+    // Apr 30 2026 (Liberation Day) + May 1 (Labor Day) are holidays
+    // Mon Apr 27 → Wed Apr 29 = 3 working days (Apr 27, 28, 29) — Apr 30 skipped
+    expect(calculateWorkingDaysBetween('2026-04-27', '2026-04-29')).toBe(3)
+  })
+})
+
+describe('getTotalTaskDays (Task 2)', () => {
+  it('sums days from all tasks', () => {
+    const tasks = JSON.stringify([
+      { text: 'A', done: false, days: 3 },
+      { text: 'B', done: false, days: 2 },
+    ])
+    expect(getTotalTaskDays(tasks)).toBe(5)
+  })
+
+  it('treats missing days field as 0', () => {
+    const tasks = JSON.stringify([
+      { text: 'A', done: false, days: 2 },
+      { text: 'B', done: false },
+    ])
+    expect(getTotalTaskDays(tasks)).toBe(2)
+  })
+
+  it('returns 0 for empty array', () => {
+    expect(getTotalTaskDays('[]')).toBe(0)
+  })
+
+  it('returns 0 for invalid summary', () => {
+    expect(getTotalTaskDays('')).toBe(0)
+    expect(getTotalTaskDays('plain text')).toBe(0)
   })
 })
