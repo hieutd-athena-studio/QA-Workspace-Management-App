@@ -111,6 +111,7 @@ Only decisions that don't fit cleanly as an active rule live here.
 | ID | Decision | Status |
 |----|----------|--------|
 | [[ADR-004-react-context-over-redux]] | React Context for app-level state (no Redux / Zustand / MobX) | Accepted |
+| [[ADR-005-task-list-json-storage]] | Task list stored as JSON in summary TEXT column | Accepted |
 
 New one-off decisions: copy [[ADR-template]] → `ADR/ADR-NNN-slug.md`.
 
@@ -122,4 +123,6 @@ New one-off decisions: copy [[ADR-template]] → `ADR/ADR-NNN-slug.md`.
 
 See `Journals/` — newest on top.
 
+- [[2026-04-28-deadline-health-dashboard-color]] — Deadline health, task budget, Dashboard page, project color
+- [[2026-04-28-test-plan-task-list]] — Task list replaces summary field
 - [[2026-04-20-vault-initialized]] — Obsidian Dev-Brain bootstrapped

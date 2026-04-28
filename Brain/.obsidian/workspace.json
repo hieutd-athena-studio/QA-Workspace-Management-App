@@ -185,6 +185,8 @@
   },
   "active": "60a1c28d0361e25a",
   "lastOpenFiles": [
+    "Library/Lessons-Learned/css-border-shorthand-overrides-border-left.md",
+    "QA-Workspace-Management-App/Journals/2026-04-28-deadline-health-dashboard-color.md",
     "Architecture.md",
     "QA-Workspace-Management-App/ADR/ADR-005-task-list-json-storage.md",
     "QA-Workspace-Management-App/Journals/2026-04-28-test-plan-task-list.md",
@@ -211,8 +213,6 @@
     "QA-Workspace-Management-App/Journals/2026-04-22-test-types-import-export.md.tmp.75416.1776830033294",
     "LLM-Config/Tool-Schemas/README.md",
     "LLM-Config/System-Prompts/default-claude-persona.md",
-    "Library/Patterns/README.md",
-    "Library/Lessons-Learned/README.md",
     "Templates",
     "Workflows",
     "LLM-Config/Tool-Schemas",

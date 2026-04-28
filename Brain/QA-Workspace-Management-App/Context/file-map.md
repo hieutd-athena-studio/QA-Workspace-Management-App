@@ -20,6 +20,8 @@ last_reviewed: 2026-04-20
 | `database/migrations/004-restructure-categories.ts` | Drops `folder`, adds 2-level hierarchy |
 | `database/migrations/005-add-plan-summary.ts` | Plan summary columns |
 | `database/migrations/006-add-environment-to-test-cycles.ts` | `environment` on test_cycle |
+| `database/migrations/007-add-test-types.ts` | Test type field on test cases |
+| `database/migrations/008-add-project-color.ts` | `color TEXT` column on project (PRAGMA-guarded) |
 | `database/repositories/project.repo.ts` | Project CRUD |
 | `database/repositories/category.repo.ts` | Category CRUD |
 | `database/repositories/subcategory.repo.ts` | Subcategory CRUD |
@@ -62,7 +64,7 @@ last_reviewed: 2026-04-20
 | `pages/TestPlanDetailPage.tsx` / `.css` | Plan editor + cycles |
 | `pages/TestCycleDetailPage.tsx` / `.css` | Grouped accordion cycle view |
 | `pages/ExecutionPage.tsx` / `.css` | Cycle execution flow |
-| `pages/GanttPage.tsx` / `.css` | Gantt visualization |
+| `pages/DashboardPage.tsx` / `.css` | Cross-project health dashboard |
 | `pages/ReportsPage.tsx` / `.css` | Reports |
 | `components/layout/**` | Shell, sidebar, header |
 | `components/category-panel/**` | Category/Subcategory selection panel |
@@ -80,6 +82,8 @@ last_reviewed: 2026-04-20
 | `types/<domain>.ts` | Per-domain DTOs (single source of truth) |
 | `ipc-channels.ts` | Named IPC channel constants |
 | `utils/steps.ts` | Step parsing (CSV `action -> expected`) |
+| `utils/working-days.ts` | VN-holiday-aware working days utils (deadline status, budget, progress) |
+| `utils/dashboard.ts` | `calculateProjectHealth(plans)` — healthy = 100% tasks + not overdue |
 
 ## Config — repo root
 
