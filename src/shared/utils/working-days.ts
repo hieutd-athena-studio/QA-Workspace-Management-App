@@ -62,14 +62,41 @@ export function getProgressPercent(startDate: string, endDate: string): number {
 
 export type DeadlineStatus = 'safe' | 'warning' | 'critical' | 'overdue'
 
-export function getDeadlineStatus(endDate: string): DeadlineStatus {
+export function getDeadlineStatus(endDate: string, summary?: string): DeadlineStatus {
   const today = todayLocal()
   const end = new Date(endDate + 'T00:00:00')
   if (end < today) return 'overdue'
+  // All tasks done before deadline = healthy
+  if (summary !== undefined && getTaskProgressPercent(summary) === 100) return 'safe'
   const remaining = calculateWorkingDaysRemaining(endDate)
   if (remaining <= 3) return 'critical'
   if (remaining <= 7) return 'warning'
   return 'safe'
+}
+
+/** Working days from startDate (inclusive) to endDate (inclusive), skipping weekends + VN holidays. */
+export function calculateWorkingDaysBetween(startDate: string, endDate: string): number {
+  const start = new Date(startDate + 'T00:00:00')
+  const end = new Date(endDate + 'T00:00:00')
+  let count = 0
+  const cur = new Date(start)
+  while (cur <= end) {
+    if (isWorkingDay(cur)) count++
+    cur.setDate(cur.getDate() + 1)
+  }
+  return count
+}
+
+/** Sum of task.days values. Tasks without days field count as 0. Returns 0 for invalid summary. */
+export function getTotalTaskDays(summary: string): number {
+  if (!summary) return 0
+  try {
+    const parsed = JSON.parse(summary)
+    if (!Array.isArray(parsed)) return 0
+    return parsed.reduce((sum: number, t: { days?: number }) => sum + (t.days ?? 0), 0)
+  } catch {
+    return 0
+  }
 }
 
 export function formatDaysRemaining(endDate: string): string {

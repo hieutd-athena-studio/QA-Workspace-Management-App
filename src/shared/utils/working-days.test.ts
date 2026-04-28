@@ -77,29 +77,29 @@ describe('getDeadlineStatus with summary (Task 1)', () => {
 
 describe('calculateWorkingDaysBetween (Task 2)', () => {
   it('counts two consecutive weekdays', () => {
-    // Mon 2026-04-27 → Tue 2026-04-28 = 2 working days
-    expect(calculateWorkingDaysBetween('2026-04-27', '2026-04-28')).toBe(2)
+    // Mon 2026-05-04 → Tue 2026-05-05 = 2 working days (no holidays)
+    expect(calculateWorkingDaysBetween('2026-05-04', '2026-05-05')).toBe(2)
   })
 
   it('skips weekends', () => {
-    // Fri 2026-04-24 → Mon 2026-04-27 = 2 working days (Fri + Mon)
-    expect(calculateWorkingDaysBetween('2026-04-24', '2026-04-27')).toBe(2)
+    // Sat 2026-05-02 → Mon 2026-05-04 = 1 working day (only Mon counts)
+    expect(calculateWorkingDaysBetween('2026-05-02', '2026-05-04')).toBe(1)
   })
 
   it('returns 0 for same-day weekend', () => {
-    // Sat 2026-04-25 → Sat 2026-04-25 = 0 working days
+    // Sat 2026-04-25 = 0 working days
     expect(calculateWorkingDaysBetween('2026-04-25', '2026-04-25')).toBe(0)
   })
 
   it('returns 1 for same-day weekday', () => {
-    // Mon 2026-04-27 only = 1 working day
-    expect(calculateWorkingDaysBetween('2026-04-27', '2026-04-27')).toBe(1)
+    // Mon 2026-05-04 only = 1 working day
+    expect(calculateWorkingDaysBetween('2026-05-04', '2026-05-04')).toBe(1)
   })
 
   it('skips Vietnamese holidays', () => {
-    // Apr 30 2026 (Liberation Day) + May 1 (Labor Day) are holidays
-    // Mon Apr 27 → Wed Apr 29 = 3 working days (Apr 27, 28, 29) — Apr 30 skipped
-    expect(calculateWorkingDaysBetween('2026-04-27', '2026-04-29')).toBe(3)
+    // Apr 28 (Tue) + Apr 29 (Wed) = working; Apr 30 (holiday) + May 1 (holiday) + May 2-3 (weekend) skipped
+    // May 4 (Mon) = working → total 3 working days
+    expect(calculateWorkingDaysBetween('2026-04-28', '2026-05-04')).toBe(3)
   })
 })
 
