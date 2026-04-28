@@ -53,15 +53,16 @@ If the session changed:
 
 Only if the **vault schema itself** changed (new top-level folder, new template). Bump `last_reviewed` in frontmatter.
 
-## 6. Commit (if repo-tracked)
+## 6. Commit and push (if repo-tracked)
 
 If the vault is committed to git (it lives inside this repo):
 
 - `git status` — review what changed
 - `git add Brain/` — stage vault updates
 - Commit with a short message like `docs(vault): journal 2026-04-20 + ADR-005`
+- `git push origin main` — push all session commits (feature + vault) to remote
 
-If the user's rules forbid auto-committing, leave this for them.
+Push covers **all commits made this session**, not just the vault commit. Always push at session end so remote stays current.
 
 ## 7. Auto-submit to fork (if applicable)
 
