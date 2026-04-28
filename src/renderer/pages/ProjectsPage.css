@@ -79,10 +79,12 @@
   transform: translateY(-4px);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
   border-color: var(--primary);
+  border-left-color: var(--project-accent, var(--primary));
 }
 
 .project-card-active {
   border-color: var(--primary);
+  border-left-color: var(--project-accent, var(--primary));
   background: var(--surface-container-high);
   box-shadow: 0 8px 24px rgba(152, 177, 242, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
