@@ -7,6 +7,13 @@ import { useInvalidation } from '../contexts/InvalidationContext'
 import { useNotification } from '../contexts/NotificationContext'
 import './ExecutionPage.css'
 
+function statusDotColor(status: ExecutionStatus): string {
+  if (status === 'Pass')    return 'var(--success)'
+  if (status === 'Fail')    return 'var(--critical)'
+  if (status === 'Blocked') return 'var(--warning)'
+  return 'var(--on-surface-variant)'
+}
+
 export default function ExecutionPage() {
   const { planId, cycleId } = useParams<{ planId: string; cycleId: string }>()
   const navigate = useNavigate()
@@ -43,6 +50,20 @@ export default function ExecutionPage() {
       })
     } catch { return assignments }
   }, [assignments, cycleId])
+
+  // Group for left panel: category → subcategory → cases
+  const groupedAssignments = React.useMemo(() => {
+    const map = new Map<string, Map<string, TestCaseAssignment[]>>()
+    for (const a of orderedAssignments) {
+      const cat = a.category_name ?? ''
+      const sub = a.subcategory_name ?? ''
+      if (!map.has(cat)) map.set(cat, new Map())
+      const subMap = map.get(cat)!
+      if (!subMap.has(sub)) subMap.set(sub, [])
+      subMap.get(sub)!.push(a)
+    }
+    return map
+  }, [orderedAssignments])
 
   const current = orderedAssignments[currentIndex]
   const steps = current?.test_case_steps ? parseSteps(current.test_case_steps) : []
@@ -96,120 +117,147 @@ export default function ExecutionPage() {
 
   return (
     <div className="execution-page">
-      <div className="breadcrumb">
-        <Link to="/plans">Plans</Link>
-        <span className="breadcrumb-sep">›</span>
-        <Link to={`/plans/${planId}`}>{plan.name}</Link>
-        <span className="breadcrumb-sep">›</span>
-        <Link to={`/plans/${planId}/cycles/${cycleId}`}>{cycle.name}</Link>
-        <span className="breadcrumb-sep">›</span>
-        <span>Execute</span>
-      </div>
 
-      <div className="execution-header">
-        <span className="execution-title">Test Execution</span>
-        <div className="execution-progress-wrap">
-          <span className="execution-progress-label">{executed}/{orderedAssignments.length}</span>
-          <div className="execution-progress-track">
-            <div className="execution-progress-fill" style={{ width: `${progressPct}%` }} />
+      {/* ── LEFT PANEL ─────────────────────────────────────────────── */}
+      <aside className="exec-panel">
+        <div className="exec-panel-header">
+          <div className="exec-panel-progress-row">
+            <span className="exec-panel-count">{executed}/{orderedAssignments.length}</span>
+            <span className="exec-panel-pct">{progressPct}%</span>
           </div>
-          <span className="execution-progress-label">{progressPct}%</span>
+          <div className="exec-panel-track">
+            <div className="exec-panel-fill" style={{ width: `${progressPct}%` }} />
+          </div>
         </div>
-      </div>
 
-      {current && (
-        <div className="execution-card">
-          <div className="execution-card-top">
-            <div>
-              <div className="execution-case-number">Case {currentIndex + 1} of {orderedAssignments.length}</div>
-              <div className="execution-case-title">{current.test_case_title}</div>
-            </div>
-            {current.status !== 'Unexecuted' && (
-              <span className={`status-badge status-${current.status.toLowerCase()}`}>{current.status}</span>
-            )}
-          </div>
-
-          {current.test_case_description && (
-            <p className="execution-description">{current.test_case_description}</p>
-          )}
-
-          {steps.length > 0 && (
-            <div>
-              <div className="execution-steps-label">Steps</div>
-              <div className="execution-steps">
-                {steps.map((s) => (
-                  <div key={s.step} className="execution-step">
-                    <span className="execution-step-num">{s.step}</span>
-                    <div className="execution-step-content">
-                      <div className="execution-step-action">{s.action}</div>
-                      {s.expected && <div className="execution-step-expected">Expected: {s.expected}</div>}
-                    </div>
-                  </div>
-                ))}
+        <div className="exec-panel-list">
+          {Array.from(groupedAssignments.entries()).map(([catName, subMap]) => (
+            <div key={catName} className="exec-panel-cat-group">
+              <div className="exec-panel-cat">
+                {catName || <span className="exec-panel-cat-empty">Uncategorized</span>}
               </div>
+              {Array.from(subMap.entries()).map(([subName, cases]) => (
+                <div key={subName} className="exec-panel-sub-group">
+                  {subName && <div className="exec-panel-sub">{subName}</div>}
+                  {cases.map((a) => {
+                    const idx = orderedAssignments.indexOf(a)
+                    const isActive = idx === currentIndex
+                    return (
+                      <button
+                        key={a.id}
+                        className={`exec-panel-item${isActive ? ' exec-panel-item-active' : ''}`}
+                        onClick={() => setCurrentIndex(idx)}
+                        title={a.test_case_title ?? ''}
+                      >
+                        <span
+                          className="exec-panel-dot"
+                          style={{ background: statusDotColor(a.status) }}
+                        />
+                        <span className="exec-panel-item-title">
+                          {a.test_case_title ?? '(untitled)'}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              ))}
             </div>
-          )}
+          ))}
+        </div>
+      </aside>
 
-          {current.test_case_expected_result && (
-            <div className="execution-expected-block">
-              <div className="execution-expected-label">Overall Expected Result</div>
-              <p className="execution-expected-text">{current.test_case_expected_result}</p>
+      {/* ── RIGHT MAIN ─────────────────────────────────────────────── */}
+      <div className="exec-main">
+        <div className="breadcrumb">
+          <Link to="/plans">Plans</Link>
+          <span className="breadcrumb-sep">›</span>
+          <Link to={`/plans/${planId}`}>{plan.name}</Link>
+          <span className="breadcrumb-sep">›</span>
+          <Link to={`/plans/${planId}/cycles/${cycleId}`}>{cycle.name}</Link>
+          <span className="breadcrumb-sep">›</span>
+          <span>Execute</span>
+        </div>
+
+        {current && (
+          <div className="execution-card">
+            <div className="execution-card-top">
+              <div>
+                <div className="execution-case-number">Case {currentIndex + 1} of {orderedAssignments.length}</div>
+                <div className="execution-case-title">{current.test_case_title}</div>
+              </div>
+              {current.status !== 'Unexecuted' && (
+                <span className={`status-badge status-${current.status.toLowerCase()}`}>{current.status}</span>
+              )}
             </div>
-          )}
 
-          <div className="execution-bug-ref">
-            <label className="execution-bug-ref-label">Bug Reference</label>
-            <input
-              className="input"
-              value={bugRef}
-              onChange={(e) => setBugRef(e.target.value)}
-              placeholder="e.g., BUG-42"
-              style={{ maxWidth: 280 }}
-            />
-            <span className="execution-bug-ref-hint">Attached to Fail / Blocked results</span>
+            {current.test_case_description && (
+              <p className="execution-description">{current.test_case_description}</p>
+            )}
+
+            {steps.length > 0 && (
+              <div>
+                <div className="execution-steps-label">Steps</div>
+                <div className="execution-steps">
+                  {steps.map((s) => (
+                    <div key={s.step} className="execution-step">
+                      <span className="execution-step-num">{s.step}</span>
+                      <div className="execution-step-content">
+                        <div className="execution-step-action">{s.action}</div>
+                        {s.expected && <div className="execution-step-expected">Expected: {s.expected}</div>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {current.test_case_expected_result && (
+              <div className="execution-expected-block">
+                <div className="execution-expected-label">Overall Expected Result</div>
+                <p className="execution-expected-text">{current.test_case_expected_result}</p>
+              </div>
+            )}
+
+            <div className="execution-bug-ref">
+              <label className="execution-bug-ref-label">Bug Reference</label>
+              <input
+                className="input"
+                value={bugRef}
+                onChange={(e) => setBugRef(e.target.value)}
+                placeholder="e.g., BUG-42"
+                style={{ maxWidth: 280 }}
+              />
+              <span className="execution-bug-ref-hint">Attached to Fail / Blocked results</span>
+            </div>
+
+            <div className="execution-actions">
+              <button className="execution-btn execution-btn-pass" onClick={() => handleStatus('Pass')}>
+                Pass <span className="execution-btn-key">P</span>
+              </button>
+              <button className="execution-btn execution-btn-fail" onClick={() => handleStatus('Fail')}>
+                Fail <span className="execution-btn-key">F</span>
+              </button>
+              <button className="execution-btn execution-btn-blocked" onClick={() => handleStatus('Blocked')}>
+                Blocked <span className="execution-btn-key">B</span>
+              </button>
+            </div>
           </div>
+        )}
 
-          <div className="execution-actions">
-            <button className="execution-btn execution-btn-pass" onClick={() => handleStatus('Pass')}>
-              Pass <span className="execution-btn-key">P</span>
-            </button>
-            <button className="execution-btn execution-btn-fail" onClick={() => handleStatus('Fail')}>
-              Fail <span className="execution-btn-key">F</span>
-            </button>
-            <button className="execution-btn execution-btn-blocked" onClick={() => handleStatus('Blocked')}>
-              Blocked <span className="execution-btn-key">B</span>
-            </button>
-          </div>
+        <div className="execution-nav">
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
+            disabled={currentIndex === 0}
+          >← Prev</button>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => setCurrentIndex(Math.min(orderedAssignments.length - 1, currentIndex + 1))}
+            disabled={currentIndex === orderedAssignments.length - 1}
+          >Next →</button>
         </div>
-      )}
-
-      <div className="execution-nav">
-        <button
-          className="btn btn-secondary btn-sm"
-          onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
-          disabled={currentIndex === 0}
-        >← Prev</button>
-        <div className="execution-nav-center">
-          <span className="execution-nav-label">Jump to:</span>
-          <select
-            className="select"
-            value={currentIndex}
-            onChange={(e) => setCurrentIndex(Number(e.target.value))}
-            style={{ width: 220 }}
-          >
-            {orderedAssignments.map((a, i) => (
-              <option key={a.id} value={i}>
-                {i + 1}. {a.test_case_title} [{a.status}]
-              </option>
-            ))}
-          </select>
-        </div>
-        <button
-          className="btn btn-secondary btn-sm"
-          onClick={() => setCurrentIndex(Math.min(orderedAssignments.length - 1, currentIndex + 1))}
-          disabled={currentIndex === orderedAssignments.length - 1}
-        >Next →</button>
       </div>
+
     </div>
   )
 }
