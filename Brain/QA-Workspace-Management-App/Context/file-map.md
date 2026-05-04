@@ -1,7 +1,7 @@
 ---
 title: File Map — QA-Workspace-Management-App
 type: context
-last_reviewed: 2026-04-20
+last_reviewed: 2026-05-04
 ---
 
 # File Map
@@ -70,7 +70,9 @@ last_reviewed: 2026-04-20
 | `components/category-panel/**` | Category/Subcategory selection panel |
 | `components/test-cases/**` | Test-case form + list |
 | `components/execution/**` | Execution UI |
-| `components/shared/**` | `ConfirmDialog`, modals, shared atoms |
+| `components/shared/ConfirmDialog.tsx` | Confirmation dialog |
+| `components/shared/TaskEditorModal.tsx` | Task editor modal (budget summary + task list) |
+| `components/shared/**` | Other shared atoms |
 | `assets/styles/global.css` | Design tokens + utility classes |
 
 ## Shared — `src/shared/`
