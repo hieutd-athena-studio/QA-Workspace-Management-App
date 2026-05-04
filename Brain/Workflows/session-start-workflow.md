@@ -21,14 +21,21 @@ Note the **Don't / Do** section and the **ADR index** — these are the guardrai
 
 ## 3. Skim recent journals
 
-Open the `Projects/<Project>/Journals/` folder and read the **last 1–2 entries**. Look for:
+Open the `Projects/<Project>/Journals/` folder and read the **last 1 entry** (read 2 only if the last entry has no "Unresolved" section). Look for:
 
 - Unresolved items from last session → they might be today's work
 - "Follow-ups for Claude" sections → carry forward behaviour
 
-## 4. Spot-check ADRs relevant to the ask
+> **Context tip:** Use `offset` + `limit` when reading large files to avoid loading full file. Prefer targeted edits over full reads.
 
-If the user's request touches a domain with an ADR (state management → ADR-004, styling → ADR-003, DB schema → ADR-002, IPC → ADR-001), **re-read that ADR** before suggesting anything.
+## 4. Spot-check ADRs relevant to the ask (only if needed)
+
+Skip this step unless user's request directly touches an ADR domain. If it does:
+- State management → ADR-004
+- DB schema → ADR-002
+- IPC shape → ADR-001
+
+Do NOT preload ADRs speculatively.
 
 ## 5. Check Lessons-Learned for error signatures
 
@@ -37,6 +44,10 @@ If the user opens with an error message, grep `Library/Lessons-Learned/` for the
 ## 6. Cross-check with the Rules folder
 
 The authoritative rule set lives in `QA-Workspace-Management-App/Rules/` inside this vault. `CLAUDE.md` at the repo root is the top-level index that auto-loads each session; it points back here. If anything in the Context Map, ADRs, or journals appears to contradict a rule, **the rule wins** — and the out-of-date document should be updated.
+
+## 6b. Preview server — known noise
+
+DashboardPage has a pre-existing crash. When using the preview server, `preview_console_logs` will be flooded with repeated DashboardPage errors. **Do not diagnose this error unless the user explicitly asks.** Navigate directly to the relevant page (`window.location.hash = '#/...'`) and use `preview_screenshot` + `preview_snapshot` to verify UI changes instead.
 
 ## 7. Confirm scope with the user (only if ambiguous)
 

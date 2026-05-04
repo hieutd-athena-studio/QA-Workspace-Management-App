@@ -64,7 +64,8 @@ last_reviewed: 2026-05-04
 | `pages/TestPlanDetailPage.tsx` / `.css` | Plan editor + cycles |
 | `pages/TestCycleDetailPage.tsx` / `.css` | Grouped accordion cycle view |
 | `pages/ExecutionPage.tsx` / `.css` | Cycle execution flow |
-| `pages/DashboardPage.tsx` / `.css` | Cross-project health dashboard |
+| `pages/TestTypesPage.tsx` / `.css` | Test type mgmt — Manage Cases modal with selected/total count display |
+| `pages/DashboardPage.tsx` / `.css` | Cross-project health dashboard ⚠️ pre-existing crash at :38 (unrelated to test/plan work) |
 | `pages/ReportsPage.tsx` / `.css` | Reports |
 | `components/layout/**` | Shell, sidebar, header |
 | `components/category-panel/**` | Category/Subcategory selection panel |

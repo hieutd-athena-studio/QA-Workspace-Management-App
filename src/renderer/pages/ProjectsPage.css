@@ -55,14 +55,14 @@
 /* Project grid */
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: var(--sp-6);
 }
 
 .project-card {
   background: var(--surface-container);
   border-radius: var(--radius-lg);
-  padding: var(--sp-6);
+  padding: var(--sp-8);
   cursor: pointer;
   transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, border-color 120ms ease;
   display: flex;
@@ -72,6 +72,7 @@
   border: 1.5px solid var(--surface-variant);
   border-left: 4px solid var(--project-accent, var(--primary));
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  min-height: 280px;
 }
 
 .project-card:hover {

@@ -90,13 +90,54 @@ interface ManageCasesModalProps {
 const ManageCasesModal = ({ testType, selectedIds, categories, subcategories, onToggle, onBatchAdd, onBatchRemove, onClose }: ManageCasesModalProps) => {
   const [selectedSub, setSelectedSub] = useState<Subcategory | null>(null)
   const [selectedCats, setSelectedCats] = useState<Set<number>>(new Set())
+  const [allTestCases, setAllTestCases] = useState<Map<number, TestCase[]>>(new Map())
 
   const { data: testCases } = useApi<TestCase[]>(
     () => selectedSub ? window.api.testCases.getBySubcategory(selectedSub.id) : Promise.resolve([]),
     [selectedSub?.id]
   )
 
+  React.useEffect(() => {
+    if (selectedSub && testCases) {
+      setAllTestCases(prev => new Map(prev).set(selectedSub.id, testCases))
+    }
+  }, [selectedSub?.id, testCases])
+
+  React.useEffect(() => {
+    const loadAllCases = async () => {
+      const map = new Map<number, TestCase[]>()
+      for (const sub of subcategories) {
+        try {
+          const cases = await window.api.testCases.getBySubcategory(sub.id) as TestCase[]
+          map.set(sub.id, cases)
+        } catch { /* skip */ }
+      }
+      setAllTestCases(map)
+    }
+    if (subcategories.length > 0) {
+      loadAllCases()
+    }
+  }, [subcategories])
+
   const subsForCat = (catId: number) => subcategories.filter(s => s.category_id === catId)
+
+  const getCountsForCat = (catId: number) => {
+    const subs = subsForCat(catId)
+    let total = 0, selected = 0
+    for (const sub of subs) {
+      const cases = allTestCases.get(sub.id) || []
+      total += cases.length
+      selected += cases.filter(tc => selectedIds.has(tc.id)).length
+    }
+    return { selected, total }
+  }
+
+  const getCountsForSub = (subId: number) => {
+    const cases = allTestCases.get(subId) || testCases || []
+    const total = cases.length
+    const selected = cases.filter(tc => selectedIds.has(tc.id)).length
+    return { selected, total }
+  }
 
   const selectAllInSubcategory = async () => {
     if (!testCases) return
@@ -154,7 +195,10 @@ const ManageCasesModal = ({ testType, selectedIds, categories, subcategories, on
                     onClick={e => { e.stopPropagation(); toggleAllInCategory(cat.id) }}
                     title={selectedCats.has(cat.id) ? `Deselect all in ${cat.name}` : `Select all in ${cat.name}`}
                   >
-                    {selectedCats.has(cat.id) ? 'Selected' : 'All'}
+                    {(() => {
+                      const { selected, total } = getCountsForCat(cat.id)
+                      return total === 0 ? 'No cases' : `${selected}/${total}`
+                    })()}
                   </button>
                 </div>
                 {subsForCat(cat.id).map(sub => (
@@ -177,7 +221,10 @@ const ManageCasesModal = ({ testType, selectedIds, categories, subcategories, on
               </span>
               {selectedSub && testCases && testCases.length > 0 && (
                 <button className="picker-select-all-btn" onClick={selectAllInSubcategory}>
-                  {allSubSelected ? 'Deselect All' : 'Select All'}
+                  {(() => {
+                    const { selected, total } = getCountsForSub(selectedSub.id)
+                    return allSubSelected ? `${selected}/${total} (deselect all)` : `${selected}/${total} (select all)`
+                  })()}
                 </button>
               )}
             </div>
