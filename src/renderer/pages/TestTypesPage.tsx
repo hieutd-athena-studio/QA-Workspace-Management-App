@@ -251,7 +251,7 @@ const ManageCasesModal = ({ testType, selectedIds, categories, subcategories, on
         </div>
 
         <div className="modal-footer">
-          <span className="body-sm text-muted">{selectedIds.size} case{selectedIds.size !== 1 ? 's' : ''} selected</span>
+          <span className="body-sm text-muted" style={{ marginRight: 'auto' }}>{selectedIds.size} case{selectedIds.size !== 1 ? 's' : ''} selected</span>
           <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
           <button className="btn btn-primary" onClick={onClose}>Done</button>
         </div>

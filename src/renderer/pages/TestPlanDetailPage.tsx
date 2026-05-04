@@ -111,9 +111,9 @@ export default function TestPlanDetailPage() {
     if (plan) setTasksDraft(parseTasks(plan.summary))
   }, [plan?.id, plan?.summary])
 
-  const handleSaveTasks = async () => {
+  const handleSaveTasks = async (tasks: { text: string; done: boolean; days?: number }[]) => {
     try {
-      await window.api.testPlans.update(Number(planId), { summary: JSON.stringify(tasksDraft) })
+      await window.api.testPlans.update(Number(planId), { summary: JSON.stringify(tasks) })
       invalidate('testPlans')
       notify('Tasks saved', 'success')
       setEditingTasks(false)
