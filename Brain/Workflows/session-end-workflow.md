@@ -15,23 +15,24 @@ Copy [[Journal-template]] to:
 Brain/<Project>/Journals/YYYY-MM-DD-<short-slug>.md
 ```
 
-Fill in:
+Use the slim template — bullets only, no prose. Fill in:
+- **Shipped** — file paths + what changed
+- **Decided** — non-trivial choices + one-line reason (inline here, no ADR needed for single-dev)
+- **Next** — concrete follow-up actions
+- **Traps** — gotchas for next Claude
 
-- **What shipped** — concrete changes, file paths OK
-- **Key decisions** — anything non-trivial
-- **Unresolved / next steps** — open bugs, edge cases, half-done work
-- **Follow-ups for Claude** — heuristics the next session should know
+## 2. Auto-update the file-map
 
-Keep it terse — think minutes of writing, not an essay.
+Run the following to detect new/deleted files since the last commit:
 
-## 2. Record any new ADRs
+```bash
+git diff --name-only HEAD~1 HEAD 2>/dev/null || git diff --cached --name-only
+```
 
-If the session made a **non-trivial decision** (a pattern chosen, a library rejected, a schema change, an API shape), create an ADR:
+For each **new** file: add a row to `Brain/<Project>/Context/file-map.md`.
+For each **deleted** file: remove its row, then grep `Brain/` for references and remove them.
 
-1. Copy [[ADR-template]] to `Brain/<Project>/ADR/ADR-NNN-slug.md`
-2. Set `status: Accepted` (or `Proposed` if still in debate)
-3. Add a row to the ADR index in `Brain/<Project>/ADR/README.md`
-4. Link the ADR from the project Context Map if it affects the Don't / Do section
+Skip if no files were added or deleted (modifications only = no map update needed).
 
 ## 3. Log any hard-won bugs
 
@@ -41,30 +42,22 @@ If a bug took **> 30 minutes** to diagnose, create a Lesson-Learned:
 2. Include the **exact error signature** so future grep hits it
 3. Document **root cause** + **fix** + **detection heuristic**
 
-## 4. Update the Context Map (if needed)
-
-If the session changed:
-
-- A major file moved / added / deleted → update [[file-map]] (`Brain/<Project>/Context/file-map.md`)
-- A vault file was **deleted** → run the Link Cleanup Rule: grep `Brain/` for references to the deleted filename and remove them before deleting (see [[Architecture]] §8)
-- A rule file added or removed → update the Context Map Rules section and `CLAUDE.md` Rules table
-
-## 5. Update `Architecture.md` (rarely)
+## 4. Update `Architecture.md` (rarely)
 
 Only if the **vault schema itself** changed (new top-level folder, new template). Bump `last_reviewed` in frontmatter.
 
-## 6. Commit and push (if repo-tracked)
+## 5. Commit and push (if repo-tracked)
 
 If the vault is committed to git (it lives inside this repo):
 
 - `git status` — review what changed
 - `git add Brain/` — stage vault updates
-- Commit with a short message like `docs(vault): journal 2026-04-20 + ADR-005`
+- Commit with a short message like `docs(vault): journal 2026-04-20`
 - `git push origin main` — push all session commits (feature + vault) to remote
 
 Push covers **all commits made this session**, not just the vault commit. Always push at session end so remote stays current.
 
-## 7. Auto-submit to fork (if applicable)
+## 6. Auto-submit to fork (if applicable)
 
 If this repo is a **fork** and there are **uncommitted changes**, run the fork PR automation:
 

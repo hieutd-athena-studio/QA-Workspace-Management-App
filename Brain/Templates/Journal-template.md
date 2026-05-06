@@ -1,26 +1,18 @@
 ---
 date: <YYYY-MM-DD>
-session_type: feature | bugfix | refactor | research | planning
-participants: [<user>, claude]
-related_specs: [<optional wikilinks>]
-related_adrs: [<optional wikilinks>]
+areas: [<execution|task-editor|test-cycle|test-plan|test-types|categories|reports|ui|db|ipc>]
 ---
 
-# <YYYY-MM-DD> — <Session slug>
+# <YYYY-MM-DD> — <slug>
 
-## What shipped
+## Shipped
+- `path/to/file` — what changed
 
-- <Bullet: concrete change, file paths welcome>
-- <Bullet: next concrete change>
+## Decided
+- [choice] — why (one line)
 
-## Key decisions
+## Next
+- specific action item
 
-- <Decision made during the session — if non-trivial, also create an ADR>
-
-## Unresolved / next steps
-
-- <Edge case / bug / open question to pick up next session>
-
-## Follow-ups for Claude
-
-- <Instruction the next Claude session should know about, e.g. "Avoid X — we tried it and it broke Y">
+## Traps
+- gotcha for next Claude (e.g. "X breaks Y — avoid")

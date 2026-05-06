@@ -41,9 +41,20 @@ Do NOT preload ADRs speculatively.
 
 If the user opens with an error message, grep `Library/Lessons-Learned/` for the signature before diagnosing from scratch.
 
-## 6. Cross-check with the Rules folder
+## 6. Cross-check with the Rules folder (only if task touches that domain)
 
-The authoritative rule set lives in `QA-Workspace-Management-App/Rules/` inside this vault. `CLAUDE.md` at the repo root is the top-level index that auto-loads each session; it points back here. If anything in the Context Map, ADRs, or journals appears to contradict a rule, **the rule wins** — and the out-of-date document should be updated.
+Skip by default. Read a rule file only when the task directly involves that domain:
+
+| Task involves | Read |
+|---|---|
+| New component, CSS patterns | `code-style.md` |
+| IPC, `window.api`, new hook | `api-conventions.md` |
+| DB schema, migrations, repo pattern | `database.md` |
+| Error handling, IPC error wrapping | `error-handling.md` |
+| Security, validation, SQL | `security.md` |
+| Git commit style | `git-workflow.md` |
+
+Do NOT preload rules speculatively. Existing code in the repo already demonstrates the patterns.
 
 ## 6b. Preview server — known noise
 
